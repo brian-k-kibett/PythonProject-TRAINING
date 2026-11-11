@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-<title>NEXA - {{ current_wall.name }} - v30 PC ON PHONE</title>
+<title>NEXA - {{ current_wall.name }} - v31 FLAGS LEFT</title>
 <style>
 * { margin:0; padding:0; box-sizing:border-box; font-family:'Segoe UI', Arial, sans-serif; }
 body { display:flex; flex-direction:column; height:100vh; background:#0a0a12; color:white; overflow:hidden; }
@@ -71,61 +71,54 @@ body { display:flex; flex-direction:column; height:100vh; background:#0a0a12; co
 .send-box input[type="text"] { flex:1; padding:13px 16px; border-radius:50px; border:1px solid #333; background:#151a35; color:white; outline:none; min-width:0; }
 .send-box button.post-btn { padding:13px 22px; border-radius:50px; border:none; cursor:pointer; background:linear-gradient(90deg,#0066ff,#ff1493,#ff0000); color:white; font-weight:800; }
 .file-name { font-size:12px; color:#ff6ec4; max-width:120px; overflow:hidden; white-space:nowrap; text-overflow:ellipsis; }
-/* ===== PHONE = SAME AS PC, JUST SMALLER - NO STACKING, NO MOVING ===== */
+/* ===== PHONE: FLAGS LEFT NARROW - BIG SPACE FOR CHAT RIGHT - SAME AS PC LAYOUT ===== */
 @media (max-width:700px){
-  body{ height:100vh; overflow:hidden; }
-  .topbar{ padding:8px 10px; }
-  .topbar-left{ gap:8px; }
-  .topbar-left h2{ font-size:16px; gap:6px; }
-  .topbar-left h2 span{ font-size:18px !important; }
+  body{ height:100vh; height:100dvh; overflow:hidden; }
+  .topbar{ padding:7px 8px; }
+  .topbar-left{ gap:6px; }
+  .topbar-left h2{ font-size:15px; gap:5px; }
+  .topbar-left h2 span{ font-size:17px !important; }
   .topbar-left p{ display:none; }
-  .flag-img-big{ width:36px; height:24px; }
-  .rank-badge-top{ font-size:10px; padding:2px 7px; margin-left:4px; }
-  .topbar-right .logo-mini{ font-size:13px; letter-spacing:3px; }
-  .topbar-right p{ font-size:10px; gap:4px; }
-  .bell-btn{ padding:4px 8px; font-size:11px; }
-  .profile-btn-top{ padding:4px 7px; font-size:10px; }
+  .flag-img-big{ width:32px; height:22px; }
+  .rank-badge-top{ font-size:10px; padding:2px 6px; margin-left:3px; }
+  .topbar-right .logo-mini{ font-size:12px; letter-spacing:2px; }
+  .topbar-right p{ font-size:9px; gap:3px; }
+  .bell-btn{ padding:3px 7px; font-size:11px; }
+  .profile-btn-top{ padding:3px 6px; font-size:9px; }
   .body-row{ flex-direction:row !important; }
-  .sidebar{ width:148px !important; min-width:148px; padding:8px; border-right:1px solid #ff1493; border-bottom:none; max-height:none; }
-  .search-box-left{ padding:4px 4px 4px 8px; margin-bottom:8px; }
-  .search-box-left input{ font-size:11px; }
-  .search-box-left button{ padding:6px 8px; font-size:11px; }
-  .wall-link{ padding:6px 6px; font-size:11px; margin-bottom:4px; }
-  .rank-num{ min-width:22px; height:22px; font-size:10px; }
-  .flag-img{ width:24px; height:16px; }
-  .flag-emoji{ font-size:16px; }
-  .flag-desc{ display:none; }
-  .people-line{ font-size:9px; }
-  .quote{ font-size:10px; padding:8px; }
-  .logout{ font-size:11px; padding:8px; }
+  /* LEFT = ONLY FLAGS, 62px */
+  .sidebar{ width:62px !important; min-width:62px !important; max-width:62px !important; padding:6px 4px; border-right:1px solid #ff1493; border-bottom:none; max-height:none; overflow-x:hidden; }
+  .search-box-left{ padding:3px; margin-bottom:6px; border-radius:10px; }
+  .search-box-left input{ display:none; }
+  .search-box-left button{ width:100%; padding:6px 2px; font-size:11px; }
+  #wallsList{ display:flex; flex-direction:column; gap:4px; }
+  .wall-link{ padding:4px 2px; margin-bottom:0; justify-content:center; border-left:none; border-radius:10px; }
+  .wall-link .rank-num{ display:none; }
+  .flag-box{ justify-content:center; gap:0; }
+  .flag-img{ width:40px; height:28px; margin:0 auto; }
+  .flag-emoji{ display:none; }
+  .flag-name, .flag-desc, .people-line{ display:none !important; }
+  .quote{ display:none; }
+  .logout{ font-size:9px; padding:6px 2px; }
+  /* RIGHT = BIG CHAT SPACE */
+  .main{ flex:1; min-width:0; }
   .messages{ padding:8px 8px; gap:8px; }
-  .msg{ min-width:0; width:100%; max-width:100%; padding:8px 10px; }
-  .msg p{ font-size:13px; }
-  .msg video{ max-width:100%; height:140px; }
-  .msg img.post-photo{ max-width:100%; height:140px; }
+  .msg{ min-width:0; width:100%; max-width:100%; padding:9px 10px; }
+  .msg p{ font-size:14px; }
+  .msg video{ max-width:100%; height:160px; }
+  .msg img.post-photo{ max-width:100%; height:160px; }
   .rank-info, .posts-left, .error-box{ font-size:10px; padding:6px; }
   .post-rank{ font-size:9px; padding:2px 7px; }
-  .delete-box{ padding:6px; }
-  .delete-btn-big, .report-btn{ font-size:10px; padding:6px 10px; }
-  .report-count, .report-hint{ font-size:9px; }
-  .like-btn{ font-size:11px; padding:4px 8px; }
-  .stat-pill{ font-size:10px; padding:3px 6px; }
-  .comments-toggle-btn{ font-size:10px; padding:6px 8px; }
-  .comment{ font-size:11px; }
   .send-box{ padding:8px 8px; gap:6px; }
   .plus-btn{ width:36px; height:36px; min-width:36px; font-size:20px; }
   .send-box input[type="text"]{ padding:9px 10px; font-size:12px; }
   .send-box button.post-btn{ padding:9px 12px; font-size:12px; }
-  .file-name{ font-size:10px; max-width:60px; }
-}
-@media (max-width:400px){
-  .sidebar{ width:128px !important; min-width:128px; padding:6px; }
-  .topbar-left h2{ font-size:14px; }
+  .file-name{ display:none; }
 }
 </style>
 </head>
 <body>
-<div class="topbar"><div class="topbar-left"><img class="flag-img-big" src="https://flagcdn.com/w80/{{ current_wall.code }}.png" onerror="this.style.display='none'" loading="lazy"><div><h2><span style="font-size:28px;">{{ current_wall.flag }}</span> {{ current_wall.name }} Wall <span class="rank-badge-top">🏆 #{{ current_rank }}</span></h2><p>Flag colours: {{ current_wall.desc }} • Hello, {{ user }} 👋 • {{ messages|length }} posts • Rank #{{ current_rank }}</p></div></div><div class="topbar-right"><div class="logo-mini">NEXA<span>.</span> v30</div><p><a class="bell-btn" href="/notifications">🔔{% if notif_count > 0 %}<span class="bell-badge">{{ notif_count }}</span>{% endif %}</a> Logged in as <b>@{{ user }}</b> <a class="profile-btn-top" href="/profile/{{ user }}">{% if my_pic %}<img src="{{ my_pic }}" style="width:22px;height:22px;border-radius:50%;object-fit:cover;vertical-align:middle;">{% else %}<span class="fb-icon-mini"><svg viewBox="0 0 24 24" fill="white"><path d="M12 12c2.7 0 5-2.3 5-5s-2.3-5-5-5-5 2.3-5 5 2.3 5 5 5zm0 2c-3.3 0-10 1.7-10 5v3h20v-3c0-3.3-6.7-5-10-5z"/></svg></span>{% endif %} My Profile</a></p></div></div>
+<div class="topbar"><div class="topbar-left"><img class="flag-img-big" src="https://flagcdn.com/w80/{{ current_wall.code }}.png" onerror="this.style.display='none'" loading="lazy"><div><h2><span style="font-size:28px;">{{ current_wall.flag }}</span> {{ current_wall.name }} Wall <span class="rank-badge-top">🏆 #{{ current_rank }}</span></h2><p>Flag colours: {{ current_wall.desc }} • Hello, {{ user }} 👋 • {{ messages|length }} posts • Rank #{{ current_rank }}</p></div></div><div class="topbar-right"><div class="logo-mini">NEXA<span>.</span> v31</div><p><a class="bell-btn" href="/notifications">🔔{% if notif_count > 0 %}<span class="bell-badge">{{ notif_count }}</span>{% endif %}</a> Logged in as <b>@{{ user }}</b> <a class="profile-btn-top" href="/profile/{{ user }}">{% if my_pic %}<img src="{{ my_pic }}" style="width:22px;height:22px;border-radius:50%;object-fit:cover;vertical-align:middle;">{% else %}<span class="fb-icon-mini"><svg viewBox="0 0 24 24" fill="white"><path d="M12 12c2.7 0 5-2.3 5-5s-2.3-5-5-5-5 2.3-5 5 2.3 5 5 5zm0 2c-3.3 0-10 1.7-10 5v3h20v-3c0-3.3-6.7-5-10-5z"/></svg></span>{% endif %} My Profile</a></p></div></div>
 <div class="body-row">
 <div class="sidebar">
 <form class="search-box-left" onsubmit="goToFirstWall(); return false;"><input id="searchInput" type="text" placeholder="🔍 Search a wall... e.g. Nigeria" autocomplete="off" oninput="filterWalls()"><button type="submit">Go →</button></form>
