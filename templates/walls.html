@@ -5,7 +5,7 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
 <link rel="preconnect" href="https://flagcdn.com">
 <link rel="dns-prefetch" href="https://flagcdn.com">
-<title> NEXA - {{ current_wall.name }} - NEON NO-DELETE-IN-WALLS v35</title>
+<title> NEXA - {{ current_wall.name }} - NEON VIDEO FIXED v36</title>
 <style>
 * { margin:0; padding:0; box-sizing:border-box; font-family:'Segoe UI', Arial, sans-serif; }
 body { display:flex; flex-direction:column; height:100vh; background:#07001a; color:white; overflow:hidden; }
@@ -168,24 +168,59 @@ let box = document.getElementById('messagesBox'); box.scrollTop = box.scrollHeig
 document.getElementById('videoFile').addEventListener('change', function(){ if(this.files.length>0){ let f=this.files[0]; if(f.size > 10*1024*1024){ alert('🚫 File too big! Max 10MB only.'); this.value=''; document.getElementById('fileName').textContent=''; return; } if(f.size > 3*1024*1024){ alert('⚠️ Video is ' + (f.size/1024/1024).toFixed(1) + 'MB - it may hang. Try under 3MB for fast play.'); } if(f.type.startsWith('video/') && !f.name.toLowerCase().endsWith('.mp4') && !f.name.toLowerCase().endsWith('.webm')){ alert('⚠️ Use MP4 video only — MOV / MKV will not play in browser. Please convert to MP4.'); this.value=''; return; } document.getElementById('fileName').textContent = "📸 " + f.name; } });
 function filterWalls(){ let q=document.getElementById('searchInput').value.toLowerCase().trim(); let links=document.querySelectorAll('.wall-link'); links.forEach(function(link){ let name=link.getAttribute('data-name'); if(!q||name.includes(q)){link.style.display='flex';} else {link.style.display='none';} }); }
 function goToFirstWall(){ let q=document.getElementById('searchInput').value.toLowerCase().trim(); if(!q) return; let links=document.querySelectorAll('.wall-link'); for(let link of links){ if(link.getAttribute('data-name').includes(q)){ window.location.href=link.href; return; } } }
+// FIXED: 1 video at a time, pause when you leave site / switch browser / lock phone
 (function(){
   var scrollBox = document.getElementById('messagesBox');
   var videos = document.querySelectorAll('video.post-video');
+  function pauseAllVideos(){
+    videos.forEach(function(v){ v.pause(); if(v.closest('.video-wrap')) v.closest('.video-wrap').classList.remove('loading'); });
+  }
+  function unloadVideo(v){
+    // Stop downloading when out of view - fixes hanging
+    if(v.dataset.src && v.src){
+      v.pause();
+      v.removeAttribute('src');
+      v.load();
+    }
+  }
+  function loadVideo(v){
+    if(!v.src && v.dataset.src){ v.src = v.dataset.src; v.load(); }
+  }
+  // FIX 1: When you leave site / switch browser / tab hidden / lock phone -> PAUSE ALL
+  document.addEventListener('visibilitychange', function(){
+    if(document.hidden){ pauseAllVideos(); }
+  });
+  window.addEventListener('blur', function(){ pauseAllVideos(); });
+  window.addEventListener('pagehide', function(){ pauseAllVideos(); });
+  document.addEventListener('visibilitychange', function(){
+    if(!document.hidden){
+      // When you come back, don't auto-play, user must tap again - saves data
+    }
+  });
   if(!videos.length) return;
-  function loadVideo(v){ if(!v.src && v.dataset.src){ v.src = v.dataset.src; v.load(); } }
-  function playVideo(v){ loadVideo(v); var p = v.play(); if(p) p.catch(function(){}); }
-  if(!('IntersectionObserver' in window)){ videos.forEach(function(v){ loadVideo(v); playVideo(v); }); return; }
+  if(!('IntersectionObserver' in window)){
+    videos.forEach(function(v){ loadVideo(v); });
+    return;
+  }
   var observer = new IntersectionObserver(function(entries){
     entries.forEach(function(entry){
-      var v = entry.target; var wrap = v.closest('.video-wrap');
-      if(entry.isIntersecting && entry.intersectionRatio >= 0.5){
+      var v = entry.target;
+      var wrap = v.closest('.video-wrap');
+      if(entry.isIntersecting && entry.intersectionRatio >= 0.5 && !document.hidden){
         if(wrap) wrap.classList.add('loading');
+        // Pause all others first - only 1 plays
+        videos.forEach(function(other){ if(other !== v){ other.pause(); unloadVideo(other); } });
         loadVideo(v);
-        videos.forEach(function(other){ if(other !== v){ other.pause(); } });
-        playVideo(v);
+        var p = v.play();
+        if(p) p.catch(function(){ if(wrap) wrap.classList.remove('loading'); });
         v.addEventListener('playing', function(){ if(wrap) wrap.classList.remove('loading'); }, {once:true});
         v.addEventListener('canplay', function(){ if(wrap) wrap.classList.remove('loading'); }, {once:true});
-      } else { v.pause(); if(wrap) wrap.classList.remove('loading'); }
+      } else {
+        v.pause();
+        if(wrap) wrap.classList.remove('loading');
+        // Unload when scrolled past - stops hanging, frees internet
+        if(!entry.isIntersecting){ unloadVideo(v); }
+      }
     });
   }, { root: scrollBox, threshold: [0.5] });
   videos.forEach(function(v){
@@ -193,6 +228,10 @@ function goToFirstWall(){ let q=document.getElementById('searchInput').value.toL
     v.addEventListener('click', function(){ if(v.muted){ v.muted = false; v.play().catch(function(){}); } else { v.muted = true; } });
     v.addEventListener('waiting', function(){ if(v.closest('.video-wrap')) v.closest('.video-wrap').classList.add('loading'); });
     v.addEventListener('playing', function(){ if(v.closest('.video-wrap')) v.closest('.video-wrap').classList.remove('loading'); });
+    // If video stalls for 3 sec, pause and show loading, don't hang forever
+    var stallTimer = null;
+    v.addEventListener('waiting', function(){ clearTimeout(stallTimer); stallTimer = setTimeout(function(){ v.pause(); if(v.closest('.video-wrap')) v.closest('.video-wrap').classList.remove('loading'); }, 5000); });
+    v.addEventListener('playing', function(){ clearTimeout(stallTimer); });
   });
 })();
 </script>
