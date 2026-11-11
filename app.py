@@ -1,6 +1,6 @@
-# app.py - 【entity-NEXA¦canonical_name=NEXA】 v29 FINAL - ALL FIXED + NICE
-# 15 Walls | Ranking Likes x10 + Comments x5 + Views | Profile Pic | Video Fix (MP4 capital)
-# Delete: only post owner OR BRIAN | Report: 5 different people = auto-delete | No duplicate IDs
+# app.py - 【entity-NEXA¦canonical_name=NEXA】 v31 BOOST - SAME LOOK, SAME FEATURES, JUST FASTER
+# NOTHING visible changed: same colours, same ranking, same delete, same video, same flags
+# BOOST inside: cache ranked walls 10 sec, cache profile pics, no re-read file on every click, faster views
 from flask import Flask, render_template, request, redirect, session, jsonify
 import database, os, requests, json, time, datetime, secrets, re
 from dotenv import load_dotenv
@@ -44,6 +44,15 @@ last_post_time = {}
 user_post_count_today = {}
 user_comment_count_today = {}
 
+# ===== BOOST: cache ranked walls for 10 seconds, so 100 people opening wall at once = 1 calculation, not 100 =====
+_RANKED_CACHE = None
+_RANKED_TIME = 0
+_RANKED_CACHE_SECONDS = 10
+def clear_ranked_cache():
+    global _RANKED_CACHE, _RANKED_TIME
+    _RANKED_CACHE = None
+    _RANKED_TIME = 0
+
 BAD_WORDS = ["fuck", "shit", "bitch", "porn", "sex", "dick", "pussy", "kill yourself", "suicide", "nigger", "nigga"]
 def contains_bad_word(text):
     t = (text or "").lower()
@@ -72,7 +81,6 @@ def record_failed_login(key):
         login_attempts[key]["blocked_until"] = time.time() + LOGIN_BLOCK_MINUTES * 60
         login_attempts[key]["count"] = 0
 def make_post_id():
-    # Unique ID - never duplicates, even if you double-click Post
     return int(time.time() * 1000000) + secrets.randbelow(1000)
 
 @app.after_request
@@ -81,6 +89,9 @@ def security_headers(response):
     response.headers["X-Frame-Options"] = "SAMEORIGIN"
     response.headers["X-XSS-Protection"] = "1; mode=block"
     response.headers["Referrer-Policy"] = "strict-origin-when-cross-origin"
+    # BOOST: tell phone/browser to keep CSS/images/flags for 1 day, don't download again every time
+    if request.path.startswith("/static/"):
+        response.headers["Cache-Control"] = "public, max-age=86400"
     return response
 @app.errorhandler(413)
 def too_large(e): return "🚫 File too big! Max 10MB only.", 413
@@ -118,7 +129,7 @@ def get_badge(total_likes, total_posts):
 def post_score(m): return (m.get("likes", 0) * 10) + (len(m.get("comments", [])) * 5) + m.get("views", 0)
 def default_messages():
     d = {}
-    for w in WALLS: d[w["slug"]] = [{"id": 1, "user": "【entity-nexa¦canonical_name=NEXA】", "text": f"Welcome to {w['name']} wall! {w['flag']} Post anything!", "video": "", "likes": 0, "liked_by": [], "comments": [], "views": 0, "viewed_by": [], "reports": 0, "reported_by": []}]
+    for w in WALLS: d[w["slug"]] = [{"id": 1, "user": " 【entity-nexa¦canonical_name=NEXA】", "text": f"Welcome to {w['name']} wall! {w['flag']} Post anything!", "video": "", "likes": 0, "liked_by": [], "comments": [], "views": 0, "viewed_by": [], "reports": 0, "reported_by": []}]
     return d
 def load_messages():
     if os.path.exists(DATA_FILE):
@@ -143,6 +154,7 @@ def load_messages():
     return default_messages()
 def save_messages():
     with open(DATA_FILE, "w", encoding="utf-8") as f: json.dump(MESSAGES, f, ensure_ascii=False, indent=2)
+    clear_ranked_cache()
 _PROFILES_CACHE = None
 _NOTIFS_CACHE = None
 def load_profiles():
@@ -194,7 +206,6 @@ def unread_count(username):
     return sum(1 for n in notifs.get(username, []) if not n.get("seen"))
 def is_owner(): return "user" in session and session["user"].strip().lower() == OWNER_NAME.lower()
 def can_delete_post(post_owner, viewer):
-    # Nice + safe: only post owner OR BRIAN, case-insensitive, no spaces
     if not post_owner or not viewer: return False
     return str(post_owner).strip().lower() == str(viewer).strip().lower() or str(viewer).strip().lower() == OWNER_NAME.lower()
 MESSAGES = load_messages()
@@ -204,6 +215,10 @@ def get_wall(slug):
         if w["slug"] == slug: return w
     return WALLS[0]
 def get_ranked_walls():
+    global _RANKED_CACHE, _RANKED_TIME
+    now = time.time()
+    if _RANKED_CACHE is not None and now - _RANKED_TIME < _RANKED_CACHE_SECONDS:
+        return _RANKED_CACHE
     ranked = []
     for w in WALLS:
         msgs = MESSAGES.get(w["slug"], [])
@@ -217,6 +232,7 @@ def get_ranked_walls():
         ranked.append({**w, "people": people_count, "posts": len(msgs), "likes": total_likes, "comments": total_comments, "views": total_views, "score": score})
     ranked.sort(key=lambda x: x["score"], reverse=True)
     for i, r in enumerate(ranked): r["rank"] = i + 1
+    _RANKED_CACHE = ranked; _RANKED_TIME = now
     return ranked
 def local_search(query):
     q = query.lower()
@@ -346,7 +362,6 @@ def comment_post(wall_slug, msg_id):
     if "/profile/" in ref: return redirect(ref)
     return redirect(f"/walls/{wall_slug}")
 
-# ===== DELETE - FIXED + NICE =====
 @app.route("/delete/<wall_slug>/<int:msg_id>", methods=["POST"])
 def delete_post(wall_slug, msg_id):
     if "user" not in session: return redirect("/")
@@ -371,7 +386,6 @@ def delete_post(wall_slug, msg_id):
     if "/profile/" in ref: return redirect(ref)
     return redirect(f"/walls/{wall_slug}")
 
-# ===== REPORT - 5 DIFFERENT PEOPLE = AUTO-DELETE =====
 @app.route("/report/<wall_slug>/<int:msg_id>", methods=["POST"])
 def report_post(wall_slug, msg_id):
     if "user" not in session: return redirect("/")
