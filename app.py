@@ -29,7 +29,7 @@ OWNER_NAME = os.environ.get("OWNER_NAME", "BRIAN")
 # PythonAnywhere calls this Worker behind the scenes for heavy work.
 # CHANGE THIS to YOUR Worker link after you deploy the Helper Worker in Cloudflare.
 # If you don't have it yet, leave it as it is - app still works, it just skips Cloudflare.
-CLOUDFLARE_HELPER = "https://nexa-helper.yourname.workers.dev"
+CLOUDFLARE_HELPER = "https://icy-shadow-4307.briankibet2029.workers.dev"
 
 def cloudflare_count_view():
     # Helper: Cloudflare counts the view, PythonAnywhere rests
