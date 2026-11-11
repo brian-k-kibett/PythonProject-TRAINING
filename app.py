@@ -1,11 +1,11 @@
-# app.py - 【entity-NEXA¦canonical_name=NEXA】 v32 - SAME LOOK, SAME FEATURES + CLOUDFLARE HELPER
-# NOTHING visible changed. Only behind the scenes added:
-# 1. Cloudflare Helper - checks video, counts views, serves files fast
-# 2. Ranked walls cache 10 sec - 100 people = 1 calculation
-# 3. Views saved in batch - PythonAnywhere rests, Cloudflare works
-# Goal: support 300,000 total users, many people online at once
+# app.py - 【entity-NEXA¦canonical_name=NEXA】 v33 - SAME LOOK, SAME FEATURES + CLOUDFLARE + SPEED < 99ms
+# NOTHING visible changed. Only speed:
+# 1. Cloudflare calls run in background thread - posting does NOT wait for Cloudflare
+# 2. Video check is local first (1ms) - Cloudflare check in background
+# 3. Views counting in background
+# Goal: post in < 99ms for Cloudflare part, support many people
 from flask import Flask, render_template, request, redirect, session, jsonify
-import database, os, requests, json, time, datetime, secrets, re
+import database, os, requests, json, time, datetime, secrets, re, threading
 from dotenv import load_dotenv
 from werkzeug.utils import secure_filename
 load_dotenv()
@@ -24,29 +24,41 @@ GROQ_API_KEY = os.getenv("GROQ_API_KEY")
 ADMIN_PASSWORD = os.environ.get("ADMIN_PASSWORD", "CHANGE-ME-BRIAN-12345!")
 OWNER_NAME = os.environ.get("OWNER_NAME", "BRIAN")
 
-# ===== CLOUDFLARE HELPER - NEW, ADDED, NOTHING ELSE CHANGED =====
+# ===== CLOUDFLARE HELPER - YOUR REAL LINK, KEPT, NOT CHANGED =====
 # People still use ONLY PythonAnywhere link.
-# PythonAnywhere calls this Worker behind the scenes for heavy work.
-# CHANGE THIS to YOUR Worker link after you deploy the Helper Worker in Cloudflare.
-# If you don't have it yet, leave it as it is - app still works, it just skips Cloudflare.
+# PythonAnywhere calls this Worker in BACKGROUND - does NOT wait, so posting is < 99ms
 CLOUDFLARE_HELPER = "https://icy-shadow-4307.briankibet2029.workers.dev"
 
-def cloudflare_count_view():
-    # Helper: Cloudflare counts the view, PythonAnywhere rests
+def _cloudflare_call_bg(url, is_post=False, payload=None):
+    # Runs in background thread, never blocks posting
     try:
-        requests.get(CLOUDFLARE_HELPER + "/helper/views", timeout=2)
+        if is_post:
+            requests.post(url, json=payload, timeout=0.08)
+        else:
+            requests.get(url, timeout=0.08)
+    except:
+        pass
+
+def cloudflare_count_view():
+    # FAST: start background thread, return in < 1ms, Cloudflare counts after
+    try:
+        t = threading.Thread(target=_cloudflare_call_bg, args=(CLOUDFLARE_HELPER + "/helper/views", False, None), daemon=True)
+        t.start()
     except:
         pass
 
 def cloudflare_check_video(name, size):
-    # Helper: Cloudflare checks if video is MP4 + under 10MB, fast
+    # FAST: check locally in 1ms, Cloudflare check runs in background, does NOT block
+    # Local check is the real check - MP4/WebM/photo + under 10MB
+    n = (name or "").lower()
+    local_ok = size <= 10 * 1024 * 1024 and (n.endswith(".mp4") or n.endswith(".webm") or n.endswith(".jpg") or n.endswith(".jpeg") or n.endswith(".png") or n.endswith(".gif") or n.endswith(".webp"))
+    # Background: tell Cloudflare, don't wait
     try:
-        r = requests.post(CLOUDFLARE_HELPER + "/helper/check-video", json={"name": name, "size": size}, timeout=3)
-        if r.status_code == 200:
-            return r.json().get("ok", True)
+        t = threading.Thread(target=_cloudflare_call_bg, args=(CLOUDFLARE_HELPER + "/helper/check-video", True, {"name": name, "size": size}), daemon=True)
+        t.start()
     except:
         pass
-    return True
+    return local_ok
 
 BASE_DIR = os.path.dirname(os.path.abspath(__file__))
 UPLOAD_FOLDER = os.path.join(BASE_DIR, "static", "uploads")
@@ -71,7 +83,6 @@ last_post_time = {}
 user_post_count_today = {}
 user_comment_count_today = {}
 
-# ===== BOOST FOR 300,000: cache ranked walls 10 sec =====
 _RANKED_CACHE = None
 _RANKED_TIME = 0
 _RANKED_CACHE_SECONDS = 10
@@ -80,8 +91,6 @@ def clear_ranked_cache():
     _RANKED_CACHE = None
     _RANKED_TIME = 0
 
-# ===== BOOST FOR 300,000: views buffer - don't write file on every single view =====
-# Views are counted in memory, saved to file only when post/like/comment happens
 _VIEWS_DIRTY = False
 
 BAD_WORDS = ["fuck", "shit", "bitch", "porn", "sex", "dick", "pussy", "kill yourself", "suicide", "nigger", "nigga"]
@@ -120,10 +129,8 @@ def security_headers(response):
     response.headers["X-Frame-Options"] = "SAMEORIGIN"
     response.headers["X-XSS-Protection"] = "1; mode=block"
     response.headers["Referrer-Policy"] = "strict-origin-when-cross-origin"
-    # BOOST: tell phone/browser + Cloudflare to keep static files for 1 day
     if request.path.startswith("/static/"):
         response.headers["Cache-Control"] = "public, max-age=86400"
-    # BOOST: tell Cloudflare to keep wall pages for 10 seconds
     if request.path.startswith("/walls/") and request.method == "GET":
         response.headers["Cache-Control"] = "public, max-age=10"
     return response
@@ -155,7 +162,7 @@ def get_today_challenge():
     day = datetime.date.today().timetuple().tm_yday
     return CHALLENGES[day % len(CHALLENGES)]
 def get_badge(total_likes, total_posts):
-    if total_likes >= 50: return "👑 【entity-NEXA King¦canonical_name=NEXA】"
+    if total_likes >= 50: return "👑 NEXA King"
     if total_likes >= 20: return "🔥 Rising Star"
     if total_likes >= 5: return "⭐ Star"
     if total_posts >= 3: return "✍ Active Poster"
@@ -163,7 +170,7 @@ def get_badge(total_likes, total_posts):
 def post_score(m): return (m.get("likes", 0) * 10) + (len(m.get("comments", [])) * 5) + m.get("views", 0)
 def default_messages():
     d = {}
-    for w in WALLS: d[w["slug"]] = [{"id": 1, "user": " 【entity-nexa¦canonical_name=NEXA】", "text": f"Welcome to {w['name']} wall! {w['flag']} Post anything!", "video": "", "likes": 0, "liked_by": [], "comments": [], "views": 0, "viewed_by": [], "reports": 0, "reported_by": []}]
+    for w in WALLS: d[w["slug"]] = [{"id": 1, "user": " nexa", "text": f"Welcome to {w['name']} wall! {w['flag']} Post anything!", "video": "", "likes": 0, "liked_by": [], "comments": [], "views": 0, "viewed_by": [], "reports": 0, "reported_by": []}]
     return d
 def load_messages():
     if os.path.exists(DATA_FILE):
@@ -326,7 +333,6 @@ def walls_redirect(): return redirect("/walls/Kenya")
 
 @app.route("/health")
 def health():
-    # NEW: Cloudflare checks this to know if PythonAnywhere is alive, without loading walls
     return jsonify({"ok": True, "app": "NEXA", "walls": len(WALLS), "time": int(time.time())})
 
 @app.route("/walls/<wall_slug>", methods=["GET", "POST"])
@@ -345,11 +351,11 @@ def wall_page(wall_slug):
                 if "video_file" in request.files:
                     f = request.files["video_file"]
                     if f and f.filename != "":
-                        # NEW: Ask Cloudflare Helper to check video fast, before saving
                         try:
                             f.seek(0, 2); _sz = f.tell(); f.seek(0)
                         except:
                             _sz = 0
+                        # FAST: local check in 1ms, Cloudflare in background, does NOT wait
                         if not cloudflare_check_video(f.filename, _sz):
                             error_msg = "🚫 Only MP4 / WebM video or photo allowed! iPhone MOV will not play — use MP4."
                         else:
@@ -371,7 +377,6 @@ def wall_page(wall_slug):
         if "views" not in m: m["views"] = 0
         if viewer not in m["viewed_by"]:
             m["viewed_by"].append(viewer); m["views"] = len(m["viewed_by"]); changed = True
-            # NEW: Cloudflare counts the view too, so PythonAnywhere doesn't work alone
             cloudflare_count_view()
     if changed: save_messages()
     ranked_posts = sorted(MESSAGES[wall_slug], key=lambda m: post_score(m), reverse=True)
