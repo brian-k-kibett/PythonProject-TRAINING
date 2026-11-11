@@ -2,238 +2,239 @@
 <html lang="en">
 <head>
 <meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-<link rel="preconnect" href="https://flagcdn.com">
-<link rel="dns-prefetch" href="https://flagcdn.com">
-<title> NEXA - {{ current_wall.name }} - NEON VIDEO FIXED v36</title>
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0">
+<title>【entity-NEXA¦canonical_name=NEXA】 - {{ current_wall.name }} {{ current_wall.flag }}</title>
 <style>
-* { margin:0; padding:0; box-sizing:border-box; font-family:'Segoe UI', Arial, sans-serif; }
-body { display:flex; flex-direction:column; height:100vh; background:#07001a; color:white; overflow:hidden; }
-.topbar { background: linear-gradient(90deg, #00ccff, #ff00aa, #ffcc00, #ff0000); background-size:200% 100%; animation: neonMove 6s linear infinite; border-bottom:3px solid #ff00aa; padding:14px 25px; display:flex; justify-content:space-between; align-items:center; flex-shrink:0; box-shadow:0 0 25px rgba(255,0,170,0.6); }
-@keyframes neonMove { 0%{background-position:0% 50%} 50%{background-position:100% 50%} 100%{background-position:0% 50%} }
-.topbar-left { display:flex; align-items:center; gap:14px; min-width:0; }
-.topbar-left h2 { font-size:26px; display:flex; align-items:center; gap:12px; white-space:nowrap; overflow:hidden; text-overflow:ellipsis; text-shadow:0 0 12px rgba(255,255,255,0.9); }
-.topbar-left p { color:white; font-size:13px; margin-top:2px; text-shadow:0 0 6px rgba(0,0,0,0.6); }
-.rank-badge-top { background:#ffcc00; color:#000; padding:4px 12px; border-radius:50px; font-size:13px; font-weight:900; margin-left:8px; box-shadow:0 0 12px #ffcc00; }
-.topbar-right { text-align:right; flex-shrink:0; }
-.topbar-right .logo-mini { font-size:20px; font-weight:900; letter-spacing:6px; text-shadow:0 0 10px white; }
-.topbar-right p { color:white; font-size:12px; display:flex; align-items:center; justify-content:flex-end; gap:6px; flex-wrap:wrap; text-shadow:0 0 6px rgba(0,0,0,0.6); }
-.bell-btn { position:relative; background:white; color:#ff00aa; padding:6px 13px; border-radius:50px; text-decoration:none; font-weight:800; font-size:14px; box-shadow:0 0 10px white; }
-.bell-badge { position:absolute; top:-8px; right:-6px; background:#ff0000; color:white; font-size:11px; font-weight:900; padding:2px 7px; border-radius:50%; border:2px solid white; }
-.profile-btn-top { background:white; color:#ff00aa; padding:5px 12px; border-radius:50px; text-decoration:none; font-weight:800; font-size:12px; box-shadow:0 0 10px white; }
-.fb-icon-mini { width:22px; height:22px; border-radius:50%; background:linear-gradient(135deg,#00ccff,#ff00aa,#ffcc00); display:inline-flex; align-items:center; justify-content:center; overflow:hidden; }
-.fb-icon-mini svg { width:16px; height:16px; margin-top:3px; }
-.flag-img-big { width:64px; height:42px; object-fit:cover; border-radius:8px; border:2px solid white; background:#222; flex-shrink:0; box-shadow:0 0 10px rgba(255,255,255,0.7); }
-.body-row { display:flex; flex:1; min-height:0; }
-.sidebar { width:340px; background:#12002e; border-right:2px solid #ff00aa; padding:16px; display:flex; flex-direction:column; flex-shrink:0; overflow-y:auto; }
-.search-box-left { display:flex; gap:8px; background:#1e004d; border:2px solid #ff00aa; border-radius:50px; padding:6px 6px 6px 14px; margin-bottom:10px; box-shadow:0 0 12px rgba(255,0,170,0.4); }
-.search-box-left input { flex:1; background:transparent; border:none; outline:none; color:white; font-size:14px; min-width:0; }
-.search-box-left input::placeholder { color:#ffb3e6; }
-.search-box-left button { background:linear-gradient(90deg,#00ccff,#ff00aa,#ffcc00); color:white; border:none; padding:9px 16px; border-radius:50px; font-weight:800; cursor:pointer; }
-.wall-link { color:#e6ccff; text-decoration:none; padding:10px 12px; border-radius:12px; display:flex; justify-content:space-between; align-items:center; margin-bottom:6px; font-size:15px; border-left:5px solid var(--c1); background: rgba(255,0,170,0.08); }
-.wall-link.active { background: linear-gradient(90deg, var(--c1), var(--c2)); color:white; font-weight:800; border:2px solid #ffcc00; box-shadow:0 0 14px rgba(255,204,0,0.6); }
-.rank-num { min-width:34px; height:34px; border-radius:50%; display:flex; align-items:center; justify-content:center; font-weight:900; font-size:14px; background:#222; color:white; }
-.rank-num.gold { background:#ffcc00; color:black; box-shadow:0 0 12px #ffcc00; } .rank-num.silver { background:#c0c0c0; color:black; } .rank-num.bronze { background:#cd7f32; color:white; }
-.flag-box { display:flex; align-items:center; gap:10px; flex:1; min-width:0; }
-.flag-img { width:38px; height:26px; object-fit:cover; border-radius:4px; border:2px solid white; background:#222; }
-.flag-emoji { font-size:24px; } .flag-name { font-weight:700; color:white; } .flag-desc { font-size:11px; color:white; background:rgba(255,0,170,0.5); padding:1px 6px; border-radius:10px; display:inline-block; margin-top:2px; }
-.people-line { font-size:11px; color:#ffb3e6; margin-top:2px; }
-.quote { margin-top:14px; background:linear-gradient(135deg, rgba(0,204,255,0.2), rgba(255,0,170,0.2)); border:1px solid #ff00aa; padding:12px; border-radius:12px; font-size:12.5px; color:white; font-style:italic; }
-.quote b { color:#ffcc00; }
-.logout { margin-top:16px; background:#1e004d; color:white; text-align:center; padding:12px; border-radius:12px; text-decoration:none; border:2px solid #ff00aa; font-weight:700; }
-.main { flex:1; display:flex; flex-direction:column; background:#07001a; min-width:0; overflow:hidden; }
-.messages { flex:1; overflow-y:auto; padding:20px 25px; display:flex; flex-direction:column; gap:14px; align-items:flex-end; }
-.rank-info { text-align:center; font-size:12px; color:#ffcc00; background:rgba(255,204,0,0.15); border:1px solid #ffcc00; padding:8px; border-radius:12px; width:100%; font-weight:700; }
-.posts-left { text-align:center; font-size:12px; color:#00ccff; background:rgba(0,204,255,0.15); border:1px solid #00ccff; padding:8px; border-radius:12px; width:100%; font-weight:700; }
-.error-box { background:#ff0000; color:white; padding:10px; border-radius:12px; font-size:13px; text-align:center; width:100%; font-weight:700; }
-.msg { width:auto; max-width:420px; min-width:280px; background:#1e004d; border:1px solid #ff00aa; padding:12px 15px; border-radius:16px; border-top-right-radius:4px; align-self:flex-end; box-shadow:0 0 12px rgba(255,0,170,0.25); }
-.msg.me { background:linear-gradient(135deg, #00ccff, #ff00aa, #ffcc00); border:none; box-shadow:0 0 18px rgba(255,0,170,0.6); }
-.msg.top-post { border:2px solid #ffcc00; box-shadow:0 0 18px rgba(255,204,0,0.8); }
-.msg b { font-size:12px; color:#ff99dd; display:block; margin-bottom:3px; } .msg.me b { color:white; }
-.msg-user-link { color:#ff99dd; text-decoration:none; display:flex; align-items:center; gap:7px; } .msg.me .msg-user-link { color:white; }
-.fb-icon-post { width:30px; height:30px; border-radius:50%; background:linear-gradient(135deg,#00ccff,#ff00aa,#ffcc00); display:inline-flex; align-items:center; justify-content:center; border:1px solid white; overflow:hidden; } .fb-icon-post svg { width:20px; height:20px; margin-top:4px; }
-.fb-icon-comment { width:22px; height:22px; border-radius:50%; background:linear-gradient(135deg,#00ccff,#ff00aa,#ffcc00); display:inline-flex; align-items:center; justify-content:center; border:1px solid white; } .fb-icon-comment svg { width:15px; height:15px; margin-top:3px; }
-.avatar-small { width:30px; height:30px; border-radius:50%; object-fit:cover; border:1px solid white; }
-.msg p { font-size:15px; line-height:1.4; word-break:break-word; }
-.msg video { width:100%; max-width:240px; height:150px; object-fit:cover; border-radius:12px; margin-top:8px; background:black; display:block; border:2px solid #ff00aa; }
-.msg img.post-photo { width:100%; max-width:240px; height:160px; object-fit:cover; border-radius:12px; margin-top:8px; display:block; border:2px solid #ff00aa; }
-.manage-row { margin-top:8px; display:flex; align-items:center; gap:6px; flex-wrap:wrap; }
-.manage-row .report-pill { font-size:11px; background:rgba(255,0,0,0.15); border:1px solid rgba(255,0,0,0.4); color:#ffcccc; padding:4px 8px; border-radius:50px; font-weight:700; }
-.report-btn-small { background:rgba(255,255,255,0.12); color:#ffb3e6; border:1px solid #ff00aa; padding:6px 12px; border-radius:50px; font-size:11px; cursor:pointer; }
-.post-rank { display:inline-block; font-size:11px; font-weight:900; padding:3px 10px; border-radius:50px; margin-bottom:6px; background:white; color:#ff00aa; } .post-rank.gold { background:#ffcc00; color:black; box-shadow:0 0 10px #ffcc00; } .post-rank.silver { background:#c0c0c0; color:black; } .post-rank.bronze { background:#cd7f32; color:white; }
-.stats-down { display:flex; gap:6px; margin-top:10px; align-items:center; flex-wrap:wrap; border-top:1px solid rgba(255,255,255,0.2); padding-top:8px; }
-.like-btn { background:rgba(255,255,255,0.12); border:1px solid #ff00aa; color:white; padding:6px 12px; border-radius:50px; font-size:13px; cursor:pointer; } .like-btn.liked { background:#ff00aa; font-weight:800; box-shadow:0 0 12px #ff00aa; }
-.stat-pill { font-size:12px; color:#e6ccff; background:rgba(0,0,0,0.3); padding:4px 9px; border-radius:50px; } .stat-pill.score { background:#ffcc00; color:black; font-weight:900; }
-.share-btn { background:rgba(0,204,255,0.2); border:1px solid #00ccff; color:white; padding:6px 12px; border-radius:50px; font-size:12px; cursor:pointer; }
-.comments-toggle-btn { background:#ff00aa; color:white; border:none; padding:8px 12px; border-radius:50px; font-size:12px; font-weight:800; cursor:pointer; margin-top:10px; width:100%; }
-.comments-box { display:none; margin-top:10px; flex-direction:column; gap:6px; } .comments-box.show { display:flex; }
-.comment { background:rgba(0,0,0,0.3); padding:7px 10px; border-radius:10px; font-size:13px; display:flex; align-items:center; gap:6px; flex-wrap:wrap; } .comment b { color:#ff99dd; font-size:11px; }
-.comment-form { display:flex; gap:6px; margin-top:8px; } .comment-form input { flex:1; padding:8px 12px; border-radius:50px; border:1px solid #ff00aa; background:#07001a; color:white; outline:none; min-width:0; } .comment-form button { padding:8px 14px; border-radius:50px; border:none; background:white; color:black; font-weight:700; cursor:pointer; }
-.send-box { padding:14px 20px; border-top:2px solid #ff00aa; background:#12002e; display:flex; gap:10px; align-items:center; }
-.plus-btn { width:48px; height:48px; min-width:48px; border-radius:50%; border:none; background:linear-gradient(135deg,#00ccff,#ff00aa,#ffcc00); color:white; font-size:26px; font-weight:900; cursor:pointer; display:flex; align-items:center; justify-content:center; }
-.send-box input[type="text"] { flex:1; padding:13px 16px; border-radius:50px; border:1px solid #ff00aa; background:#1e004d; color:white; outline:none; min-width:0; }
-.send-box input[type="text"]::placeholder { color:#ffb3e6; }
-.send-box button.post-btn { padding:13px 22px; border-radius:50px; border:none; cursor:pointer; background:linear-gradient(90deg,#00ccff,#ff00aa,#ffcc00); color:white; font-weight:800; }
-.file-name { font-size:12px; color:#ffb3e6; max-width:120px; overflow:hidden; white-space:nowrap; text-overflow:ellipsis; }
-.video-wrap { position:relative; width:100%; max-width:240px; margin-top:8px; }
-.video-loading { position:absolute; top:50%; left:50%; transform:translate(-50%,-50%); background:rgba(0,0,0,0.7); color:white; font-size:11px; padding:4px 10px; border-radius:50px; display:none; pointer-events:none; }
-.video-wrap.loading .video-loading { display:block; }
-@media (max-width:700px){
-  body{ height:100vh; height:100dvh; overflow:hidden; }
-  .topbar{ padding:7px 8px; }
-  .topbar-left{ gap:6px; }
-  .topbar-left h2{ font-size:15px; gap:5px; }
-  .topbar-left h2 span{ font-size:17px !important; }
-  .topbar-left p{ display:none; }
-  .flag-img-big{ width:32px; height:22px; }
-  .rank-badge-top{ font-size:10px; padding:2px 6px; margin-left:3px; }
-  .topbar-right .logo-mini{ font-size:12px; letter-spacing:2px; }
-  .topbar-right p{ font-size:9px; gap:3px; }
-  .bell-btn{ padding:3px 7px; font-size:11px; }
-  .profile-btn-top{ padding:3px 6px; font-size:9px; }
-  .body-row{ flex-direction:row !important; }
-  .sidebar{ width:62px !important; min-width:62px !important; max-width:62px !important; padding:6px 4px; border-right:1px solid #ff00aa; border-bottom:none; max-height:none; overflow-x:hidden; }
-  .search-box-left{ padding:3px; margin-bottom:6px; border-radius:10px; }
-  .search-box-left input{ display:none; }
-  .search-box-left button{ width:100%; padding:6px 2px; font-size:11px; }
-  #wallsList{ display:flex; flex-direction:column; gap:4px; }
-  .wall-link{ padding:4px 2px; margin-bottom:0; justify-content:center; border-left:none; border-radius:10px; }
-  .wall-link .rank-num{ display:none; }
-  .flag-box{ justify-content:center; gap:0; }
-  .flag-img{ width:40px; height:28px; margin:0 auto; }
-  .flag-emoji{ display:none; }
-  .flag-name, .flag-desc, .people-line{ display:none !important; }
-  .quote{ display:none; }
-  .logout{ font-size:9px; padding:6px 2px; }
-  .main{ flex:1; min-width:0; }
-  .messages{ padding:8px 8px; gap:8px; }
-  .msg{ min-width:0; width:100%; max-width:100%; padding:9px 10px; }
-  .msg p{ font-size:14px; }
-  .msg video{ max-width:100%; height:160px; }
-  .video-wrap{ max-width:100%; }
-  .msg img.post-photo{ max-width:100%; height:160px; }
-  .rank-info, .posts-left, .error-box{ font-size:10px; padding:6px; }
-  .post-rank{ font-size:9px; padding:2px 7px; }
-  .send-box{ padding:8px 8px; gap:6px; }
-  .plus-btn{ width:36px; height:36px; min-width:36px; font-size:20px; }
-  .send-box input[type="text"]{ padding:9px 10px; font-size:12px; }
-  .send-box button.post-btn{ padding:9px 12px; font-size:12px; }
-  .file-name{ display:none; }
+*{box-sizing:border-box;margin:0;padding:0}
+body{font-family:Arial,sans-serif;background:#0B0B1A;color:white;overflow-x:hidden}
+a{color:white;text-decoration:none}
+
+/* TOP BAR - NEON PARTY */
+.topbar{position:fixed;top:0;left:0;right:0;height:56px;background:linear-gradient(90deg,#3B82F6,#EC4899,#F59E0B,#EF4444);display:flex;align-items:center;justify-content:space-between;padding:0 10px;z-index:100;box-shadow:0 4px 20px rgba(236,72,153,.5)}
+.logo{font-size:22px;font-weight:900;letter-spacing:2px;text-shadow:0 0 10px white}
+.top-right{display:flex;gap:8px;align-items:center}
+.top-right a,.top-right button{background:rgba(0,0,0,.35);border:1px solid rgba(255,255,255,.6);color:white;padding:6px 10px;border-radius:20px;font-size:13px;cursor:pointer}
+.notif-dot{background:#EF4444;color:white;border-radius:50%;padding:1px 6px;font-size:11px;margin-left:3px}
+
+/* LAYOUT - FLAGS LEFT NARROW, CHAT RIGHT BIG - SAME AS BEFORE */
+.main{display:flex;margin-top:56px;min-height:calc(100vh - 56px)}
+.sidebar{width:68px;min-width:68px;background:#14142B;border-right:2px solid #EC4899;overflow-y:auto;height:calc(100vh - 56px);position:sticky;top:56px;padding:6px 4px}
+.sidebar a{display:flex;flex-direction:column;align-items:center;padding:8px 2px;border-radius:12px;margin-bottom:4px;font-size:10px;text-align:center;line-height:1.2}
+.sidebar a.active{background:linear-gradient(135deg,#3B82F6,#EC4899);box-shadow:0 0 12px #EC4899}
+.sidebar .flag{font-size:26px;line-height:1}
+.sidebar .rank{font-size:9px;background:#F59E0B;color:black;border-radius:10px;padding:1px 5px;margin-top:2px;font-weight:bold}
+.sidebar .people{font-size:9px;opacity:.7}
+
+.content{flex:1;max-width:720px;margin:0 auto;padding:10px;width:100%}
+
+/* WALL HEADER */
+.wall-head{background:linear-gradient(135deg,#1E1E3A,#2D1B4E);border:2px solid #EC4899;border-radius:16px;padding:14px;text-align:center;margin-bottom:12px;box-shadow:0 0 20px rgba(236,72,153,.3)}
+.wall-head h1{font-size:24px}
+.wall-head p{font-size:13px;opacity:.8;margin-top:4px}
+.challenge{background:linear-gradient(90deg,#F59E0B,#EF4444);color:white;padding:8px;border-radius:10px;margin-top:10px;font-size:13px;font-weight:bold}
+.posts-left{background:#16A34A;display:inline-block;padding:4px 10px;border-radius:20px;font-size:12px;margin-top:8px;font-weight:bold}
+
+/* POST BOX */
+.post-box{background:#1A1A33;border:2px solid #3B82F6;border-radius:16px;padding:12px;margin-bottom:14px}
+.post-box textarea{width:100%;background:#0B0B1A;border:1px solid #444;color:white;border-radius:10px;padding:10px;font-size:15px;min-height:70px;resize:vertical}
+.post-actions{display:flex;gap:8px;margin-top:10px;flex-wrap:wrap;align-items:center}
+.post-actions label{background:#333;color:white;padding:8px 12px;border-radius:20px;font-size:13px;cursor:pointer}
+.post-actions input[type=file]{display:none}
+.post-actions button{background:linear-gradient(90deg,#3B82F6,#EC4899);color:white;border:none;padding:9px 18px;border-radius:20px;font-size:14px;font-weight:bold;cursor:pointer}
+.hint{font-size:11px;opacity:.6;margin-top:6px}
+.error{background:#EF4444;color:white;padding:10px;border-radius:10px;margin-bottom:10px;font-size:13px}
+
+/* POST CARD */
+.post{background:#1A1A33;border:1px solid #2A2A4A;border-radius:16px;padding:12px;margin-bottom:12px}
+.post-top{display:flex;gap:10px;align-items:center}
+.avatar{width:40px;height:40px;border-radius:50%;background:linear-gradient(135deg,#3B82F6,#EC4899);display:flex;align-items:center;justify-content:center;font-weight:900;font-size:18px;flex-shrink:0;overflow:hidden}
+.avatar img{width:100%;height:100%;object-fit:cover}
+.post-top b{font-size:15px}
+.post-top small{font-size:11px;opacity:.6;display:block}
+.post-text{font-size:15px;line-height:1.5;margin:10px 0;white-space:pre-wrap;word-break:break-word}
+
+/* ===== VIDEO NO-LAG STYLE ===== */
+.video-wrap{position:relative;width:100%;background:black;border-radius:12px;overflow:hidden;margin:8px 0;aspect-ratio:16/9;cursor:pointer}
+.video-wrap img.thumb{width:100%;height:100%;object-fit:cover;display:block}
+.video-wrap video{width:100%;height:100%;object-fit:contain;display:none;background:black}
+.video-wrap.playing video{display:block}
+.video-wrap.playing img.thumb{display:none}
+.play-btn{position:absolute;top:50%;left:50%;transform:translate(-50%,-50%);width:64px;height:64px;background:rgba(0,0,0,.6);border:2px solid white;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:28px;z-index:2}
+.video-wrap.playing .play-btn{display:none}
+.video-label{position:absolute;bottom:8px;left:8px;background:rgba(0,0,0,.7);padding:3px 8px;border-radius:20px;font-size:11px;z-index:2}
+.video-wrap.playing .video-label{display:none}
+.photo-wrap img{width:100%;border-radius:12px;display:block;max-height:420px;object-fit:cover}
+
+.post-actions-row{display:flex;gap:6px;flex-wrap:wrap;margin-top:10px}
+.post-actions-row button,.post-actions-row a{background:#26264A;border:1px solid #3A3A5A;color:white;padding:7px 12px;border-radius:20px;font-size:13px;cursor:pointer}
+.post-actions-row button.liked{background:#EC4899;border-color:#EC4899}
+.comments{margin-top:10px;border-top:1px solid #2A2A4A;padding-top:8px}
+.comment{display:flex;gap:8px;margin-bottom:8px;font-size:13px}
+.comment b{color:#F59E0B}
+.comment-form{display:flex;gap:6px;margin-top:8px}
+.comment-form input{flex:1;background:#0B0B1A;border:1px solid #444;color:white;border-radius:20px;padding:8px 12px;font-size:13px}
+.comment-form button{background:#3B82F6;color:white;border:none;padding:8px 14px;border-radius:20px;font-size:13px}
+.no-posts{text-align:center;padding:30px;opacity:.6}
+
+@media(max-width:600px){
+.sidebar{width:56px;min-width:56px}
+.sidebar .flag{font-size:22px}
+.content{padding:8px}
+.logo{font-size:18px}
 }
 </style>
 </head>
 <body>
-<div class="topbar"><div class="topbar-left"><img class="flag-img-big" src="https://flagcdn.com/w80/{{ current_wall.code }}.png" onerror="this.style.display='none'" loading="lazy"><div><h2><span style="font-size:28px;">{{ current_wall.flag }}</span> {{ current_wall.name }} Wall <span class="rank-badge-top">🏆 #{{ current_rank }}</span></h2><p>Flag colours: {{ current_wall.desc }} • Hello, {{ user }} 👋 • {{ messages|length }} posts • Rank #{{ current_rank }}</p></div></div><div class="topbar-right"><div class="logo-mini">NEXA<span>.</span> NEON</div><p><a class="bell-btn" href="/notifications">🔔{% if notif_count > 0 %}<span class="bell-badge">{{ notif_count }}</span>{% endif %}</a> Logged in as <b>@{{ user }}</b> <a class="profile-btn-top" href="/profile/{{ user }}">{% if my_pic %}<img src="{{ my_pic }}" style="width:22px;height:22px;border-radius:50%;object-fit:cover;vertical-align:middle;">{% else %}<span class="fb-icon-mini"><svg viewBox="0 0 24 24" fill="white"><path d="M12 12c2.7 0 5-2.3 5-5s-2.3-5-5-5-5 2.3-5 5 2.3 5 5 5zm0 2c-3.3 0-10 1.7-10 5v3h20v-3c0-3.3-6.7-5-10-5z"/></svg></span>{% endif %} My Profile</a></p></div></div>
-<div class="body-row">
-<div class="sidebar">
-<form class="search-box-left" onsubmit="goToFirstWall(); return false;"><input id="searchInput" type="text" placeholder="🔍 Search a wall... e.g. Nigeria" autocomplete="off" oninput="filterWalls()"><button type="submit">Go →</button></form>
-<div id="wallsList">{% for w in walls %}<a class="wall-link {% if w.slug == current_slug %}active{% endif %}" href="/walls/{{ w.slug }}" style="--c1: {{ w.color }}; --c2: {{ w.color2 }};" data-name="{{ w.name|lower }}"><span class="rank-num {% if w.rank == 1 %}gold{% elif w.rank == 2 %}silver{% elif w.rank == 3 %}bronze{% endif %}">#{{ w.rank }}</span><span class="flag-box"><img class="flag-img" src="https://flagcdn.com/w80/{{ w.code }}.png" onerror="this.style.display='none'" loading="lazy"><span class="flag-emoji">{{ w.flag }}</span><span><span class="flag-name">{{ w.name }}</span><br><span class="flag-desc">{{ w.desc }}</span><br><span class="people-line">👥 {{ w.people }} people • 📱 {{ w.posts }} posts • ❤️ {{ w.likes }} • 👁️ {{ w.views }}</span></span></span></a>{% endfor %}</div>
-<div class="quote">"I am just a kid, but <b>age does not define our destiny.</b>"</div><div class="quote" style="font-style:normal; font-size:11px;">🛡️ <b>NEXA Rules:</b> Max 10 posts/day • 30 sec wait • Bad words blocked • 5 Reports = Auto-Delete • Be kind ❤️</div><a class="logout" href="/logout">Logout</a>
+
+<div class="topbar">
+<div class="logo">⚡ 【entity-NEXA¦canonical_name=NEXA】</div>
+<div class="top-right">
+<a href="/profile/{{ user }}">👤 {{ user }}</a>
+<a href="/notifications">🔔 {% if notif_count %}<span class="notif-dot">{{ notif_count }}</span>{% endif %}</a>
+<a href="/logout">Logout</a>
 </div>
+</div>
+
 <div class="main">
-<div class="messages" id="messagesBox">
-{% if error_msg %}<div class="error-box">{{ error_msg }}</div>{% endif %}
-<div class="posts-left">📱 You have <b>{{ posts_left }} posts left today</b> (Max 10/day) • Wait 30 sec • Max 10MB</div>
-<div class="rank-info">🏆 Posts ranked by ❤️ Likes + 💬 Comments + 👁️ Views — Best post is on TOP!</div>
-{% for m in messages %}
-<div class="msg {% if m.user == user %}me{% endif %} {% if loop.index == 1 %}top-post{% endif %}">
-{% if loop.index == 1 %}<span class="post-rank gold">🥇 #1 TOP POST</span>{% elif loop.index == 2 %}<span class="post-rank silver">🥈 #2</span>{% elif loop.index == 3 %}<span class="post-rank bronze">🥉 #3</span>{% else %}<span class="post-rank">#{{ loop.index }}</span>{% endif %}
-<b><a class="msg-user-link" href="/profile/{{ m.user }}">{% if profile_pics and m.user in profile_pics %}<img class="avatar-small" src="{{ profile_pics[m.user] }}" loading="lazy">{% else %}<span class="fb-icon-post"><svg viewBox="0 0 24 24" fill="white"><path d="M12 12c2.7 0 5-2.3 5-5s-2.3-5-5-5-5 2.3-5 5 2.3 5 5 5zm0 2c-3.3 0-10 1.7-10 5v3h20v-3c0-3.3-6.7-5-10-5z"/></svg></span>{% endif %}@{{ m.user }}</a></b>
-{% if m.text %}<p>{{ m.text }}</p>{% endif %}
-{% if m.video %}{% if 'youtube' in m.video %}<iframe src="{{ m.video }}" allowfullscreen></iframe>{% elif '.mp4' in m.video|lower or '.webm' in m.video|lower %}<div class="video-wrap"><video class="post-video" controls playsinline muted loop preload="none" data-src="{{ m.video }}" disablepictureinpicture></video><div class="video-loading">⏳ Loading video...</div></div>{% else %}<img class="post-photo" src="{{ m.video }}" loading="lazy">{% endif %}{% endif %}
-<div class="manage-row">
-{% if m.user.strip().lower() != user.strip().lower() %}
-<span class="report-pill">🚩 {{ m.reports or 0 }}/5</span>
-<form method="POST" action="/report/{{ current_slug }}/{{ m.id }}" onsubmit="return confirm('Report this post as bad? 5 reports = auto-delete.');"><button class="report-btn-small" type="submit">🚩 Report</button></form>
-{% endif %}
-<button class="share-btn" onclick="sharePost('{{ current_wall.name }}', '{{ m.user }}')">🔗 Share</button>
-</div>
-<div class="stats-down"><form method="POST" action="/like/{{ current_slug }}/{{ m.id }}"><button type="submit" class="like-btn {% if user in m.liked_by %}liked{% endif %}">❤️ {{ m.likes }}</button></form><span class="stat-pill">💬 {{ m.comments|length }} comments</span><span class="stat-pill">👁️ {{ m.views }} views</span><span class="stat-pill">👥 {{ m.viewed_by|length }} viewed</span><span class="stat-pill score">🏆 {{ m.score }}</span></div>
-{% set unique_commenters = m.comments | map(attribute='user') | unique | list %}
-<button class="comments-toggle-btn" onclick="document.getElementById('c-{{ m.id }}').classList.toggle('show'); this.textContent = document.getElementById('c-{{ m.id }}').classList.contains('show') ? '▲ Hide Comments' : '💬 Show Comments — {{ m.comments|length }} comments from {{ unique_commenters|length }} people ▼'">💬 Show Comments — {{ m.comments|length }} comments from {{ unique_commenters|length }} people ▼</button>
-<div class="comments-box" id="c-{{ m.id }}">{% for c in m.comments %}<div class="comment"><b><a href="/profile/{{ c.user }}" style="color:#ff9ecf; text-decoration:none; display:flex; align-items:center;"><span class="fb-icon-comment"><svg viewBox="0 0 24 24" fill="white"><path d="M12 12c2.7 0 5-2.3 5-5s-2.3-5-5-5-5 2.3-5 5 2.3 5 5 5zm0 2c-3.3 0-10 1.7-10 5v3h20v-3c0-3.3-6.7-5-10-5z"/></svg></span>@{{ c.user }}</a></b> {{ c.text }}</div>{% else %}<div style="font-size:12px; color:#c9a6ff; text-align:center;">No comments yet. Be first!</div>{% endfor %}<form class="comment-form" method="POST" action="/comment/{{ current_slug }}/{{ m.id }}"><input type="text" name="comment" placeholder="Write a comment... (Max 300)" maxlength="300" required><button type="submit">Send</button></form></div>
-</div>
+<div class="sidebar">
+{% for w in walls %}
+<a href="/walls/{{ w.slug }}" class="{% if w.slug == current_slug %}active{% endif %}">
+<span class="flag">{{ w.flag }}</span>
+<span>{{ w.name }}</span>
+<span class="rank">#{{ w.rank }}</span>
+<span class="people">{{ w.people }} 👥</span>
+</a>
 {% endfor %}
 </div>
-<form class="send-box" method="POST" enctype="multipart/form-data"><label class="plus-btn" for="videoFile" title="Add photo or video (Max 10MB)">+</label><input type="file" name="video_file" id="videoFile" accept="video/mp4,video/webm,image/*" style="display:none;"><span id="fileName" class="file-name"></span><input type="text" name="message" placeholder="Post anything in {{ current_wall.name }}... + photo/video (Max 500)" maxlength="500" autocomplete="off"><button class="post-btn" type="submit">Post →</button></form>
+
+<div class="content">
+<div class="wall-head">
+<h1>{{ current_wall.flag }} {{ current_wall.name }} Wall</h1>
+<p>Rank #{{ current_rank }} • {{ current_wall.desc }}</p>
+<div class="challenge">🔥 Today: {{ challenge }}</div>
+<div class="posts-left">✍ You have {{ posts_left }} posts left today</div>
+</div>
+
+{% if error_msg %}<div class="error">{{ error_msg }}</div>{% endif %}
+
+<div class="post-box">
+<form method="POST" enctype="multipart/form-data">
+<textarea name="message" placeholder="What's on your mind, {{ user }}? 🌍..."></textarea>
+<div class="post-actions">
+<label>📷 Photo / 🎥 Video <input type="file" name="video_file" accept=".mp4,.webm,.jpg,.jpeg,.png,.gif,.webp" onchange="checkSize(this)"></label>
+<button type="submit">Post 🚀</button>
+<span id="sizeInfo" style="font-size:12px"></span>
+</div>
+<div class="hint">✅ MP4 / WebM / Photo only. Max 10MB. Tip: Keep video under 3MB = NO LAG. iPhone MOV will NOT show — use MP4.</div>
+</form>
+</div>
+
+{% for m in messages %}
+<div class="post">
+<div class="post-top">
+<div class="avatar">{% if profile_pics.get(m.user) %}<img src="{{ profile_pics.get(m.user) }}" loading="lazy">{% else %}{{ m.user[0]|upper }}{% endif %}</div>
+<div><b><a href="/profile/{{ m.user }}">{{ m.user }}</a></b><small>👁 {{ m.views }} • ❤ {{ m.likes }} • Score {{ m.score }}</small></div>
+</div>
+{% if m.text %}<div class="post-text">{{ m.text }}</div>{% endif %}
+
+{% if m.video %}
+{% if m.video.endswith('.mp4') or m.video.endswith('.webm') %}
+<!-- NO-LAG VIDEO: Shows picture first, tap to play, loads ONLY when tapped -->
+<div class="video-wrap" onclick="playVideo(this)">
+<img class="thumb" src="https://via.placeholder.com/640x360/1A1A33/EC4899?text=▶+Tap+to+Play+Video" alt="Tap to play video" loading="lazy">
+<video controls playsinline preload="none" src="{{ m.video }}" onplay="pauseOthers(this)"></video>
+<div class="play-btn">▶</div>
+<div class="video-label">🎥 Tap to Play • No Lag</div>
+</div>
+{% else %}
+<div class="photo-wrap"><img src="{{ m.video }}" loading="lazy"></div>
+{% endif %}
+{% endif %}
+
+<div class="post-actions-row">
+<form method="POST" action="/like/{{ current_slug }}/{{ m.id }}" style="display:inline"><button type="submit" class="{% if user in m.liked_by %}liked{% endif %}">❤ {{ m.likes }}</button></form>
+{% if m.user != user %}
+<form method="POST" action="/report/{{ current_slug }}/{{ m.id }}" style="display:inline" onsubmit="return confirm('Report this post? 5 reports = auto-delete')"><button type="submit">🚩 Report</button></form>
+{% endif %}
+<a href="https://wa.me/?text={{ ('Look on NEXA ' + current_wall.name + ': ' + m.text)|urlencode }}" target="_blank">💬 WhatsApp</a>
+<a href="https://www.facebook.com/sharer/sharer.php?u=https://Brian1234bett.pythonanywhere.com/walls/{{ current_slug }}" target="_blank">📘 Share</a>
+</div>
+
+<div class="comments">
+{% for c in m.comments %}
+<div class="comment"><b>{{ c.user }}:</b><span>{{ c.text }}</span></div>
+{% endfor %}
+<form class="comment-form" method="POST" action="/comment/{{ current_slug }}/{{ m.id }}">
+<input name="comment" placeholder="Write a comment..." required maxlength="300">
+<button type="submit">Send</button>
+</form>
 </div>
 </div>
+{% else %}
+<div class="no-posts">No posts yet. Be first! 🚀</div>
+{% endfor %}
+</div>
+</div>
+
 <script>
-function sharePost(wall, user){
-  var text = "Join NEXA! 🔥 " + user + " posted in " + wall + " Wall. https://Brian1234bett.pythonanywhere.com/walls/" + wall;
-  if(navigator.share){ navigator.share({title:"NEXA", text:text, url:"https://Brian1234bett.pythonanywhere.com/walls/" + wall}).catch(function(){}); }
-  else { navigator.clipboard.writeText(text).then(function(){ alert("Link copied! Share it on WhatsApp / Facebook ❤️"); }); }
+// ===== VIDEO NO-LAG LOGIC =====
+// 1. Only 1 video plays at a time
+// 2. Video loads ONLY when you tap it - not before
+// 3. When you leave tab / lock phone -> pause all
+function pauseOthers(currentVideo){
+  document.querySelectorAll('video').forEach(v=>{
+    if(v !== currentVideo){ v.pause(); v.closest('.video-wrap').classList.remove('playing'); }
+  });
 }
-let box = document.getElementById('messagesBox'); box.scrollTop = box.scrollHeight;
-document.getElementById('videoFile').addEventListener('change', function(){ if(this.files.length>0){ let f=this.files[0]; if(f.size > 10*1024*1024){ alert('🚫 File too big! Max 10MB only.'); this.value=''; document.getElementById('fileName').textContent=''; return; } if(f.size > 3*1024*1024){ alert('⚠️ Video is ' + (f.size/1024/1024).toFixed(1) + 'MB - it may hang. Try under 3MB for fast play.'); } if(f.type.startsWith('video/') && !f.name.toLowerCase().endsWith('.mp4') && !f.name.toLowerCase().endsWith('.webm')){ alert('⚠️ Use MP4 video only — MOV / MKV will not play in browser. Please convert to MP4.'); this.value=''; return; } document.getElementById('fileName').textContent = "📸 " + f.name; } });
-function filterWalls(){ let q=document.getElementById('searchInput').value.toLowerCase().trim(); let links=document.querySelectorAll('.wall-link'); links.forEach(function(link){ let name=link.getAttribute('data-name'); if(!q||name.includes(q)){link.style.display='flex';} else {link.style.display='none';} }); }
-function goToFirstWall(){ let q=document.getElementById('searchInput').value.toLowerCase().trim(); if(!q) return; let links=document.querySelectorAll('.wall-link'); for(let link of links){ if(link.getAttribute('data-name').includes(q)){ window.location.href=link.href; return; } } }
-// FIXED: 1 video at a time, pause when you leave site / switch browser / lock phone
-(function(){
-  var scrollBox = document.getElementById('messagesBox');
-  var videos = document.querySelectorAll('video.post-video');
-  function pauseAllVideos(){
-    videos.forEach(function(v){ v.pause(); if(v.closest('.video-wrap')) v.closest('.video-wrap').classList.remove('loading'); });
-  }
-  function unloadVideo(v){
-    // Stop downloading when out of view - fixes hanging
-    if(v.dataset.src && v.src){
-      v.pause();
-      v.removeAttribute('src');
-      v.load();
-    }
-  }
-  function loadVideo(v){
-    if(!v.src && v.dataset.src){ v.src = v.dataset.src; v.load(); }
-  }
-  // FIX 1: When you leave site / switch browser / tab hidden / lock phone -> PAUSE ALL
-  document.addEventListener('visibilitychange', function(){
-    if(document.hidden){ pauseAllVideos(); }
-  });
-  window.addEventListener('blur', function(){ pauseAllVideos(); });
-  window.addEventListener('pagehide', function(){ pauseAllVideos(); });
-  document.addEventListener('visibilitychange', function(){
-    if(!document.hidden){
-      // When you come back, don't auto-play, user must tap again - saves data
-    }
-  });
-  if(!videos.length) return;
-  if(!('IntersectionObserver' in window)){
-    videos.forEach(function(v){ loadVideo(v); });
+function playVideo(wrap){
+  var video = wrap.querySelector('video');
+  // If already playing, pause it
+  if(wrap.classList.contains('playing')){
+    video.pause();
+    wrap.classList.remove('playing');
     return;
   }
-  var observer = new IntersectionObserver(function(entries){
-    entries.forEach(function(entry){
-      var v = entry.target;
-      var wrap = v.closest('.video-wrap');
-      if(entry.isIntersecting && entry.intersectionRatio >= 0.5 && !document.hidden){
-        if(wrap) wrap.classList.add('loading');
-        // Pause all others first - only 1 plays
-        videos.forEach(function(other){ if(other !== v){ other.pause(); unloadVideo(other); } });
-        loadVideo(v);
-        var p = v.play();
-        if(p) p.catch(function(){ if(wrap) wrap.classList.remove('loading'); });
-        v.addEventListener('playing', function(){ if(wrap) wrap.classList.remove('loading'); }, {once:true});
-        v.addEventListener('canplay', function(){ if(wrap) wrap.classList.remove('loading'); }, {once:true});
-      } else {
-        v.pause();
-        if(wrap) wrap.classList.remove('loading');
-        // Unload when scrolled past - stops hanging, frees internet
-        if(!entry.isIntersecting){ unloadVideo(v); }
-      }
-    });
-  }, { root: scrollBox, threshold: [0.5] });
-  videos.forEach(function(v){
-    observer.observe(v);
-    v.addEventListener('click', function(){ if(v.muted){ v.muted = false; v.play().catch(function(){}); } else { v.muted = true; } });
-    v.addEventListener('waiting', function(){ if(v.closest('.video-wrap')) v.closest('.video-wrap').classList.add('loading'); });
-    v.addEventListener('playing', function(){ if(v.closest('.video-wrap')) v.closest('.video-wrap').classList.remove('loading'); });
-    // If video stalls for 3 sec, pause and show loading, don't hang forever
-    var stallTimer = null;
-    v.addEventListener('waiting', function(){ clearTimeout(stallTimer); stallTimer = setTimeout(function(){ v.pause(); if(v.closest('.video-wrap')) v.closest('.video-wrap').classList.remove('loading'); }, 5000); });
-    v.addEventListener('playing', function(){ clearTimeout(stallTimer); });
-  });
-})();
+  // Pause all others, play this one
+  document.querySelectorAll('.video-wrap').forEach(w=>w.classList.remove('playing'));
+  document.querySelectorAll('video').forEach(v=>{ if(v!==video) v.pause(); });
+  wrap.classList.add('playing');
+  // This is the magic: load ONLY now, when tapped
+  if(video.getAttribute('data-loaded') !== 'yes'){
+    video.setAttribute('data-loaded','yes');
+    video.load();
+  }
+  video.play().catch(()=>{});
+}
+// Pause when leaving site / switching tab / locking phone
+document.addEventListener('visibilitychange', function(){
+  if(document.hidden){
+    document.querySelectorAll('video').forEach(v=>v.pause());
+  }
+});
+window.addEventListener('pagehide', function(){
+  document.querySelectorAll('video').forEach(v=>v.pause());
+});
+window.addEventListener('blur', function(){
+  document.querySelectorAll('video').forEach(v=>v.pause());
+});
+// Check size before posting
+function checkSize(input){
+  var f = input.files[0];
+  if(!f) return;
+  var mb = (f.size / 1024 / 1024).toFixed(1);
+  var info = document.getElementById('sizeInfo');
+  if(f.size > 10*1024*1024){
+    info.textContent = '❌ Too big: ' + mb + 'MB (max 10MB)';
+    info.style.color = 'red';
+    input.value = '';
+  } else if(f.size > 3*1024*1024){
+    info.textContent = '⚠ ' + mb + 'MB - will be a bit slow. Try under 3MB for NO LAG.';
+    info.style.color = 'orange';
+  } else {
+    info.textContent = '✅ ' + mb + 'MB - perfect, no lag!';
+    info.style.color = 'green';
+  }
+}
 </script>
 </body>
 </html>
