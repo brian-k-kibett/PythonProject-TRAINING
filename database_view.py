@@ -4,17 +4,21 @@ import sqlite3, os, json
 database_view = Blueprint("database_view", __name__)
 OWNER_NAME = os.environ.get("OWNER_NAME", "BRIAN")
 ADMIN_PASSWORD = os.environ.get("ADMIN_PASSWORD", "CHANGE-ME-BRIAN-12345!")
+# FIX: Absolute paths
+BASE_DIR = os.path.dirname(os.path.abspath(__file__))
+DB_PATH = os.path.join(BASE_DIR, "nexa_users.db")
+DATA_PATH = os.path.join(BASE_DIR, "nexa_data.json")
 def get_all_data():
     all_users = []
     try:
-        conn = sqlite3.connect("nexa_users.db")
+        conn = sqlite3.connect(DB_PATH)
         cur = conn.execute("SELECT username FROM users")
         all_users = [r[0] for r in cur.fetchall()]; conn.close()
     except Exception as e: all_users = [f"Error: {e}"]
     all_posts = []
-    if os.path.exists("nexa_data.json"):
+    if os.path.exists(DATA_PATH):
         try:
-            with open("nexa_data.json", "r", encoding="utf-8") as f: data = json.load(f)
+            with open(DATA_PATH, "r", encoding="utf-8") as f: data = json.load(f)
             for wall_slug, msgs in data.items():
                 for m in msgs:
                     likes = m.get("likes", 0); comments = m.get("comments", []); views = m.get("views", 0)
@@ -41,9 +45,9 @@ def admin_download():
 @database_view.route("/admin-brian/delete/<wall_slug>/<int:msg_id>", methods=["POST"])
 def admin_delete(wall_slug, msg_id):
     if not check_admin(): return "❌ Not allowed."
-    if os.path.exists("nexa_data.json"):
-        with open("nexa_data.json", "r", encoding="utf-8") as f: data = json.load(f)
+    if os.path.exists(DATA_PATH):
+        with open(DATA_PATH, "r", encoding="utf-8") as f: data = json.load(f)
         if wall_slug in data:
             data[wall_slug] = [m for m in data[wall_slug] if m.get("id") != msg_id]
-            with open("nexa_data.json", "w", encoding="utf-8") as f: json.dump(data, f, ensure_ascii=False, indent=2)
+            with open(DATA_PATH, "w", encoding="utf-8") as f: json.dump(data, f, ensure_ascii=False, indent=2)
     return redirect(f"/admin-brian?key={ADMIN_PASSWORD}")

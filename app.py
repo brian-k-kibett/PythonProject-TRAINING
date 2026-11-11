@@ -1,4 +1,4 @@
-# app.py - NEXA v28 FINAL - ALL IN ONE - Delete + Limits + High Security + Click Likes/Comments
+# app.py - 【entity-NEXA¦canonical_name=NEXA】 v28 FINAL - ALL IN ONE - Delete + Limits + High Security + Click Likes/Comments
 # Features: 15 Walls, Ranking, Likes, Comments (click to see), Views, Profiles, Badges, Notifications, Search, Report, Delete, Post Limits, Admin
 from flask import Flask, render_template, request, redirect, session, jsonify
 import database, os, requests, json, time, datetime, secrets, re
@@ -21,21 +21,23 @@ GROQ_API_KEY = os.getenv("GROQ_API_KEY")
 ADMIN_PASSWORD = os.environ.get("ADMIN_PASSWORD", "CHANGE-ME-BRIAN-12345!")
 OWNER_NAME = os.environ.get("OWNER_NAME", "BRIAN")
 
-UPLOAD_FOLDER = os.path.join("static", "uploads")
+# ===== FIX: Absolute paths - so PythonAnywhere never uses the wrong folder =====
+BASE_DIR = os.path.dirname(os.path.abspath(__file__))
+UPLOAD_FOLDER = os.path.join(BASE_DIR, "static", "uploads")
 os.makedirs(UPLOAD_FOLDER, exist_ok=True)
 app.config["UPLOAD_FOLDER"] = UPLOAD_FOLDER
 ALLOWED_VIDEO = {"mp4", "mov", "webm", "mkv", "avi"}
 ALLOWED_PHOTO = {"png", "jpg", "jpeg", "gif", "webp"}
-DATA_FILE = "nexa_data.json"
-PROFILES_FILE = "profiles.json"
-NOTIF_FILE = "notifications.json"
+DATA_FILE = os.path.join(BASE_DIR, "nexa_data.json")
+PROFILES_FILE = os.path.join(BASE_DIR, "profiles.json")
+NOTIF_FILE = os.path.join(BASE_DIR, "notifications.json")
 
 # ===== LIMITS =====
 MAX_POSTS_PER_DAY = 10
 MAX_COMMENTS_PER_DAY = 30
 POST_COOLDOWN_SECONDS = 30
-MAX_LOGIN_ATTEMPTS = 5
-LOGIN_BLOCK_MINUTES = 10
+MAX_LOGIN_ATTEMPTS = 10
+LOGIN_BLOCK_MINUTES = 2
 login_attempts = {}
 last_post_time = {}
 user_post_count_today = {}
@@ -58,16 +60,16 @@ def check_post_limit(username):
 def check_comment_limit(username):
     if user_comment_count_today.get(get_today_key(username), 0) >= MAX_COMMENTS_PER_DAY: return False, "🚫 Max comments today reached."
     return True, ""
-def check_login_block(ip):
-    if ip in login_attempts and login_attempts[ip].get("blocked_until", 0) > time.time():
-        return False, int(login_attempts[ip]["blocked_until"] - time.time())
+def check_login_block(key):
+    if key in login_attempts and login_attempts[key].get("blocked_until", 0) > time.time():
+        return False, int(login_attempts[key]["blocked_until"] - time.time())
     return True, 0
-def record_failed_login(ip):
-    if ip not in login_attempts: login_attempts[ip] = {"count": 0, "blocked_until": 0}
-    login_attempts[ip]["count"] += 1
-    if login_attempts[ip]["count"] >= MAX_LOGIN_ATTEMPTS:
-        login_attempts[ip]["blocked_until"] = time.time() + LOGIN_BLOCK_MINUTES * 60
-        login_attempts[ip]["count"] = 0
+def record_failed_login(key):
+    if key not in login_attempts: login_attempts[key] = {"count": 0, "blocked_until": 0}
+    login_attempts[key]["count"] += 1
+    if login_attempts[key]["count"] >= MAX_LOGIN_ATTEMPTS:
+        login_attempts[key]["blocked_until"] = time.time() + LOGIN_BLOCK_MINUTES * 60
+        login_attempts[key]["count"] = 0
 
 @app.after_request
 def security_headers(response):
@@ -99,20 +101,20 @@ WALLS = [
     {"slug": "Ireland", "name": "Ireland", "flag": "🇮🇪", "code": "ie", "color": "#16A34A", "color2": "#FF7A00", "desc": "Green, White, Orange"},
 ]
 WALL_SLUGS = [w["slug"] for w in WALLS]
-CHALLENGES = ["🍔 Post your favourite food!", "⚽ Post your favourite football team!", "🎵 Post your favourite song!", "🌍 Post your dream country to visit!", "😂 Post the funniest thing today!", "📸 Post a photo of your town!", "🎬 Post your best video!", "❤️ Post something you love!"]
+CHALLENGES = ["🍔 Post your favourite food!", "⚽ Post your favourite football team!", "🎵 Post your favourite song!", "🌍 Post your dream country to visit!", "😂 Post the funniest thing today!", "📸 Post a photo of your town!", "🎬 Post your best video!", "❤ Post something you love!"]
 def get_today_challenge():
     day = datetime.date.today().timetuple().tm_yday
     return CHALLENGES[day % len(CHALLENGES)]
 def get_badge(total_likes, total_posts):
-    if total_likes >= 50: return "👑 NEXA King"
+    if total_likes >= 50: return "👑 【entity-NEXA¦canonical_name=NEXA】 King"
     if total_likes >= 20: return "🔥 Rising Star"
     if total_likes >= 5: return "⭐ Star"
-    if total_posts >= 3: return "✍️ Active Poster"
+    if total_posts >= 3: return "✍ Active Poster"
     return "🌱 Newcomer"
 def post_score(m): return (m.get("likes", 0) * 10) + (len(m.get("comments", [])) * 5) + m.get("views", 0)
 def default_messages():
     d = {}
-    for w in WALLS: d[w["slug"]] = [{"id": 1, "user": "nexa", "text": f"Welcome to {w['name']} wall! {w['flag']} Post anything!", "video": "", "likes": 0, "liked_by": [], "comments": [], "views": 0, "viewed_by": [], "reports": 0}]
+    for w in WALLS: d[w["slug"]] = [{"id": 1, "user": "【entity-nexa¦canonical_name=NEXA】", "text": f"Welcome to {w['name']} wall! {w['flag']} Post anything!", "video": "", "likes": 0, "liked_by": [], "comments": [], "views": 0, "viewed_by": [], "reports": 0}]
     return d
 def load_messages():
     if os.path.exists(DATA_FILE):
@@ -212,13 +214,14 @@ def find_related_posts(query):
 @app.route("/", methods=["GET", "POST"])
 def login():
     error = ""
-    ip = request.remote_addr or "unknown"
+    ip = (request.headers.get("X-Forwarded-For", "") or request.remote_addr or "unknown").split(",")[0].strip()
     if request.method == "POST":
-        allowed, wait = check_login_block(ip)
-        if not allowed:
-            error = f"🚫 Too many wrong tries! Wait {wait} seconds."
-            return render_template("login.html", error=error)
         name = request.form["username"].strip(); password = request.form["password"]; action = request.form["action"]
+        login_key = f"{ip}|{name.lower()}"
+        allowed, wait = check_login_block(login_key)
+        if not allowed:
+            error = f"🚫 Too many wrong tries for {name}. Wait {wait} seconds, then try Sign Up if you are new."
+            return render_template("login.html", error=error)
         if not re.match(r"^[A-Za-z0-9_]{3,20}$", name):
             error = "Username must be 3-20 letters/numbers, no spaces or symbols."
             return render_template("login.html", error=error)
@@ -227,8 +230,8 @@ def login():
             return render_template("login.html", error=error)
         if action == "login":
             if database.check_user(name, password):
-                login_attempts.pop(ip, None); session["user"] = name; session.permanent = True; return redirect("/walls/Kenya")
-            else: record_failed_login(ip); error = "Wrong name or password. Try Sign Up first."
+                login_attempts.pop(login_key, None); session["user"] = name; session.permanent = True; return redirect("/walls/Kenya")
+            else: record_failed_login(login_key); error = "Wrong name or password. Try Sign Up first."
         if action == "signup":
             if database.create_user(name, password): session["user"] = name; session.permanent = True; return redirect("/walls/Kenya")
             else: error = "That name is already taken."
@@ -311,12 +314,10 @@ def comment_post(wall_slug, msg_id):
     return redirect(f"/walls/{wall_slug}")
 
 # ===== DELETE - INSIDE app.py - NO SEPARATE FILE NEEDED =====
-# This is the ONLY delete function. It reads fresh from file, deletes, saves.
 @app.route("/delete/<wall_slug>/<int:msg_id>", methods=["POST"])
 def delete_post(wall_slug, msg_id):
     if "user" not in session: return redirect("/")
     user = session["user"]
-    # Load FRESH from file so delete always works even if memory is old
     fresh = {}
     if os.path.exists(DATA_FILE):
         try:
@@ -326,19 +327,17 @@ def delete_post(wall_slug, msg_id):
         new_list = []
         for m in fresh[wall_slug]:
             if m.get("id") == msg_id:
-                # ONLY owner of post OR BRIAN can delete
                 if m.get("user") == user or user.lower() == OWNER_NAME.lower():
                     if m.get("video") and m["video"].startswith("/static/uploads/"):
                         try: os.remove(m["video"].lstrip("/"))
                         except: pass
                     print(f"✅ DELETED post {msg_id} by {m.get('user')} - deleted by {user}")
-                    continue  # SKIP = DELETED
+                    continue
                 else:
                     print(f"❌ {user} NOT allowed to delete {m.get('user')} post")
             new_list.append(m)
         fresh[wall_slug] = new_list
         with open(DATA_FILE, "w", encoding="utf-8") as f: json.dump(fresh, f, ensure_ascii=False, indent=2)
-        # Update memory too
         global MESSAGES
         MESSAGES = fresh
     ref = request.referrer or ""
@@ -370,7 +369,6 @@ def profile_page(username):
         return redirect(f"/profile/{username}")
     bio = profiles.get(username, "Hello! I am on NEXA 🌍")
     my_posts = []; total_likes = 0; total_comments = 0; total_views = 0
-    # Reload fresh so profile always shows latest
     fresh_messages = load_messages()
     for wall_slug in WALL_SLUGS:
         wall = get_wall(wall_slug)
@@ -408,11 +406,10 @@ def admin_brian():
     if "user" not in session: return redirect("/")
     if session["user"].lower() != OWNER_NAME.lower(): return "<h1>❌ Not allowed. Only BRIAN.</h1><a href='/walls/Kenya'>Back</a>"
     if request.args.get("key") != ADMIN_PASSWORD: return "<h1>❌ Wrong admin key. Add ?key=YOUR_ADMIN_PASSWORD</h1><a href='/walls/Kenya'>Back</a>"
-    # Build data
     all_users = []
     try:
         import sqlite3
-        conn = sqlite3.connect("nexa_users.db")
+        conn = sqlite3.connect(os.path.join(BASE_DIR, "nexa_users.db"))
         cur = conn.execute("SELECT username FROM users")
         all_users = [r[0] for r in cur.fetchall()]; conn.close()
     except Exception as e: all_users = [f"Error: {e}"]

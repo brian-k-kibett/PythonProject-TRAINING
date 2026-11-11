@@ -1,6 +1,8 @@
 # database.py - Users - Hashed passwords
 import sqlite3, hashlib, os
-DB = "nexa_users.db"
+# FIX: Absolute path next to this file, so it works on PC AND on PythonAnywhere
+BASE_DIR = os.path.dirname(os.path.abspath(__file__))
+DB = os.path.join(BASE_DIR, "nexa_users.db")
 def init_db():
     conn = sqlite3.connect(DB)
     conn.execute("CREATE TABLE IF NOT EXISTS users (username TEXT PRIMARY KEY, password TEXT)")

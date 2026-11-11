@@ -6,7 +6,9 @@ import os, json
 delete_view = Blueprint("delete_view", __name__)
 
 OWNER_NAME = os.environ.get("OWNER_NAME", "BRIAN")
-DATA_FILE = "nexa_data.json"
+# FIX: Absolute path
+BASE_DIR = os.path.dirname(os.path.abspath(__file__))
+DATA_FILE = os.path.join(BASE_DIR, "nexa_data.json")
 
 def load_data():
     if os.path.exists(DATA_FILE):
@@ -23,35 +25,25 @@ def save_data(data):
 
 @delete_view.route("/delete/<wall_slug>/<int:msg_id>", methods=["POST"])
 def delete_post_separate(wall_slug, msg_id):
-    # 1. Must be logged in
     if "user" not in session:
         return redirect("/")
     user = session["user"]
-
-    # 2. Load fresh data from file - NOT from memory - so it ALWAYS works
     data = load_data()
-
-    # 3. If wall does not exist, go back
     if wall_slug not in data:
         return redirect(f"/walls/{wall_slug}")
-
-    # 4. Find the post
     new_list = []
     found = False
     for m in data[wall_slug]:
         if m.get("id") == msg_id:
             found = True
-            # ONLY owner of post OR BRIAN can delete
             can_delete = (m.get("user") == user) or (user.lower() == OWNER_NAME.lower())
             if can_delete:
-                # Delete photo/video file too
                 video = m.get("video", "")
                 if video and video.startswith("/static/uploads/"):
                     try:
                         os.remove(video.lstrip("/"))
                     except:
                         pass
-                # DO NOT add to new_list = DELETED!
                 print(f"✅ DELETED: Post {msg_id} by {m.get('user')} deleted by {user}")
                 continue
             else:
@@ -59,19 +51,14 @@ def delete_post_separate(wall_slug, msg_id):
                 new_list.append(m)
         else:
             new_list.append(m)
-
-    # 5. Save if deleted
     if found:
         data[wall_slug] = new_list
         save_data(data)
-
-    # 6. Go back to where you came from - Profile or Wall
     ref = request.referrer or ""
     if "/profile/" in ref:
         return redirect(ref)
     return redirect(f"/walls/{wall_slug}")
 
-# Extra: Delete from admin - same file, same logic
 @delete_view.route("/delete-admin/<wall_slug>/<int:msg_id>", methods=["POST"])
 def delete_admin(wall_slug, msg_id):
     if "user" not in session:
