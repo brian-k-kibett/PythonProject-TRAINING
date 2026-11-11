@@ -1,5 +1,6 @@
-# app.py - 【entity-NEXA¦canonical_name=NEXA】 v28 FINAL - ALL IN ONE - Delete + Limits + High Security + Click Likes/Comments
-# Features: 15 Walls, Ranking, Likes, Comments, Views, Profiles, Badges, Notifications, Search, Report, Delete, Post Limits, Admin, Profile Picture, Speed Cache, Auto-Delete at 5 Reports
+# app.py - 【entity-NEXA¦canonical_name=NEXA】 v29 FINAL - ALL FIXED + NICE
+# 15 Walls | Ranking Likes x10 + Comments x5 + Views | Profile Pic | Video Fix (MP4 capital)
+# Delete: only post owner OR BRIAN | Report: 5 different people = auto-delete | No duplicate IDs
 from flask import Flask, render_template, request, redirect, session, jsonify
 import database, os, requests, json, time, datetime, secrets, re
 from dotenv import load_dotenv
@@ -37,7 +38,6 @@ MAX_COMMENTS_PER_DAY = 30
 POST_COOLDOWN_SECONDS = 30
 MAX_LOGIN_ATTEMPTS = 10
 LOGIN_BLOCK_MINUTES = 2
-# NEW: Auto-delete rule
 AUTO_DELETE_REPORTS = 5
 login_attempts = {}
 last_post_time = {}
@@ -71,6 +71,9 @@ def record_failed_login(key):
     if login_attempts[key]["count"] >= MAX_LOGIN_ATTEMPTS:
         login_attempts[key]["blocked_until"] = time.time() + LOGIN_BLOCK_MINUTES * 60
         login_attempts[key]["count"] = 0
+def make_post_id():
+    # Unique ID - never duplicates, even if you double-click Post
+    return int(time.time() * 1000000) + secrets.randbelow(1000)
 
 @app.after_request
 def security_headers(response):
@@ -107,7 +110,7 @@ def get_today_challenge():
     day = datetime.date.today().timetuple().tm_yday
     return CHALLENGES[day % len(CHALLENGES)]
 def get_badge(total_likes, total_posts):
-    if total_likes >= 50: return "👑 NEXA King"
+    if total_likes >= 50: return "👑 【entity-NEXA¦canonical_name=NEXA】 King"
     if total_likes >= 20: return "🔥 Rising Star"
     if total_likes >= 5: return "⭐ Star"
     if total_posts >= 3: return "✍ Active Poster"
@@ -115,7 +118,7 @@ def get_badge(total_likes, total_posts):
 def post_score(m): return (m.get("likes", 0) * 10) + (len(m.get("comments", [])) * 5) + m.get("views", 0)
 def default_messages():
     d = {}
-    for w in WALLS: d[w["slug"]] = [{"id": 1, "user": " nexa", "text": f"Welcome to {w['name']} wall! {w['flag']} Post anything!", "video": "", "likes": 0, "liked_by": [], "comments": [], "views": 0, "viewed_by": [], "reports": 0, "reported_by": []}]
+    for w in WALLS: d[w["slug"]] = [{"id": 1, "user": "【entity-nexa¦canonical_name=NEXA】", "text": f"Welcome to {w['name']} wall! {w['flag']} Post anything!", "video": "", "likes": 0, "liked_by": [], "comments": [], "views": 0, "viewed_by": [], "reports": 0, "reported_by": []}]
     return d
 def load_messages():
     if os.path.exists(DATA_FILE):
@@ -126,11 +129,13 @@ def load_messages():
                     if "likes" not in m: m["likes"] = 0
                     if "liked_by" not in m: m["liked_by"] = []
                     if "comments" not in m: m["comments"] = []
-                    if "id" not in m: m["id"] = int(time.time()*1000)
+                    if "id" not in m: m["id"] = make_post_id()
                     if "views" not in m: m["views"] = 0
                     if "viewed_by" not in m: m["viewed_by"] = []
                     if "reports" not in m: m["reports"] = 0
                     if "reported_by" not in m: m["reported_by"] = []
+                    if "video" not in m: m["video"] = ""
+                    if "user" in m: m["user"] = str(m["user"]).strip()
             for w in WALL_SLUGS:
                 if w not in data: data[w] = default_messages()[w]
             return data
@@ -187,7 +192,11 @@ def add_notif(to_user, from_user, type_, text, wall_slug):
 def unread_count(username):
     notifs = load_notifs()
     return sum(1 for n in notifs.get(username, []) if not n.get("seen"))
-def is_owner(): return "user" in session and session["user"].lower() == OWNER_NAME.lower()
+def is_owner(): return "user" in session and session["user"].strip().lower() == OWNER_NAME.lower()
+def can_delete_post(post_owner, viewer):
+    # Nice + safe: only post owner OR BRIAN, case-insensitive, no spaces
+    if not post_owner or not viewer: return False
+    return str(post_owner).strip().lower() == str(viewer).strip().lower() or str(viewer).strip().lower() == OWNER_NAME.lower()
 MESSAGES = load_messages()
 SEARCH_CACHE = {}
 def get_wall(slug):
@@ -283,11 +292,13 @@ def wall_page(wall_slug):
                     if f and f.filename != "":
                         ext = f.filename.rsplit(".", 1)[-1].lower()
                         if ext in ALLOWED_VIDEO or ext in ALLOWED_PHOTO:
-                            filename = secure_filename(f"{session['user']}_{int(time.time())}_{f.filename}")
+                            raw = secure_filename(f"{session['user']}_{int(time.time())}_{f.filename}")
+                            name_part, ext_part = os.path.splitext(raw)
+                            filename = name_part + ext_part.lower()
                             path = os.path.join(app.config["UPLOAD_FOLDER"], filename); f.save(path); media_url = f"/static/uploads/{filename}"
                         else: error_msg = "🚫 Only MP4 / WebM video or photo allowed! iPhone MOV will not play — use MP4."
                 if not error_msg and (text or media_url):
-                    MESSAGES[wall_slug].append({"id": int(time.time()*1000), "user": session["user"], "text": text, "video": media_url, "likes": 0, "liked_by": [], "comments": [], "views": 0, "viewed_by": [], "reports": 0, "reported_by": []})
+                    MESSAGES[wall_slug].append({"id": make_post_id(), "user": session["user"].strip(), "text": text, "video": media_url, "likes": 0, "liked_by": [], "comments": [], "views": 0, "viewed_by": [], "reports": 0, "reported_by": []})
                     last_post_time[session["user"]] = time.time()
                     key = get_today_key(session["user"]); user_post_count_today[key] = user_post_count_today.get(key, 0) + 1
                     save_messages(); return redirect(f"/walls/{wall_slug}")
@@ -335,61 +346,51 @@ def comment_post(wall_slug, msg_id):
     if "/profile/" in ref: return redirect(ref)
     return redirect(f"/walls/{wall_slug}")
 
-# ===== DELETE - ONLY OWNER OF POST OR BRIAN (ADMIN) =====
+# ===== DELETE - FIXED + NICE =====
 @app.route("/delete/<wall_slug>/<int:msg_id>", methods=["POST"])
 def delete_post(wall_slug, msg_id):
     if "user" not in session: return redirect("/")
-    user = session["user"]
-    fresh = {}
-    if os.path.exists(DATA_FILE):
-        try:
-            with open(DATA_FILE, "r", encoding="utf-8") as f: fresh = json.load(f)
-        except: fresh = {}
-    if wall_slug in fresh:
+    user = session["user"].strip()
+    deleted = False
+    if wall_slug in MESSAGES:
         new_list = []
-        for m in fresh[wall_slug]:
-            if m.get("id") == msg_id:
-                # RULE: Only the person who posted it, or BRIAN, can delete. Public can NEVER delete others.
-                if m.get("user") == user or user.lower() == OWNER_NAME.lower():
+        for m in MESSAGES[wall_slug]:
+            if m.get("id") == msg_id and not deleted:
+                if can_delete_post(m.get("user"), user):
                     if m.get("video") and m["video"].startswith("/static/uploads/"):
-                        try: os.remove(m["video"].lstrip("/"))
+                        try:
+                            full_path = os.path.join(BASE_DIR, m["video"].lstrip("/"))
+                            if os.path.exists(full_path): os.remove(full_path)
                         except: pass
-                    print(f"✅ DELETED post {msg_id} by {m.get('user')} - deleted by {user}")
+                    deleted = True
                     continue
-                else:
-                    print(f"❌ {user} NOT allowed to delete {m.get('user')} post")
             new_list.append(m)
-        fresh[wall_slug] = new_list
-        with open(DATA_FILE, "w", encoding="utf-8") as f: json.dump(fresh, f, ensure_ascii=False, indent=2)
-        global MESSAGES
-        MESSAGES = fresh
+        MESSAGES[wall_slug] = new_list
+        if deleted: save_messages()
     ref = request.referrer or ""
     if "/profile/" in ref: return redirect(ref)
     return redirect(f"/walls/{wall_slug}")
 
-# ===== REPORT - NEW: 5 DIFFERENT PEOPLE REPORT = AUTO-DELETE =====
+# ===== REPORT - 5 DIFFERENT PEOPLE = AUTO-DELETE =====
 @app.route("/report/<wall_slug>/<int:msg_id>", methods=["POST"])
 def report_post(wall_slug, msg_id):
     if "user" not in session: return redirect("/")
     user = session["user"]
     for m in list(MESSAGES.get(wall_slug, [])):
         if m["id"] == msg_id:
-            # You cannot report your own post
-            if m.get("user") == user:
+            if str(m.get("user", "")).strip().lower() == user.strip().lower():
                 return redirect(f"/walls/{wall_slug}")
             if "reported_by" not in m: m["reported_by"] = []
-            # 1 person = 1 report only. Same person clicking again does NOT count again.
             if user in m["reported_by"]:
                 return redirect(f"/walls/{wall_slug}")
             m["reported_by"].append(user)
             m["reports"] = len(m["reported_by"])
-            # Tell BRIAN
             add_notif(OWNER_NAME, user, "comment", f"REPORTED post by {m.get('user')}: {m.get('text','')[:50]} in {wall_slug} — {m['reports']}/5 reports", wall_slug)
-            # NEW RULE: 5 reports = AUTO-DELETE, no admin needed
             if m["reports"] >= AUTO_DELETE_REPORTS:
-                print(f"🚨 AUTO-DELETED post {msg_id} by {m.get('user')} — reached {m['reports']} reports")
                 if m.get("video") and m["video"].startswith("/static/uploads/"):
-                    try: os.remove(m["video"].lstrip("/"))
+                    try:
+                        full_path = os.path.join(BASE_DIR, m["video"].lstrip("/"))
+                        if os.path.exists(full_path): os.remove(full_path)
                     except: pass
                 MESSAGES[wall_slug] = [x for x in MESSAGES[wall_slug] if x.get("id") != msg_id]
                 add_notif(m.get("user"), "NEXA", "comment", "Your post was auto-deleted after 5 reports from different people.", wall_slug)
@@ -412,7 +413,9 @@ def profile_page(username):
             if f and f.filename != "":
                 ext = f.filename.rsplit(".", 1)[-1].lower()
                 if ext in ALLOWED_PHOTO:
-                    filename = secure_filename(f"{username}_{int(time.time())}.{ext}")
+                    raw = secure_filename(f"{username}_{int(time.time())}.{ext}")
+                    name_part, ext_part = os.path.splitext(raw)
+                    filename = name_part + ext_part.lower()
                     path = os.path.join(PROFILE_PIC_FOLDER, filename); f.save(path)
                     new_pic = f"/static/uploads/profiles/{filename}"
         new_bio = bio if bio else cur.get("bio", "Hello! I am on NEXA 🌍")
@@ -426,12 +429,12 @@ def profile_page(username):
     for wall_slug in WALL_SLUGS:
         wall = get_wall(wall_slug)
         for m in MESSAGES.get(wall_slug, []):
-            if m["user"] == username:
-                my_posts.append({"id": m["id"], "user": m["user"], "text": m.get("text",""), "video": m.get("video",""), "likes": m.get("likes",0), "liked_by": m.get("liked_by",[]), "comments": m.get("comments",[]), "views": m.get("views",0), "viewed_by": m.get("viewed_by",[]), "score": post_score(m), "wall": wall["name"], "wall_slug": wall_slug, "flag": wall["flag"], "reports": m.get("reports",0)})
+            if str(m.get("user", "")).strip().lower() == username.strip().lower():
+                my_posts.append({"id": m["id"], "user": m["user"], "text": m.get("text",""), "video": m.get("video",""), "likes": m.get("likes",0), "liked_by": m.get("liked_by",[]), "comments": m.get("comments",[]), "views": m.get("views",0), "viewed_by": m.get("viewed_by",[]), "score": post_score(m), "wall": wall["name"], "wall_slug": wall_slug, "flag": wall["flag"], "reports": m.get("reports",0), "reported_by": m.get("reported_by",[])})
                 total_likes += m.get("likes",0); total_comments += len(m.get("comments",[])); total_views += m.get("views",0)
     my_posts.sort(key=lambda x: x["score"], reverse=True)
     badge = get_badge(total_likes, len(my_posts))
-    can_delete = (username == session["user"]) or is_owner()
+    can_delete = (username.strip().lower() == session["user"].strip().lower()) or is_owner()
     return render_template("profile.html", user=session["user"], profile_user=username, bio=bio, profile_pic=profile_pic, my_posts=my_posts, total_likes=total_likes, total_comments=total_comments, total_views=total_views, notif_count=unread_count(session["user"]), badge=badge, is_owner=is_owner(), can_delete=can_delete)
 
 @app.route("/notifications")

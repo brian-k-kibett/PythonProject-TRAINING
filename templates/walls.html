@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-<title>NEXA - {{ current_wall.name }} - v26</title>
+<title>【entity-NEXA¦canonical_name=NEXA】 - {{ current_wall.name }} - v29</title>
 <style>
 * { margin:0; padding:0; box-sizing:border-box; font-family:'Segoe UI', Arial, sans-serif; }
 body { display:flex; flex-direction:column; height:100vh; background:#0a0a12; color:white; overflow:hidden; }
@@ -75,7 +75,7 @@ body { display:flex; flex-direction:column; height:100vh; background:#0a0a12; co
 </style>
 </head>
 <body>
-<div class="topbar"><div class="topbar-left"><img class="flag-img-big" src="https://flagcdn.com/w80/{{ current_wall.code }}.png" onerror="this.style.display='none'" loading="lazy"><div><h2><span style="font-size:28px;">{{ current_wall.flag }}</span> {{ current_wall.name }} Wall <span class="rank-badge-top">🏆 #{{ current_rank }}</span></h2><p>Flag colours: {{ current_wall.desc }} • Hello, {{ user }} 👋 • {{ messages|length }} posts • Rank #{{ current_rank }}</p></div></div><div class="topbar-right"><div class="logo-mini">NEXA<span>.</span> v26</div><p><a class="bell-btn" href="/notifications">🔔{% if notif_count > 0 %}<span class="bell-badge">{{ notif_count }}</span>{% endif %}</a> Logged in as <b>@{{ user }}</b> <a class="profile-btn-top" href="/profile/{{ user }}">{% if my_pic %}<img src="{{ my_pic }}" style="width:22px;height:22px;border-radius:50%;object-fit:cover;vertical-align:middle;">{% else %}<span class="fb-icon-mini"><svg viewBox="0 0 24 24" fill="white"><path d="M12 12c2.7 0 5-2.3 5-5s-2.3-5-5-5-5 2.3-5 5 2.3 5 5 5zm0 2c-3.3 0-10 1.7-10 5v3h20v-3c0-3.3-6.7-5-10-5z"/></svg></span>{% endif %} My Profile</a></p></div></div>
+<div class="topbar"><div class="topbar-left"><img class="flag-img-big" src="https://flagcdn.com/w80/{{ current_wall.code }}.png" onerror="this.style.display='none'" loading="lazy"><div><h2><span style="font-size:28px;">{{ current_wall.flag }}</span> {{ current_wall.name }} Wall <span class="rank-badge-top">🏆 #{{ current_rank }}</span></h2><p>Flag colours: {{ current_wall.desc }} • Hello, {{ user }} 👋 • {{ messages|length }} posts • Rank #{{ current_rank }}</p></div></div><div class="topbar-right"><div class="logo-mini">NEXA<span>.</span> v29</div><p><a class="bell-btn" href="/notifications">🔔{% if notif_count > 0 %}<span class="bell-badge">{{ notif_count }}</span>{% endif %}</a> Logged in as <b>@{{ user }}</b> <a class="profile-btn-top" href="/profile/{{ user }}">{% if my_pic %}<img src="{{ my_pic }}" style="width:22px;height:22px;border-radius:50%;object-fit:cover;vertical-align:middle;">{% else %}<span class="fb-icon-mini"><svg viewBox="0 0 24 24" fill="white"><path d="M12 12c2.7 0 5-2.3 5-5s-2.3-5-5-5-5 2.3-5 5 2.3 5 5 5zm0 2c-3.3 0-10 1.7-10 5v3h20v-3c0-3.3-6.7-5-10-5z"/></svg></span>{% endif %} My Profile</a></p></div></div>
 <div class="body-row">
 <div class="sidebar">
 <form class="search-box-left" onsubmit="goToFirstWall(); return false;"><input id="searchInput" type="text" placeholder="🔍 Search a wall... e.g. Nigeria" autocomplete="off" oninput="filterWalls()"><button type="submit">Go →</button></form>
@@ -92,10 +92,9 @@ body { display:flex; flex-direction:column; height:100vh; background:#0a0a12; co
 {% if loop.index == 1 %}<span class="post-rank gold">🥇 #1 TOP POST</span>{% elif loop.index == 2 %}<span class="post-rank silver">🥈 #2</span>{% elif loop.index == 3 %}<span class="post-rank bronze">🥉 #3</span>{% else %}<span class="post-rank">#{{ loop.index }}</span>{% endif %}
 <b><a class="msg-user-link" href="/profile/{{ m.user }}">{% if profile_pics and m.user in profile_pics %}<img class="avatar-small" src="{{ profile_pics[m.user] }}" loading="lazy">{% else %}<span class="fb-icon-post"><svg viewBox="0 0 24 24" fill="white"><path d="M12 12c2.7 0 5-2.3 5-5s-2.3-5-5-5-5 2.3-5 5 2.3 5 5 5zm0 2c-3.3 0-10 1.7-10 5v3h20v-3c0-3.3-6.7-5-10-5z"/></svg></span>{% endif %}@{{ m.user }}</a></b>
 {% if m.text %}<p>{{ m.text }}</p>{% endif %}
-{% if m.video %}{% if 'youtube' in m.video %}<iframe src="{{ m.video }}" allowfullscreen></iframe>{% elif '.mp4' in m.video or '.webm' in m.video %}<video controls playsinline preload="none"><source src="{{ m.video }}" type="video/mp4">Your browser cannot play this video. Please use MP4.</video>{% else %}<img class="post-photo" src="{{ m.video }}" loading="lazy">{% endif %}{% endif %}
-<!-- ===== DELETE / REPORT - OWNER ONLY DELETE ===== -->
+{% if m.video %}{% if 'youtube' in m.video %}<iframe src="{{ m.video }}" allowfullscreen></iframe>{% elif '.mp4' in m.video|lower or '.webm' in m.video|lower %}<video class="post-video" controls playsinline muted loop preload="metadata" src="{{ m.video }}"></video>{% else %}<img class="post-photo" src="{{ m.video }}" loading="lazy">{% endif %}{% endif %}
 <div class="delete-box">
-{% if m.user == user or is_owner %}
+{% if m.user.strip().lower() == user.strip().lower() or is_owner %}
 <span style="font-size:12px; font-weight:700;">🗑️ Manage:</span>
 <form method="POST" action="/delete/{{ current_slug }}/{{ m.id }}" onsubmit="return confirm('Delete this post forever?');"><button class="delete-btn-big" type="submit">🗑️ DELETE POST</button></form>
 {% else %}
@@ -120,6 +119,27 @@ let box = document.getElementById('messagesBox'); box.scrollTop = box.scrollHeig
 document.getElementById('videoFile').addEventListener('change', function(){ if(this.files.length>0){ let f=this.files[0]; if(f.size > 10*1024*1024){ alert('🚫 File too big! Max 10MB only.'); this.value=''; document.getElementById('fileName').textContent=''; return; } if(f.type.startsWith('video/') && !f.name.toLowerCase().endsWith('.mp4') && !f.name.toLowerCase().endsWith('.webm')){ alert('⚠️ Use MP4 video only — MOV / MKV will not play in browser. Please convert to MP4.'); this.value=''; return; } document.getElementById('fileName').textContent = "📸 " + f.name; } });
 function filterWalls(){ let q=document.getElementById('searchInput').value.toLowerCase().trim(); let links=document.querySelectorAll('.wall-link'); links.forEach(function(link){ let name=link.getAttribute('data-name'); if(!q||name.includes(q)){link.style.display='flex';} else {link.style.display='none';} }); }
 function goToFirstWall(){ let q=document.getElementById('searchInput').value.toLowerCase().trim(); if(!q) return; let links=document.querySelectorAll('.wall-link'); for(let link of links){ if(link.getAttribute('data-name').includes(q)){ window.location.href=link.href; return; } } }
+// NEXA - Auto-play video when you scroll to it, pause when you scroll past it
+(function(){
+  var scrollBox = document.getElementById('messagesBox');
+  var videos = document.querySelectorAll('video.post-video');
+  if(!videos.length) return;
+  function setup(){
+    if(!('IntersectionObserver' in window)){ videos.forEach(function(v){ v.play().catch(function(){}); }); return; }
+    var observer = new IntersectionObserver(function(entries){
+      entries.forEach(function(entry){
+        var v = entry.target;
+        if(entry.isIntersecting && entry.intersectionRatio >= 0.5){ v.play().catch(function(){}); }
+        else { v.pause(); }
+      });
+    }, { root: scrollBox, threshold: [0.5] });
+    videos.forEach(function(v){
+      observer.observe(v);
+      v.addEventListener('click', function(){ if(v.muted){ v.muted = false; v.play().catch(function(){}); } else { v.muted = true; } });
+    });
+  }
+  if(document.readyState === 'loading'){ document.addEventListener('DOMContentLoaded', setup); } else { setup(); }
+})();
 </script>
 </body>
 </html>

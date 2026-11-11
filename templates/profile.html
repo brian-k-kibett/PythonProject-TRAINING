@@ -1,9 +1,9 @@
- <!DOCTYPE html>
+<!DOCTYPE html>
 <html lang="en">
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>NEXA - @{{ profile_user }} - v28</title>
+<title>NEXA - @{{ profile_user }} - v29</title>
 <style>
 * { margin:0; padding:0; box-sizing:border-box; font-family:'Segoe UI', Arial; }
 body { background:#0a0a12; color:white; min-height:100vh; }
@@ -30,11 +30,12 @@ body { background:#0a0a12; color:white; min-height:100vh; }
 .post.top-post { border:2px solid gold; box-shadow:0 0 14px rgba(255,215,0,0.35); }
 .post-rank { display:inline-block; font-size:11px; font-weight:900; padding:3px 10px; border-radius:50px; margin-bottom:8px; background:white; color:#ff1493; } .post-rank.gold { background:gold; color:black; } .post-rank.silver { background:#c0c0c0; color:black; } .post-rank.bronze { background:#cd7f32; color:white; }
 .wall-tag { float:right; font-size:11px; background:linear-gradient(90deg,#0066ff,#ff1493); padding:4px 10px; border-radius:50px; color:white; font-weight:700; text-decoration:none; }
-.post p { margin:8px 0; font-size:16px; line-height:1.5; }
+.post p { margin:8px 0; font-size:16px; line-height:1.5; word-break:break-word; }
 .post video { width:100%; max-width:260px; height:150px; object-fit:cover; border-radius:12px; background:black; display:block; margin-top:8px; }
 .post img.post-photo { width:100%; max-width:260px; height:180px; object-fit:cover; border-radius:12px; display:block; margin-top:8px; }
 .meta { font-size:12px; color:#aab0d6; margin-top:10px; display:flex; gap:8px; flex-wrap:wrap; border-top:1px solid rgba(255,255,255,0.2); padding-top:8px; } .meta span { background:rgba(0,0,0,0.25); padding:4px 10px; border-radius:50px; }
 .delete-box { margin-top:12px; background:#ff0000; padding:14px; border-radius:12px; border:3px solid white; text-align:center; }
+.delete-box.report-box { background:#151a35; border:2px solid #ff6ec4; }
 .delete-box-title { font-weight:900; font-size:14px; display:block; margin-bottom:8px; color:white; }
 .delete-btn-big { background:white !important; color:#ff0000 !important; border:none; padding:12px 28px; border-radius:50px; font-size:16px; cursor:pointer; font-weight:900; width:100%; }
 .report-btn { background:white; color:#ff1493; border:none; padding:12px 28px; border-radius:50px; font-size:14px; cursor:pointer; font-weight:800; width:100%; }
@@ -52,7 +53,7 @@ body { background:#0a0a12; color:white; min-height:100vh; }
 </style>
 </head>
 <body>
-<div class="topbar"><div class="logo">NEXA. v28</div><div><a href="/walls/Kenya">← Walls</a> <a href="/profile/{{ user }}">My Profile</a> <a href="/logout">Logout</a></div></div>
+<div class="topbar"><div class="logo">NEXA. v29</div><div><a href="/walls/Kenya">← Walls</a> <a href="/profile/{{ user }}">My Profile</a> <a href="/logout">Logout</a></div></div>
 <div class="wrap">
 <div class="profile-card">
 {% if profile_pic %}<img class="profile-pic-big" src="{{ profile_pic }}" alt="Profile picture">{% else %}<div class="profile-pic-placeholder">👤</div>{% endif %}
@@ -69,17 +70,21 @@ body { background:#0a0a12; color:white; min-height:100vh; }
 {% if loop.index == 1 %}<span class="post-rank gold">🥇 #1 TOP POST</span>{% elif loop.index == 2 %}<span class="post-rank silver">🥈 #2</span>{% elif loop.index == 3 %}<span class="post-rank bronze">🥉 #3</span>{% else %}<span class="post-rank">#{{ loop.index }}</span>{% endif %}
 <a class="wall-tag" href="/walls/{{ p.wall_slug }}">{{ p.flag }} {{ p.wall }} Wall →</a>
 {% if p.text %}<p>{{ p.text }}</p>{% endif %}
-{% if p.video %}{% if '.mp4' in p.video or '.webm' in p.video %}<video controls playsinline preload="none"><source src="{{ p.video }}" type="video/mp4">Your browser cannot play this video. Please use MP4.</video>{% else %}<img class="post-photo" src="{{ p.video }}" loading="lazy">{% endif %}{% endif %}
-<div class="meta"><span>❤️ {{ p.likes }} likes</span><span>💬 {{ p.comments|length }} comments</span><span>👁️ {{ p.views }} views</span><span>🏆 Score: {{ p.score }}</span></div>
+{% if p.video %}{% if '.mp4' in p.video|lower or '.webm' in p.video|lower %}<video class="post-video" controls playsinline muted loop preload="metadata" src="{{ p.video }}"></video>{% else %}<img class="post-photo" src="{{ p.video }}" loading="lazy">{% endif %}{% endif %}
+<div class="meta"><span>❤️ {{ p.likes }} likes</span><span>💬 {{ p.comments|length }} comments</span><span>👁️ {{ p.views }} views</span><span>🏆 Score: {{ p.score }}</span><span>🚩 {{ p.reports or 0 }}/5 reports</span></div>
+{% if p.user.strip().lower() == user.strip().lower() or is_owner %}
 <div class="delete-box">
 <span class="delete-box-title">🗑️ DELETE IS HERE ↓</span>
-{% if can_delete %}
 <form method="POST" action="/delete/{{ p.wall_slug }}/{{ p.id }}" onsubmit="return confirm('Delete this post forever?');"><button class="delete-btn-big" type="submit">🗑️ DELETE THIS POST</button></form>
-{% else %}
-<form method="POST" action="/report/{{ p.wall_slug }}/{{ p.id }}"><button class="report-btn" type="submit">🚩 Report This Post</button></form>
-{% endif %}
-<div class="debug-line">DEBUG: You=@{{ user }} | Owner=@{{ p.user }} | CanDelete={{ can_delete }} | ID={{ p.id }} | Wall={{ p.wall_slug }}</div>
+<div class="debug-line">DEBUG: You=@{{ user }} | Owner=@{{ p.user }} | CanDelete=True | ID={{ p.id }} | Wall={{ p.wall_slug }}</div>
 </div>
+{% else %}
+<div class="delete-box report-box">
+<span class="delete-box-title">🚩 REPORT IS HERE ↓</span>
+<form method="POST" action="/report/{{ p.wall_slug }}/{{ p.id }}" onsubmit="return confirm('Report this post as bad? 5 reports = auto-delete.');"><button class="report-btn" type="submit">🚩 Report This Post</button></form>
+<div class="debug-line">DEBUG: You=@{{ user }} | Owner=@{{ p.user }} | CanDelete=False | ID={{ p.id }} | Wall={{ p.wall_slug }} | 5 reports = auto-delete</div>
+</div>
+{% endif %}
 {% set likers = p.liked_by | unique | list %}
 <button class="toggle-btn likes-btn" onclick="var b=document.getElementById('likes-{{ p.id }}'); b.classList.toggle('show'); this.textContent = b.classList.contains('show') ? '▲ Hide Likes' : '❤️ Show Likes — {{ p.likes }} likes from {{ likers|length }} people ▼'">❤️ Show Likes — {{ p.likes }} likes from {{ likers|length }} people ▼</button>
 <div class="hidden-box" id="likes-{{ p.id }}">
@@ -103,5 +108,24 @@ body { background:#0a0a12; color:white; min-height:100vh; }
 {% else %}<div class="empty">No posts yet.<br><br><a href="/walls/Kenya" style="color:#ff6ec4; font-weight:700; text-decoration:none;">Post something now →</a></div>{% endfor %}
 <a class="back-link" href="/walls/Kenya">← Back to Walls</a>
 </div>
+<script>
+// NEXA - Auto-play video when you scroll to it, pause when you scroll past it
+(function(){
+  var videos = document.querySelectorAll('video.post-video');
+  if(!videos.length) return;
+  if(!('IntersectionObserver' in window)){ videos.forEach(function(v){ v.play().catch(function(){}); }); return; }
+  var observer = new IntersectionObserver(function(entries){
+    entries.forEach(function(entry){
+      var v = entry.target;
+      if(entry.isIntersecting && entry.intersectionRatio >= 0.5){ v.play().catch(function(){}); }
+      else { v.pause(); }
+    });
+  }, { threshold: [0.5] });
+  videos.forEach(function(v){
+    observer.observe(v);
+    v.addEventListener('click', function(){ if(v.muted){ v.muted = false; v.play().catch(function(){}); } else { v.muted = true; } });
+  });
+})();
+</script>
 </body>
 </html>
