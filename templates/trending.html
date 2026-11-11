@@ -1,0 +1,52 @@
+<!DOCTYPE html>
+<html>
+<head>
+<title>NEXA - Trending 🔥</title>
+<style>
+* { margin:0; padding:0; box-sizing:border-box; font-family:'Segoe UI', Arial; }
+body { background:#0a0a12; color:white; min-height:100vh; }
+.topbar { background: linear-gradient(90deg, #0066ff, #ff1493, #ff0000); padding:14px 25px; display:flex; justify-content:space-between; align-items:center; }
+.topbar .logo { font-size:22px; font-weight:900; letter-spacing:6px; }
+.topbar .logo span { color:#ffd1e8; }
+.topbar a { color:white; text-decoration:none; background:rgba(255,255,255,0.2); padding:8px 16px; border-radius:50px; font-weight:700; font-size:13px; }
+.wrap { max-width:750px; margin:20px auto; padding:0 15px; }
+.challenge { background:linear-gradient(90deg,#0066ff,#ff1493,#ff0000); padding:18px; border-radius:18px; text-align:center; margin-bottom:16px; border:2px solid white; }
+.challenge h2 { font-size:22px; } .challenge p { font-size:14px; margin-top:6px; opacity:0.95; }
+.creators { background:#151a35; border:1px solid #ff1493; border-radius:16px; padding:16px; margin-bottom:16px; }
+.creators h3 { color:#ff6ec4; margin-bottom:10px; }
+.creator { display:flex; justify-content:space-between; align-items:center; padding:10px; background:#0a0a12; border-radius:12px; margin-bottom:8px; }
+.creator a { color:white; text-decoration:none; font-weight:800; }
+.creator .badge { font-size:12px; background:linear-gradient(90deg,#0066ff,#ff1493); padding:4px 10px; border-radius:50px; }
+.post { background:#151a35; border:1px solid #2a335e; padding:14px 16px; border-radius:16px; margin-bottom:12px; }
+.post b { color:#ff6ec4; }
+.post .wall-tag { float:right; font-size:11px; background:linear-gradient(90deg,#0066ff,#ff1493); padding:4px 10px; border-radius:50px; text-decoration:none; color:white; font-weight:700; }
+.post p { margin:8px 0; font-size:15px; }
+.post video { width:240px; height:150px; object-fit:cover; border-radius:12px; background:black; display:block; }
+.post img { width:240px; height:180px; object-fit:cover; border-radius:12px; display:block; }
+.post .meta { font-size:12px; color:#aab0d6; margin-top:8px; }
+.rank-label { background:gold; color:black; font-weight:900; padding:3px 10px; border-radius:50px; font-size:12px; margin-right:6px; }
+.empty { text-align:center; color:#888; padding:30px; background:#151a35; border-radius:16px; }
+</style>
+</head>
+<body>
+<div class="topbar"><div class="logo">NEXA<span>.</span></div><div style="display:flex; gap:10px;"><a href="/walls/Kenya">← Walls</a><a href="/notifications">🔔 {% if notif_count>0 %}{{ notif_count }}{% endif %}</a><a href="/logout">Logout</a></div></div>
+<div class="wrap">
+    <div class="challenge"><h2>🏆 DAILY CHALLENGE</h2><p style="font-size:18px; font-weight:800; margin-top:8px;">{{ challenge }}</p><p>Post it in any wall to join! Best post goes to #1 Trending 🔥</p></div>
+    <div class="creators"><h3>⭐ TOP CREATORS — Top 5</h3>
+        {% for c in creators %}
+        <div class="creator"><span><b>#{{ loop.index }} <a href="/profile/{{ c.user }}">@{{ c.user }}</a></b> — {{ c.posts }} posts • ❤️ {{ c.likes }} likes</span><span class="badge">{{ c.badge }}</span></div>
+        {% else %}<p style="color:#888;">No creators yet. Be the first!</p>{% endfor %}
+    </div>
+    <h2 style="margin-bottom:12px;">🔥 TRENDING — Best Posts From All Walls</h2>
+    {% for p in trending %}
+    <div class="post">
+        <span class="rank-label">#{{ loop.index }} TRENDING</span> <b><a href="/profile/{{ p.user }}" style="color:#ff6ec4; text-decoration:none;">@{{ p.user }}</a></b> <a class="wall-tag" href="/walls/{{ p.wall_slug }}">{{ p.flag }} {{ p.wall }} →</a>
+        {% if p.text %}<p>{{ p.text }}</p>{% endif %}
+        {% if p.video %}{% if '.mp4' in p.video or '.mov' in p.video or '.webm' in p.video %}<video controls src="{{ p.video }}"></video>{% else %}<img src="{{ p.video }}">{% endif %}{% endif %}
+        <div class="meta">❤️ {{ p.likes }} likes • 💬 {{ p.comments|length }} comments</div>
+    </div>
+    {% else %}<div class="empty">No trending yet. Post something and be #1! 🚀</div>{% endfor %}
+    <a href="/walls/Kenya" style="display:block; text-align:center; margin:16px; color:#ff6ec4; text-decoration:none; font-weight:700;">← Back to Walls</a>
+</div>
+</body>
+</html>

@@ -1,0 +1,8 @@
+2026-11-01 20:18:08 | INFO | agentic_inbox | Agentic Inbox logging system initialized.
+2026-11-01 20:18:08 | WARNING | agentic_inbox | This is a logging test. No messages were processed.
+2026-11-01 20:18:08 | INFO | agentic_inbox | Example redaction test: api_key=[REDACTED]
+2026-11-01 20:18:08 | INFO | agentic_inbox.security | SECURITY_EVENT | event=logging_test | user_id=test_user | workspace_id=test_workspace | outcome=success
+2026-11-01 20:20:25 | INFO | agentic_inbox.worker | Background job database initialized.
+2026-11-01 20:20:25 | INFO | agentic_inbox.worker | Task handler registered: system_test
+2026-11-01 20:20:25 | INFO | agentic_inbox.worker | Background job queued: id=54e30b18-c613-48cc-bcd3-6bf920203223 type=system_test
+2026-11-01 20:20:25 | INFO | agentic_inbox.worker | Background job completed: id=54e30b18-c613-48cc-bcd3-6bf920203223 type=system_test

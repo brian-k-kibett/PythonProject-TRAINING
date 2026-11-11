@@ -1,0 +1,29 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>NEXA - Database - BRIAN ONLY - v26</title>
+<style>
+* { margin:0; padding:0; box-sizing:border-box; font-family:'Segoe UI', Arial; }
+body { background:#0a0a12; color:white; min-height:100vh; padding:15px; }
+.topbar { background: linear-gradient(90deg, #0066ff, #ff1493, #ff0000); padding:14px 20px; border-radius:14px; display:flex; justify-content:space-between; align-items:center; flex-wrap:wrap; gap:10px; }
+.topbar a { color:white; text-decoration:none; background:rgba(255,255,255,0.2); padding:8px 16px; border-radius:50px; font-weight:700; font-size:13px; }
+.stats { display:flex; gap:10px; flex-wrap:wrap; margin:16px 0; }
+.stat { background:#151a35; border:1px solid #ff1493; padding:14px 18px; border-radius:14px; text-align:center; flex:1; min-width:130px; } .stat b { display:block; font-size:24px; color:#ff6ec4; } .stat span { font-size:12px; color:#aab0d6; }
+.section { background:#151a35; border-radius:14px; padding:16px; margin-bottom:16px; overflow-x:auto; }
+.user-pill { display:inline-block; background:linear-gradient(90deg,#0066ff,#ff1493); padding:6px 14px; border-radius:50px; margin:4px; font-size:13px; font-weight:700; }
+table { width:100%; border-collapse:collapse; font-size:13px; min-width:600px; } th { background:#0a0f24; color:#ff6ec4; text-align:left; padding:10px; } td { padding:10px; border-bottom:1px solid #2a335e; vertical-align:top; }
+.delete-btn { background:#ff0000; color:white; border:none; padding:6px 12px; border-radius:50px; font-size:11px; cursor:pointer; font-weight:800; }
+</style>
+</head>
+<body>
+<div class="topbar"><h1>🔐 NEXA DATABASE — BRIAN ONLY — v26</h1><div><a href="/walls/Kenya">← Walls</a> <a href="/logout">Logout</a></div></div>
+<div class="stats"><div class="stat"><b>{{ all_users|length }}</b><span>👥 Users</span></div><div class="stat"><b>{{ total_posts }}</b><span>📱 Posts</span></div><div class="stat"><b>{{ total_likes }}</b><span>❤️ Likes</span></div><div class="stat"><b>{{ total_comments }}</b><span>💬 Comments</span></div><div class="stat"><b>{{ total_views }}</b><span>👁️ Views</span></div></div>
+<div class="section"><h2>👥 All Users — {{ all_users|length }}</h2>{% for u in all_users %}<span class="user-pill">@{{ u }}</span>{% else %}<p>No users yet</p>{% endfor %}</div>
+<div class="section"><h2>📱 All Posts — Best First</h2>
+<table><tr><th>Wall</th><th>User</th><th>Post</th><th>❤️</th><th>💬</th><th>👁️</th><th>🚩</th><th>Action</th></tr>
+{% for p in all_posts %}<tr><td>{{ p.wall }}</td><td><b>@{{ p.user }}</b></td><td>{{ p.text }}{% for c in p.comments_list %}<br><span style="font-size:11px; color:#aab0d6;">💬 @{{ c.user }}: {{ c.text }}</span>{% endfor %}</td><td>{{ p.likes }}</td><td>{{ p.comments_count }}</td><td>{{ p.views }}</td><td>{% if p.reports > 0 %}🚩 {{ p.reports }}{% else %}0{% endif %}</td><td><form method="POST" action="/admin-brian/delete/{{ p.wall }}/{{ p.id }}?key={{ admin_key }}" onsubmit="return confirm('Delete this post from admin?');"><button class="delete-btn" type="submit">🗑️ Delete</button></form></td></tr>{% else %}<tr><td colspan="8">No posts yet</td></tr>{% endfor %}
+</table></div>
+</body>
+</html>

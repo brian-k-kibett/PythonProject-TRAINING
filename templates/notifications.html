@@ -1,0 +1,26 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>NEXA - Notifications - v26</title>
+<style>
+* { margin:0; padding:0; box-sizing:border-box; font-family:'Segoe UI', Arial; }
+body { background:#0a0a12; color:white; min-height:100vh; }
+.topbar { background: linear-gradient(90deg, #0066ff, #ff1493, #ff0000); padding:14px 20px; display:flex; justify-content:space-between; align-items:center; }
+.topbar a { color:white; text-decoration:none; background:rgba(255,255,255,0.2); padding:8px 14px; border-radius:50px; font-weight:700; font-size:13px; }
+.wrap { max-width:650px; margin:20px auto; padding:0 15px; }
+.notif { background:#151a35; border:1px solid #2a335e; padding:14px 16px; border-radius:16px; margin-bottom:10px; display:flex; gap:10px; align-items:center; }
+.notif b { color:#ff6ec4; } .notif p { font-size:14px; margin-top:3px; color:#dbe8ff; }
+.icon { font-size:24px; }
+.empty { text-align:center; color:#888; padding:30px; background:#151a35; border-radius:16px; }
+</style>
+</head>
+<body>
+<div class="topbar"><div style="font-size:20px; font-weight:900;">NEXA. 🔔 Notifications</div><div><a href="/walls/Kenya">← Walls</a> <a href="/profile/{{ user }}">My Profile</a> <a href="/logout">Logout</a></div></div>
+<div class="wrap">
+<h2 style="margin-bottom:14px;">🔔 Notifications for @{{ user }} — {{ notifs|length }}</h2>
+{% for n in notifs %}<div class="notif"><span class="icon">{% if n.type == 'like' %}❤️{% else %}💬{% endif %}</span><div><b>@{{ n.from }}</b> {% if n.type == 'like' %}liked your post{% else %}commented{% endif %} in <b>{{ n.wall }}</b> wall<p>{{ n.text }}</p></div></div>{% else %}<div class="empty">No notifications yet.<br>Post something and people will like / comment! ❤️</div>{% endfor %}
+</div>
+</body>
+</html>

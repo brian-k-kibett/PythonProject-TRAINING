@@ -1,0 +1,244 @@
+{
+  "USA": [
+    {
+      "id": 1,
+      "user": "nexa",
+      "text": "Welcome to USA wall! 🇺🇸 Post anything!",
+      "video": "",
+      "likes": 0,
+      "liked_by": [],
+      "comments": [],
+      "views": 0,
+      "viewed_by": [],
+      "reports": 0
+    }
+  ],
+  "Kenya": [
+    {
+      "id": 1794327635074,
+      "user": "BRIAN",
+      "text": "my first post",
+      "video": "/static/uploads/BRIAN_1794327635_0ac257279df985659ef92e133c58e2fd_1792684632305.mp4",
+      "likes": 0,
+      "liked_by": [],
+      "comments": [
+        {
+          "user": "BRIAN",
+          "text": "awesome"
+        }
+      ],
+      "views": 1,
+      "viewed_by": [
+        "BRIAN"
+      ],
+      "reports": 0,
+      "score": 6
+    },
+    {
+      "id": 1794328069853,
+      "user": "BRIAN",
+      "text": "whats app i will like to thank you for joining this app so good",
+      "video": "",
+      "likes": 0,
+      "liked_by": [],
+      "comments": [
+        {
+          "user": "BRIAN",
+          "text": "okay thank you brian ho i am brian"
+        },
+        {
+          "user": "BRIAN",
+          "text": "yes"
+        }
+      ],
+      "views": 1,
+      "viewed_by": [
+        "BRIAN"
+      ],
+      "reports": 0,
+      "score": 6
+    }
+  ],
+  "UK": [
+    {
+      "id": 1,
+      "user": "nexa",
+      "text": "Welcome to UK wall! 🇬🇧 Post anything!",
+      "video": "",
+      "likes": 0,
+      "liked_by": [],
+      "comments": [],
+      "views": 0,
+      "viewed_by": [],
+      "reports": 0
+    }
+  ],
+  "Tanzania": [
+    {
+      "id": 1,
+      "user": "nexa",
+      "text": "Welcome to Tanzania wall! 🇹🇿 Post anything!",
+      "video": "",
+      "likes": 0,
+      "liked_by": [],
+      "comments": [],
+      "views": 0,
+      "viewed_by": [],
+      "reports": 0
+    }
+  ],
+  "South-Africa": [
+    {
+      "id": 1,
+      "user": "nexa",
+      "text": "Welcome to South Africa wall! 🇿🇦 Post anything!",
+      "video": "",
+      "likes": 0,
+      "liked_by": [],
+      "comments": [],
+      "views": 0,
+      "viewed_by": [],
+      "reports": 0
+    }
+  ],
+  "Uganda": [
+    {
+      "id": 1,
+      "user": "nexa",
+      "text": "Welcome to Uganda wall! 🇺🇬 Post anything!",
+      "video": "",
+      "likes": 0,
+      "liked_by": [],
+      "comments": [],
+      "views": 0,
+      "viewed_by": [],
+      "reports": 0
+    }
+  ],
+  "Brazil": [
+    {
+      "id": 1,
+      "user": "nexa",
+      "text": "Welcome to Brazil wall! 🇧🇷 Post anything!",
+      "video": "",
+      "likes": 0,
+      "liked_by": [],
+      "comments": [],
+      "views": 0,
+      "viewed_by": [],
+      "reports": 0
+    }
+  ],
+  "Nigeria": [
+    {
+      "id": 1,
+      "user": "nexa",
+      "text": "Welcome to Nigeria wall! 🇳🇬 Post anything!",
+      "video": "",
+      "likes": 0,
+      "liked_by": [],
+      "comments": [],
+      "views": 0,
+      "viewed_by": [],
+      "reports": 0
+    }
+  ],
+  "Ghana": [
+    {
+      "id": 1,
+      "user": "nexa",
+      "text": "Welcome to Ghana wall! 🇬🇭 Post anything!",
+      "video": "",
+      "likes": 0,
+      "liked_by": [],
+      "comments": [],
+      "views": 0,
+      "viewed_by": [],
+      "reports": 0
+    }
+  ],
+  "Canada": [
+    {
+      "id": 1,
+      "user": "nexa",
+      "text": "Welcome to Canada wall! 🇨🇦 Post anything!",
+      "video": "",
+      "likes": 0,
+      "liked_by": [],
+      "comments": [],
+      "views": 0,
+      "viewed_by": [],
+      "reports": 0
+    }
+  ],
+  "Australia": [
+    {
+      "id": 1,
+      "user": "nexa",
+      "text": "Welcome to Australia wall! 🇦🇺 Post anything!",
+      "video": "",
+      "likes": 0,
+      "liked_by": [],
+      "comments": [],
+      "views": 0,
+      "viewed_by": [],
+      "reports": 0
+    }
+  ],
+  "Jamaica": [
+    {
+      "id": 1,
+      "user": "nexa",
+      "text": "Welcome to Jamaica wall! 🇯🇲 Post anything!",
+      "video": "",
+      "likes": 0,
+      "liked_by": [],
+      "comments": [],
+      "views": 0,
+      "viewed_by": [],
+      "reports": 0
+    }
+  ],
+  "India": [
+    {
+      "id": 1,
+      "user": "nexa",
+      "text": "Welcome to India wall! 🇮🇳 Post anything!",
+      "video": "",
+      "likes": 0,
+      "liked_by": [],
+      "comments": [],
+      "views": 0,
+      "viewed_by": [],
+      "reports": 0
+    }
+  ],
+  "New-Zealand": [
+    {
+      "id": 1,
+      "user": "nexa",
+      "text": "Welcome to New Zealand wall! 🇳🇿 Post anything!",
+      "video": "",
+      "likes": 0,
+      "liked_by": [],
+      "comments": [],
+      "views": 0,
+      "viewed_by": [],
+      "reports": 0
+    }
+  ],
+  "Ireland": [
+    {
+      "id": 1,
+      "user": "nexa",
+      "text": "Welcome to Ireland wall! 🇮🇪 Post anything!",
+      "video": "",
+      "likes": 0,
+      "liked_by": [],
+      "comments": [],
+      "views": 0,
+      "viewed_by": [],
+      "reports": 0
+    }
+  ]
+}

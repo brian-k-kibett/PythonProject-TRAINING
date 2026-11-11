@@ -1,0 +1,32 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>NEXA - Login - v26</title>
+<style>
+* { margin:0; padding:0; box-sizing:border-box; font-family:'Segoe UI', Arial; }
+body { background: linear-gradient(135deg, #0066ff, #ff1493, #ff0000); min-height:100vh; display:flex; align-items:center; justify-content:center; padding:15px; }
+.card { background:#0a0a12; color:white; padding:30px 25px; border-radius:20px; width:100%; max-width:400px; text-align:center; border:2px solid #ff1493; box-shadow:0 0 30px rgba(0,0,0,0.5); }
+.logo { font-size:42px; font-weight:900; letter-spacing:8px; margin-bottom:6px; } .logo span { color:#ff1493; }
+.tag { color:#aab0d6; font-size:13px; margin-bottom:18px; }
+input { width:100%; padding:13px 16px; border-radius:50px; border:1px solid #333; background:#151a35; color:white; outline:none; margin-bottom:10px; font-size:15px; }
+input:focus { border-color:#ff1493; }
+.btn { width:100%; padding:13px; border-radius:50px; border:none; background:linear-gradient(90deg,#0066ff,#ff1493,#ff0000); color:white; font-weight:800; cursor:pointer; font-size:15px; margin-bottom:8px; }
+.btn2 { width:100%; padding:13px; border-radius:50px; border:1px solid #ff1493; background:#151a35; color:white; font-weight:800; cursor:pointer; font-size:15px; }
+.error { background:#ff0000; color:white; padding:10px; border-radius:12px; font-size:13px; margin-bottom:12px; }
+.rules { font-size:11px; color:#aab0d6; margin-top:14px; line-height:1.5; }
+.quote { margin-top:14px; font-size:12px; font-style:italic; color:#dbe8ff; }
+</style>
+</head>
+<body>
+<div class="card">
+<div class="logo">NEXA<span>.</span></div>
+<div class="tag">15 Country Walls 🌍 • Post • Like • Comment • Rank • v26 SECURE</div>
+{% if error %}<div class="error">{{ error }}</div>{% endif %}
+<form method="POST"><input type="text" name="username" placeholder="Username — 3-20 letters/numbers, no spaces" required><input type="password" name="password" placeholder="Password — min 4 chars" required><button class="btn" type="submit" name="action" value="login">Login →</button><button class="btn2" type="submit" name="action" value="signup">Sign Up — New Account</button></form>
+<div class="rules">🛡️ Rules: Max 10 posts/day • 30 sec wait • Bad words blocked • Max 10MB photo/video<br>Be kind ❤️</div>
+<div class="quote">"I am just a kid, but <b>age does not define our destiny.</b>"</div>
+</div>
+</body>
+</html>
