@@ -5,7 +5,7 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
 <link rel="preconnect" href="https://flagcdn.com">
 <link rel="dns-prefetch" href="https://flagcdn.com">
-<title> NEXA - {{ current_wall.name }} - NEON v33</title>
+<title> NEXA - {{ current_wall.name }} - NEON NO-DELETE-IN-WALLS v35</title>
 <style>
 * { margin:0; padding:0; box-sizing:border-box; font-family:'Segoe UI', Arial, sans-serif; }
 body { display:flex; flex-direction:column; height:100vh; background:#07001a; color:white; overflow:hidden; }
@@ -29,7 +29,7 @@ body { display:flex; flex-direction:column; height:100vh; background:#07001a; co
 .search-box-left { display:flex; gap:8px; background:#1e004d; border:2px solid #ff00aa; border-radius:50px; padding:6px 6px 6px 14px; margin-bottom:10px; box-shadow:0 0 12px rgba(255,0,170,0.4); }
 .search-box-left input { flex:1; background:transparent; border:none; outline:none; color:white; font-size:14px; min-width:0; }
 .search-box-left input::placeholder { color:#ffb3e6; }
-.search-box-left button { background:linear-gradient(90deg,#00ccff,#ff00aa,#ffcc00); color:white; border:none; padding:9px 16px; border-radius:50px; font-weight:800; cursor:pointer; text-shadow:0 0 6px rgba(0,0,0,0.5); }
+.search-box-left button { background:linear-gradient(90deg,#00ccff,#ff00aa,#ffcc00); color:white; border:none; padding:9px 16px; border-radius:50px; font-weight:800; cursor:pointer; }
 .wall-link { color:#e6ccff; text-decoration:none; padding:10px 12px; border-radius:12px; display:flex; justify-content:space-between; align-items:center; margin-bottom:6px; font-size:15px; border-left:5px solid var(--c1); background: rgba(255,0,170,0.08); }
 .wall-link.active { background: linear-gradient(90deg, var(--c1), var(--c2)); color:white; font-weight:800; border:2px solid #ffcc00; box-shadow:0 0 14px rgba(255,204,0,0.6); }
 .rank-num { min-width:34px; height:34px; border-radius:50%; display:flex; align-items:center; justify-content:center; font-weight:900; font-size:14px; background:#222; color:white; }
@@ -38,7 +38,7 @@ body { display:flex; flex-direction:column; height:100vh; background:#07001a; co
 .flag-img { width:38px; height:26px; object-fit:cover; border-radius:4px; border:2px solid white; background:#222; }
 .flag-emoji { font-size:24px; } .flag-name { font-weight:700; color:white; } .flag-desc { font-size:11px; color:white; background:rgba(255,0,170,0.5); padding:1px 6px; border-radius:10px; display:inline-block; margin-top:2px; }
 .people-line { font-size:11px; color:#ffb3e6; margin-top:2px; }
-.quote { margin-top:14px; background:linear-gradient(135deg, rgba(0,204,255,0.2), rgba(255,0,170,0.2)); border:1px solid #ff00aa; padding:12px; border-radius:12px; font-size:12.5px; color:white; font-style:italic; box-shadow:0 0 10px rgba(255,0,170,0.3); }
+.quote { margin-top:14px; background:linear-gradient(135deg, rgba(0,204,255,0.2), rgba(255,0,170,0.2)); border:1px solid #ff00aa; padding:12px; border-radius:12px; font-size:12.5px; color:white; font-style:italic; }
 .quote b { color:#ffcc00; }
 .logout { margin-top:16px; background:#1e004d; color:white; text-align:center; padding:12px; border-radius:12px; text-decoration:none; border:2px solid #ff00aa; font-weight:700; }
 .main { flex:1; display:flex; flex-direction:column; background:#07001a; min-width:0; overflow:hidden; }
@@ -56,26 +56,28 @@ body { display:flex; flex-direction:column; height:100vh; background:#07001a; co
 .avatar-small { width:30px; height:30px; border-radius:50%; object-fit:cover; border:1px solid white; }
 .msg p { font-size:15px; line-height:1.4; word-break:break-word; }
 .msg video { width:100%; max-width:240px; height:150px; object-fit:cover; border-radius:12px; margin-top:8px; background:black; display:block; border:2px solid #ff00aa; }
-.msg img.post-photo { width:100%; max-width:240px; height:180px; object-fit:cover; border-radius:12px; margin-top:8px; display:block; border:2px solid #ff00aa; }
+.msg img.post-photo { width:100%; max-width:240px; height:160px; object-fit:cover; border-radius:12px; margin-top:8px; display:block; border:2px solid #ff00aa; }
+.manage-row { margin-top:8px; display:flex; align-items:center; gap:6px; flex-wrap:wrap; }
+.manage-row .report-pill { font-size:11px; background:rgba(255,0,0,0.15); border:1px solid rgba(255,0,0,0.4); color:#ffcccc; padding:4px 8px; border-radius:50px; font-weight:700; }
+.report-btn-small { background:rgba(255,255,255,0.12); color:#ffb3e6; border:1px solid #ff00aa; padding:6px 12px; border-radius:50px; font-size:11px; cursor:pointer; }
 .post-rank { display:inline-block; font-size:11px; font-weight:900; padding:3px 10px; border-radius:50px; margin-bottom:6px; background:white; color:#ff00aa; } .post-rank.gold { background:#ffcc00; color:black; box-shadow:0 0 10px #ffcc00; } .post-rank.silver { background:#c0c0c0; color:black; } .post-rank.bronze { background:#cd7f32; color:white; }
-.delete-box { margin-top:10px; background:rgba(255,0,0,0.15); border:1px solid #ff0000; padding:8px; border-radius:12px; display:flex; justify-content:space-between; align-items:center; flex-wrap:wrap; gap:6px; }
-.delete-btn-big { background:#ff0000; color:white; border:none; padding:8px 16px; border-radius:50px; font-size:12px; cursor:pointer; font-weight:900; box-shadow:0 0 10px #ff0000; }
-.report-btn { background:rgba(255,255,255,0.15); color:#ffb3e6; border:1px solid #ff00aa; padding:8px 14px; border-radius:50px; font-size:12px; cursor:pointer; }
-.report-count { font-size:11px; color:#ffb3e6; font-weight:700; }
-.report-hint { width:100%; font-size:11px; color:#c9a6ff; text-align:center; }
 .stats-down { display:flex; gap:6px; margin-top:10px; align-items:center; flex-wrap:wrap; border-top:1px solid rgba(255,255,255,0.2); padding-top:8px; }
 .like-btn { background:rgba(255,255,255,0.12); border:1px solid #ff00aa; color:white; padding:6px 12px; border-radius:50px; font-size:13px; cursor:pointer; } .like-btn.liked { background:#ff00aa; font-weight:800; box-shadow:0 0 12px #ff00aa; }
 .stat-pill { font-size:12px; color:#e6ccff; background:rgba(0,0,0,0.3); padding:4px 9px; border-radius:50px; } .stat-pill.score { background:#ffcc00; color:black; font-weight:900; }
-.comments-toggle-btn { background:#ff00aa; color:white; border:none; padding:8px 12px; border-radius:50px; font-size:12px; font-weight:800; cursor:pointer; margin-top:10px; width:100%; box-shadow:0 0 10px rgba(255,0,170,0.6); }
+.share-btn { background:rgba(0,204,255,0.2); border:1px solid #00ccff; color:white; padding:6px 12px; border-radius:50px; font-size:12px; cursor:pointer; }
+.comments-toggle-btn { background:#ff00aa; color:white; border:none; padding:8px 12px; border-radius:50px; font-size:12px; font-weight:800; cursor:pointer; margin-top:10px; width:100%; }
 .comments-box { display:none; margin-top:10px; flex-direction:column; gap:6px; } .comments-box.show { display:flex; }
 .comment { background:rgba(0,0,0,0.3); padding:7px 10px; border-radius:10px; font-size:13px; display:flex; align-items:center; gap:6px; flex-wrap:wrap; } .comment b { color:#ff99dd; font-size:11px; }
 .comment-form { display:flex; gap:6px; margin-top:8px; } .comment-form input { flex:1; padding:8px 12px; border-radius:50px; border:1px solid #ff00aa; background:#07001a; color:white; outline:none; min-width:0; } .comment-form button { padding:8px 14px; border-radius:50px; border:none; background:white; color:black; font-weight:700; cursor:pointer; }
-.send-box { padding:14px 20px; border-top:2px solid #ff00aa; background:#12002e; display:flex; gap:10px; align-items:center; box-shadow:0 -4px 20px rgba(255,0,170,0.3); }
-.plus-btn { width:48px; height:48px; min-width:48px; border-radius:50%; border:none; background:linear-gradient(135deg,#00ccff,#ff00aa,#ffcc00); color:white; font-size:26px; font-weight:900; cursor:pointer; display:flex; align-items:center; justify-content:center; box-shadow:0 0 14px #ff00aa; }
+.send-box { padding:14px 20px; border-top:2px solid #ff00aa; background:#12002e; display:flex; gap:10px; align-items:center; }
+.plus-btn { width:48px; height:48px; min-width:48px; border-radius:50%; border:none; background:linear-gradient(135deg,#00ccff,#ff00aa,#ffcc00); color:white; font-size:26px; font-weight:900; cursor:pointer; display:flex; align-items:center; justify-content:center; }
 .send-box input[type="text"] { flex:1; padding:13px 16px; border-radius:50px; border:1px solid #ff00aa; background:#1e004d; color:white; outline:none; min-width:0; }
 .send-box input[type="text"]::placeholder { color:#ffb3e6; }
-.send-box button.post-btn { padding:13px 22px; border-radius:50px; border:none; cursor:pointer; background:linear-gradient(90deg,#00ccff,#ff00aa,#ffcc00); color:white; font-weight:800; box-shadow:0 0 14px rgba(255,0,170,0.6); }
+.send-box button.post-btn { padding:13px 22px; border-radius:50px; border:none; cursor:pointer; background:linear-gradient(90deg,#00ccff,#ff00aa,#ffcc00); color:white; font-weight:800; }
 .file-name { font-size:12px; color:#ffb3e6; max-width:120px; overflow:hidden; white-space:nowrap; text-overflow:ellipsis; }
+.video-wrap { position:relative; width:100%; max-width:240px; margin-top:8px; }
+.video-loading { position:absolute; top:50%; left:50%; transform:translate(-50%,-50%); background:rgba(0,0,0,0.7); color:white; font-size:11px; padding:4px 10px; border-radius:50px; display:none; pointer-events:none; }
+.video-wrap.loading .video-loading { display:block; }
 @media (max-width:700px){
   body{ height:100vh; height:100dvh; overflow:hidden; }
   .topbar{ padding:7px 8px; }
@@ -108,6 +110,7 @@ body { display:flex; flex-direction:column; height:100vh; background:#07001a; co
   .msg{ min-width:0; width:100%; max-width:100%; padding:9px 10px; }
   .msg p{ font-size:14px; }
   .msg video{ max-width:100%; height:160px; }
+  .video-wrap{ max-width:100%; }
   .msg img.post-photo{ max-width:100%; height:160px; }
   .rank-info, .posts-left, .error-box{ font-size:10px; padding:6px; }
   .post-rank{ font-size:9px; padding:2px 7px; }
@@ -137,17 +140,13 @@ body { display:flex; flex-direction:column; height:100vh; background:#07001a; co
 {% if loop.index == 1 %}<span class="post-rank gold">🥇 #1 TOP POST</span>{% elif loop.index == 2 %}<span class="post-rank silver">🥈 #2</span>{% elif loop.index == 3 %}<span class="post-rank bronze">🥉 #3</span>{% else %}<span class="post-rank">#{{ loop.index }}</span>{% endif %}
 <b><a class="msg-user-link" href="/profile/{{ m.user }}">{% if profile_pics and m.user in profile_pics %}<img class="avatar-small" src="{{ profile_pics[m.user] }}" loading="lazy">{% else %}<span class="fb-icon-post"><svg viewBox="0 0 24 24" fill="white"><path d="M12 12c2.7 0 5-2.3 5-5s-2.3-5-5-5-5 2.3-5 5 2.3 5 5 5zm0 2c-3.3 0-10 1.7-10 5v3h20v-3c0-3.3-6.7-5-10-5z"/></svg></span>{% endif %}@{{ m.user }}</a></b>
 {% if m.text %}<p>{{ m.text }}</p>{% endif %}
-{% if m.video %}{% if 'youtube' in m.video %}<iframe src="{{ m.video }}" allowfullscreen></iframe>{% elif '.mp4' in m.video|lower or '.webm' in m.video|lower %}<video class="post-video" controls playsinline muted loop preload="metadata" src="{{ m.video }}"></video>{% else %}<img class="post-photo" src="{{ m.video }}" loading="lazy">{% endif %}{% endif %}
-<div class="delete-box">
-{% if m.user.strip().lower() == user.strip().lower() or is_owner %}
-<span style="font-size:12px; font-weight:700;">🗑️ Manage:</span>
-<form method="POST" action="/delete/{{ current_slug }}/{{ m.id }}" onsubmit="return confirm('Delete this post forever?');"><button class="delete-btn-big" type="submit">🗑️ DELETE POST</button></form>
-{% else %}
-<span style="font-size:12px; font-weight:700;">🚩 Report if bad:</span>
-<form method="POST" action="/report/{{ current_slug }}/{{ m.id }}" onsubmit="return confirm('Report this post as bad? 5 reports = auto-delete.');"><button class="report-btn" type="submit">🚩 Report</button></form>
+{% if m.video %}{% if 'youtube' in m.video %}<iframe src="{{ m.video }}" allowfullscreen></iframe>{% elif '.mp4' in m.video|lower or '.webm' in m.video|lower %}<div class="video-wrap"><video class="post-video" controls playsinline muted loop preload="none" data-src="{{ m.video }}" disablepictureinpicture></video><div class="video-loading">⏳ Loading video...</div></div>{% else %}<img class="post-photo" src="{{ m.video }}" loading="lazy">{% endif %}{% endif %}
+<div class="manage-row">
+{% if m.user.strip().lower() != user.strip().lower() %}
+<span class="report-pill">🚩 {{ m.reports or 0 }}/5</span>
+<form method="POST" action="/report/{{ current_slug }}/{{ m.id }}" onsubmit="return confirm('Report this post as bad? 5 reports = auto-delete.');"><button class="report-btn-small" type="submit">🚩 Report</button></form>
 {% endif %}
-<span class="report-count">🚩 {{ m.reports or 0 }}/5 reports</span>
-<span class="report-hint">5 different people report = post auto-deletes</span>
+<button class="share-btn" onclick="sharePost('{{ current_wall.name }}', '{{ m.user }}')">🔗 Share</button>
 </div>
 <div class="stats-down"><form method="POST" action="/like/{{ current_slug }}/{{ m.id }}"><button type="submit" class="like-btn {% if user in m.liked_by %}liked{% endif %}">❤️ {{ m.likes }}</button></form><span class="stat-pill">💬 {{ m.comments|length }} comments</span><span class="stat-pill">👁️ {{ m.views }} views</span><span class="stat-pill">👥 {{ m.viewed_by|length }} viewed</span><span class="stat-pill score">🏆 {{ m.score }}</span></div>
 {% set unique_commenters = m.comments | map(attribute='user') | unique | list %}
@@ -160,29 +159,41 @@ body { display:flex; flex-direction:column; height:100vh; background:#07001a; co
 </div>
 </div>
 <script>
+function sharePost(wall, user){
+  var text = "Join NEXA! 🔥 " + user + " posted in " + wall + " Wall. https://Brian1234bett.pythonanywhere.com/walls/" + wall;
+  if(navigator.share){ navigator.share({title:"NEXA", text:text, url:"https://Brian1234bett.pythonanywhere.com/walls/" + wall}).catch(function(){}); }
+  else { navigator.clipboard.writeText(text).then(function(){ alert("Link copied! Share it on WhatsApp / Facebook ❤️"); }); }
+}
 let box = document.getElementById('messagesBox'); box.scrollTop = box.scrollHeight;
-document.getElementById('videoFile').addEventListener('change', function(){ if(this.files.length>0){ let f=this.files[0]; if(f.size > 10*1024*1024){ alert('🚫 File too big! Max 10MB only.'); this.value=''; document.getElementById('fileName').textContent=''; return; } if(f.type.startsWith('video/') && !f.name.toLowerCase().endsWith('.mp4') && !f.name.toLowerCase().endsWith('.webm')){ alert('⚠️ Use MP4 video only — MOV / MKV will not play in browser. Please convert to MP4.'); this.value=''; return; } document.getElementById('fileName').textContent = "📸 " + f.name; } });
+document.getElementById('videoFile').addEventListener('change', function(){ if(this.files.length>0){ let f=this.files[0]; if(f.size > 10*1024*1024){ alert('🚫 File too big! Max 10MB only.'); this.value=''; document.getElementById('fileName').textContent=''; return; } if(f.size > 3*1024*1024){ alert('⚠️ Video is ' + (f.size/1024/1024).toFixed(1) + 'MB - it may hang. Try under 3MB for fast play.'); } if(f.type.startsWith('video/') && !f.name.toLowerCase().endsWith('.mp4') && !f.name.toLowerCase().endsWith('.webm')){ alert('⚠️ Use MP4 video only — MOV / MKV will not play in browser. Please convert to MP4.'); this.value=''; return; } document.getElementById('fileName').textContent = "📸 " + f.name; } });
 function filterWalls(){ let q=document.getElementById('searchInput').value.toLowerCase().trim(); let links=document.querySelectorAll('.wall-link'); links.forEach(function(link){ let name=link.getAttribute('data-name'); if(!q||name.includes(q)){link.style.display='flex';} else {link.style.display='none';} }); }
 function goToFirstWall(){ let q=document.getElementById('searchInput').value.toLowerCase().trim(); if(!q) return; let links=document.querySelectorAll('.wall-link'); for(let link of links){ if(link.getAttribute('data-name').includes(q)){ window.location.href=link.href; return; } } }
 (function(){
   var scrollBox = document.getElementById('messagesBox');
   var videos = document.querySelectorAll('video.post-video');
   if(!videos.length) return;
-  function setup(){
-    if(!('IntersectionObserver' in window)){ videos.forEach(function(v){ v.play().catch(function(){}); }); return; }
-    var observer = new IntersectionObserver(function(entries){
-      entries.forEach(function(entry){
-        var v = entry.target;
-        if(entry.isIntersecting && entry.intersectionRatio >= 0.5){ v.play().catch(function(){}); }
-        else { v.pause(); }
-      });
-    }, { root: scrollBox, threshold: [0.5] });
-    videos.forEach(function(v){
-      observer.observe(v);
-      v.addEventListener('click', function(){ if(v.muted){ v.muted = false; v.play().catch(function(){}); } else { v.muted = true; } });
+  function loadVideo(v){ if(!v.src && v.dataset.src){ v.src = v.dataset.src; v.load(); } }
+  function playVideo(v){ loadVideo(v); var p = v.play(); if(p) p.catch(function(){}); }
+  if(!('IntersectionObserver' in window)){ videos.forEach(function(v){ loadVideo(v); playVideo(v); }); return; }
+  var observer = new IntersectionObserver(function(entries){
+    entries.forEach(function(entry){
+      var v = entry.target; var wrap = v.closest('.video-wrap');
+      if(entry.isIntersecting && entry.intersectionRatio >= 0.5){
+        if(wrap) wrap.classList.add('loading');
+        loadVideo(v);
+        videos.forEach(function(other){ if(other !== v){ other.pause(); } });
+        playVideo(v);
+        v.addEventListener('playing', function(){ if(wrap) wrap.classList.remove('loading'); }, {once:true});
+        v.addEventListener('canplay', function(){ if(wrap) wrap.classList.remove('loading'); }, {once:true});
+      } else { v.pause(); if(wrap) wrap.classList.remove('loading'); }
     });
-  }
-  if(document.readyState === 'loading'){ document.addEventListener('DOMContentLoaded', setup); } else { setup(); }
+  }, { root: scrollBox, threshold: [0.5] });
+  videos.forEach(function(v){
+    observer.observe(v);
+    v.addEventListener('click', function(){ if(v.muted){ v.muted = false; v.play().catch(function(){}); } else { v.muted = true; } });
+    v.addEventListener('waiting', function(){ if(v.closest('.video-wrap')) v.closest('.video-wrap').classList.add('loading'); });
+    v.addEventListener('playing', function(){ if(v.closest('.video-wrap')) v.closest('.video-wrap').classList.remove('loading'); });
+  });
 })();
 </script>
 </body>
