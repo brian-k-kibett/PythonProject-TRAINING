@@ -1,4 +1,4 @@
-<!DOCTYPE html>
+ <!DOCTYPE html>
 <html lang="en">
 <head>
 <meta charset="UTF-8">
@@ -13,14 +13,19 @@ body { background:#0a0a12; color:white; min-height:100vh; }
 .wrap { max-width:750px; margin:20px auto; padding:0 15px; padding-bottom:40px; }
 .profile-card { background:#151a35; border:2px solid #ff1493; border-radius:20px; padding:22px; text-align:center; margin-bottom:16px; }
 .profile-card h1 { font-size:28px; }
+.profile-pic-big { width:120px; height:120px; border-radius:50%; object-fit:cover; border:3px solid #ff1493; background:#0a0a12; display:block; margin:0 auto 10px; }
+.profile-pic-placeholder { width:120px; height:120px; border-radius:50%; background:linear-gradient(135deg,#0066ff,#ff1493,#ff0000); display:flex; align-items:center; justify-content:center; font-size:52px; margin:0 auto 10px; border:3px solid white; }
 .badge-box { display:inline-block; background:linear-gradient(90deg,#0066ff,#ff1493,#ff0000); padding:6px 18px; border-radius:50px; font-weight:800; font-size:13px; margin-top:10px; border:1px solid white; }
 .bio { color:#dbe8ff; font-size:15px; margin-top:10px; font-style:italic; }
 .stats { display:flex; justify-content:center; gap:10px; margin-top:14px; flex-wrap:wrap; }
 .stat { background:#0a0a12; border:1px solid #2a335e; padding:10px 14px; border-radius:14px; text-align:center; min-width:100px; }
 .stat b { display:block; font-size:20px; color:#ff6ec4; } .stat span { font-size:12px; color:#aab0d6; }
 .edit-form { margin-top:14px; display:flex; gap:8px; justify-content:center; flex-wrap:wrap; }
-.edit-form input { flex:1; max-width:300px; padding:10px 14px; border-radius:50px; border:1px solid #333; background:#0a0a12; color:white; outline:none; }
+.edit-form input[type="text"] { flex:1; max-width:300px; padding:10px 14px; border-radius:50px; border:1px solid #333; background:#0a0a12; color:white; outline:none; }
 .edit-form button { padding:10px 18px; border-radius:50px; border:none; background:white; color:black; font-weight:800; cursor:pointer; }
+.pic-form { margin-top:12px; display:flex; gap:8px; justify-content:center; flex-wrap:wrap; align-items:center; }
+.pic-form label { background:#ff1493; color:white; padding:10px 16px; border-radius:50px; font-weight:800; font-size:13px; cursor:pointer; }
+.pic-form button { padding:10px 16px; border-radius:50px; border:none; background:white; color:black; font-weight:800; cursor:pointer; }
 .post { background:#151a35; border:1px solid #2a335e; padding:16px; border-radius:16px; margin-bottom:14px; }
 .post.top-post { border:2px solid gold; box-shadow:0 0 14px rgba(255,215,0,0.35); }
 .post-rank { display:inline-block; font-size:11px; font-weight:900; padding:3px 10px; border-radius:50px; margin-bottom:8px; background:white; color:#ff1493; } .post-rank.gold { background:gold; color:black; } .post-rank.silver { background:#c0c0c0; color:black; } .post-rank.bronze { background:#cd7f32; color:white; }
@@ -33,10 +38,11 @@ body { background:#0a0a12; color:white; min-height:100vh; }
 .delete-box-title { font-weight:900; font-size:14px; display:block; margin-bottom:8px; color:white; }
 .delete-btn-big { background:white !important; color:#ff0000 !important; border:none; padding:12px 28px; border-radius:50px; font-size:16px; cursor:pointer; font-weight:900; width:100%; }
 .report-btn { background:white; color:#ff1493; border:none; padding:12px 28px; border-radius:50px; font-size:14px; cursor:pointer; font-weight:800; width:100%; }
+.debug-line { font-size:11px; color:white; margin-top:8px; }
 .toggle-btn { background:#ff1493; color:white; border:none; padding:11px 14px; border-radius:50px; font-size:13px; font-weight:800; cursor:pointer; margin-top:10px; width:100%; text-align:left; }
 .toggle-btn.likes-btn { background:#0066ff; }
 .toggle-btn.views-btn { background:#16A34A; }
-.hidden-box { display:none !important; margin-top:10px; flex-direction:column; gap:6px; background:rgba(0,0,0,0.25); padding:10px; border-radius:12px; max-height:300px; overflow-y:auto; }
+.hidden-box { display:none !important; margin-top:10px; flex-direction:column; gap:6px; background:rgba(0,0,0,0.25); padding:10px; border-radius:12px; }
 .hidden-box.show { display:flex !important; }
 .person-row { background:rgba(255,255,255,0.08); padding:8px 10px; border-radius:10px; font-size:13px; display:flex; align-items:center; gap:8px; flex-wrap:wrap; }
 .person-row a { color:#ff9ecf; text-decoration:none; font-weight:700; }
@@ -48,27 +54,32 @@ body { background:#0a0a12; color:white; min-height:100vh; }
 <body>
 <div class="topbar"><div class="logo">NEXA. v28</div><div><a href="/walls/Kenya">← Walls</a> <a href="/profile/{{ user }}">My Profile</a> <a href="/logout">Logout</a></div></div>
 <div class="wrap">
-<div class="profile-card"><h1>@{{ profile_user }}</h1><div class="badge-box">{{ badge }}</div><div class="bio">{{ bio }}</div><div class="stats"><div class="stat"><b>{{ my_posts|length }}</b><span>📱 Posts</span></div><div class="stat"><b>{{ total_likes }}</b><span>❤️ Likes</span></div><div class="stat"><b>{{ total_comments }}</b><span>💬 Comments</span></div><div class="stat"><b>{{ total_views }}</b><span>👁️ Views</span></div></div>{% if profile_user == user %}<form class="edit-form" method="POST"><input type="text" name="bio" placeholder="Write your bio..." maxlength="120" value="{{ bio }}"><button type="submit">Save Bio ✏️</button></form>{% endif %}</div>
+<div class="profile-card">
+{% if profile_pic %}<img class="profile-pic-big" src="{{ profile_pic }}" alt="Profile picture">{% else %}<div class="profile-pic-placeholder">👤</div>{% endif %}
+<h1>@{{ profile_user }}</h1><div class="badge-box">{{ badge }}</div><div class="bio">{{ bio }}</div><div class="stats"><div class="stat"><b>{{ my_posts|length }}</b><span>📱 Posts</span></div><div class="stat"><b>{{ total_likes }}</b><span>❤️ Likes</span></div><div class="stat"><b>{{ total_comments }}</b><span>💬 Comments</span></div><div class="stat"><b>{{ total_views }}</b><span>👁️ Views</span></div></div>
+{% if profile_user == user %}
+<form class="edit-form" method="POST" enctype="multipart/form-data"><input type="text" name="bio" placeholder="Write your bio..." maxlength="120" value="{{ bio }}"><button type="submit">Save Bio ✏️</button></form>
+<form class="pic-form" method="POST" enctype="multipart/form-data"><label for="profilePicInput">📸 Choose Profile Picture</label><input type="file" name="profile_pic" id="profilePicInput" accept="image/*" style="display:none;"><span id="picName" style="font-size:12px;color:#aab0d6;"></span><button type="submit">Upload Picture</button></form>
+<script>document.getElementById('profilePicInput').addEventListener('change', function(){ if(this.files.length>0){ document.getElementById('picName').textContent = this.files[0].name; } });</script>
+{% endif %}
+</div>
 <h2 style="margin-bottom:12px;">📱 Posts by @{{ profile_user }} — {{ my_posts|length }}</h2>
 {% for p in my_posts %}
 <div class="post {% if loop.index == 1 %}top-post{% endif %}">
 {% if loop.index == 1 %}<span class="post-rank gold">🥇 #1 TOP POST</span>{% elif loop.index == 2 %}<span class="post-rank silver">🥈 #2</span>{% elif loop.index == 3 %}<span class="post-rank bronze">🥉 #3</span>{% else %}<span class="post-rank">#{{ loop.index }}</span>{% endif %}
 <a class="wall-tag" href="/walls/{{ p.wall_slug }}">{{ p.flag }} {{ p.wall }} Wall →</a>
 {% if p.text %}<p>{{ p.text }}</p>{% endif %}
-{% if p.video %}{% if '.mp4' in p.video or '.mov' in p.video or '.webm' in p.video or '.mkv' in p.video or '.avi' in p.video %}<video controls src="{{ p.video }}"></video>{% else %}<img class="post-photo" src="{{ p.video }}">{% endif %}{% endif %}
+{% if p.video %}{% if '.mp4' in p.video or '.webm' in p.video %}<video controls playsinline preload="none"><source src="{{ p.video }}" type="video/mp4">Your browser cannot play this video. Please use MP4.</video>{% else %}<img class="post-photo" src="{{ p.video }}" loading="lazy">{% endif %}{% endif %}
 <div class="meta"><span>❤️ {{ p.likes }} likes</span><span>💬 {{ p.comments|length }} comments</span><span>👁️ {{ p.views }} views</span><span>🏆 Score: {{ p.score }}</span></div>
-{% if profile_user == user %}
 <div class="delete-box">
 <span class="delete-box-title">🗑️ DELETE IS HERE ↓</span>
-<form method="POST" action="/delete/{{ p.wall_slug }}/{{ p.id }}" onsubmit="return confirm('Delete this post forever?');">
-<button class="delete-btn-big" type="submit">🗑️ DELETE THIS POST</button>
-</form>
-</div>
+{% if can_delete %}
+<form method="POST" action="/delete/{{ p.wall_slug }}/{{ p.id }}" onsubmit="return confirm('Delete this post forever?');"><button class="delete-btn-big" type="submit">🗑️ DELETE THIS POST</button></form>
 {% else %}
-<div class="delete-box" style="background:rgba(255,255,255,0.08); border:1px solid #ff6ec4;">
 <form method="POST" action="/report/{{ p.wall_slug }}/{{ p.id }}"><button class="report-btn" type="submit">🚩 Report This Post</button></form>
-</div>
 {% endif %}
+<div class="debug-line">DEBUG: You=@{{ user }} | Owner=@{{ p.user }} | CanDelete={{ can_delete }} | ID={{ p.id }} | Wall={{ p.wall_slug }}</div>
+</div>
 {% set likers = p.liked_by | unique | list %}
 <button class="toggle-btn likes-btn" onclick="var b=document.getElementById('likes-{{ p.id }}'); b.classList.toggle('show'); this.textContent = b.classList.contains('show') ? '▲ Hide Likes' : '❤️ Show Likes — {{ p.likes }} likes from {{ likers|length }} people ▼'">❤️ Show Likes — {{ p.likes }} likes from {{ likers|length }} people ▼</button>
 <div class="hidden-box" id="likes-{{ p.id }}">
@@ -81,8 +92,8 @@ body { background:#0a0a12; color:white; min-height:100vh; }
 {% for c in p.comments[:10] %}<div class="person-row">💬 <a href="/profile/{{ c.user }}">@{{ c.user }}</a> {{ c.text }}</div>{% endfor %}
 {% if p.comments|length > 10 %}<div style="font-size:12px; color:#ff6ec4; text-align:center;">... and {{ p.comments|length - 10 }} more comments. Only first 10 shown to save phone.</div>{% endif %}
 {% if p.comments|length == 0 %}<div style="font-size:13px; color:#aab0d6; text-align:center;">No comments yet. Be first!</div>{% endif %}
-</div>
 <form class="comment-form" method="POST" action="/comment/{{ p.wall_slug }}/{{ p.id }}"><input type="text" name="comment" placeholder="Write a comment..." maxlength="300" required><button type="submit">Send</button></form>
+</div>
 {% set viewers = p.viewed_by | unique | list %}
 <button class="toggle-btn views-btn" onclick="var b=document.getElementById('views-{{ p.id }}'); b.classList.toggle('show'); this.textContent = b.classList.contains('show') ? '▲ Hide Views' : '👁️ Show Views — {{ p.views }} views from {{ viewers|length }} people ▼'">👁️ Show Views — {{ p.views }} views from {{ viewers|length }} people ▼</button>
 <div class="hidden-box" id="views-{{ p.id }}">

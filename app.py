@@ -1,5 +1,5 @@
 # app.py - 【entity-NEXA¦canonical_name=NEXA】 v28 FINAL - ALL IN ONE - Delete + Limits + High Security + Click Likes/Comments
-# Features: 15 Walls, Ranking, Likes, Comments (click to see), Views, Profiles, Badges, Notifications, Search, Report, Delete, Post Limits, Admin
+# Features: 15 Walls, Ranking, Likes, Comments, Views, Profiles, Badges, Notifications, Search, Report, Delete, Post Limits, Admin, Profile Picture, Speed Cache, Auto-Delete at 5 Reports
 from flask import Flask, render_template, request, redirect, session, jsonify
 import database, os, requests, json, time, datetime, secrets, re
 from dotenv import load_dotenv
@@ -7,37 +7,38 @@ from werkzeug.utils import secure_filename
 load_dotenv()
 
 app = Flask(__name__)
-
-# ===== SECURITY =====
 app.secret_key = os.environ.get("SECRET_KEY", secrets.token_hex(32))
-app.config["MAX_CONTENT_LENGTH"] = 10 * 1024 * 1024  # 10MB max
+app.config["MAX_CONTENT_LENGTH"] = 10 * 1024 * 1024
 app.config["PERMANENT_SESSION_LIFETIME"] = datetime.timedelta(days=7)
 app.config["SESSION_COOKIE_HTTPONLY"] = True
 app.config["SESSION_COOKIE_SAMESITE"] = "Lax"
 app.config["SESSION_COOKIE_SECURE"] = True if os.environ.get("KOYEB") else False
+app.config["SEND_FILE_MAX_AGE_DEFAULT"] = 86400
 
 database.init_db()
 GROQ_API_KEY = os.getenv("GROQ_API_KEY")
 ADMIN_PASSWORD = os.environ.get("ADMIN_PASSWORD", "CHANGE-ME-BRIAN-12345!")
 OWNER_NAME = os.environ.get("OWNER_NAME", "BRIAN")
 
-# ===== FIX: Absolute paths - so PythonAnywhere never uses the wrong folder =====
 BASE_DIR = os.path.dirname(os.path.abspath(__file__))
 UPLOAD_FOLDER = os.path.join(BASE_DIR, "static", "uploads")
+PROFILE_PIC_FOLDER = os.path.join(BASE_DIR, "static", "uploads", "profiles")
 os.makedirs(UPLOAD_FOLDER, exist_ok=True)
+os.makedirs(PROFILE_PIC_FOLDER, exist_ok=True)
 app.config["UPLOAD_FOLDER"] = UPLOAD_FOLDER
-ALLOWED_VIDEO = {"mp4", "mov", "webm", "mkv", "avi"}
+ALLOWED_VIDEO = {"mp4", "webm"}
 ALLOWED_PHOTO = {"png", "jpg", "jpeg", "gif", "webp"}
 DATA_FILE = os.path.join(BASE_DIR, "nexa_data.json")
 PROFILES_FILE = os.path.join(BASE_DIR, "profiles.json")
 NOTIF_FILE = os.path.join(BASE_DIR, "notifications.json")
 
-# ===== LIMITS =====
 MAX_POSTS_PER_DAY = 10
 MAX_COMMENTS_PER_DAY = 30
 POST_COOLDOWN_SECONDS = 30
 MAX_LOGIN_ATTEMPTS = 10
 LOGIN_BLOCK_MINUTES = 2
+# NEW: Auto-delete rule
+AUTO_DELETE_REPORTS = 5
 login_attempts = {}
 last_post_time = {}
 user_post_count_today = {}
@@ -106,7 +107,7 @@ def get_today_challenge():
     day = datetime.date.today().timetuple().tm_yday
     return CHALLENGES[day % len(CHALLENGES)]
 def get_badge(total_likes, total_posts):
-    if total_likes >= 50: return "👑 【entity-NEXA¦canonical_name=NEXA】 King"
+    if total_likes >= 50: return "👑 NEXA King"
     if total_likes >= 20: return "🔥 Rising Star"
     if total_likes >= 5: return "⭐ Star"
     if total_posts >= 3: return "✍ Active Poster"
@@ -114,7 +115,7 @@ def get_badge(total_likes, total_posts):
 def post_score(m): return (m.get("likes", 0) * 10) + (len(m.get("comments", [])) * 5) + m.get("views", 0)
 def default_messages():
     d = {}
-    for w in WALLS: d[w["slug"]] = [{"id": 1, "user": "【entity-nexa¦canonical_name=NEXA】", "text": f"Welcome to {w['name']} wall! {w['flag']} Post anything!", "video": "", "likes": 0, "liked_by": [], "comments": [], "views": 0, "viewed_by": [], "reports": 0}]
+    for w in WALLS: d[w["slug"]] = [{"id": 1, "user": " nexa", "text": f"Welcome to {w['name']} wall! {w['flag']} Post anything!", "video": "", "likes": 0, "liked_by": [], "comments": [], "views": 0, "viewed_by": [], "reports": 0, "reported_by": []}]
     return d
 def load_messages():
     if os.path.exists(DATA_FILE):
@@ -129,6 +130,7 @@ def load_messages():
                     if "views" not in m: m["views"] = 0
                     if "viewed_by" not in m: m["viewed_by"] = []
                     if "reports" not in m: m["reports"] = 0
+                    if "reported_by" not in m: m["reported_by"] = []
             for w in WALL_SLUGS:
                 if w not in data: data[w] = default_messages()[w]
             return data
@@ -136,21 +138,45 @@ def load_messages():
     return default_messages()
 def save_messages():
     with open(DATA_FILE, "w", encoding="utf-8") as f: json.dump(MESSAGES, f, ensure_ascii=False, indent=2)
+_PROFILES_CACHE = None
+_NOTIFS_CACHE = None
 def load_profiles():
+    global _PROFILES_CACHE
+    if _PROFILES_CACHE is not None: return _PROFILES_CACHE
     if os.path.exists(PROFILES_FILE):
         try:
-            with open(PROFILES_FILE, "r", encoding="utf-8") as f: return json.load(f)
+            with open(PROFILES_FILE, "r", encoding="utf-8") as f: _PROFILES_CACHE = json.load(f)
+            return _PROFILES_CACHE
         except: pass
-    return {}
+    _PROFILES_CACHE = {}
+    return _PROFILES_CACHE
 def save_profiles(data):
+    global _PROFILES_CACHE
+    _PROFILES_CACHE = data
     with open(PROFILES_FILE, "w", encoding="utf-8") as f: json.dump(data, f, ensure_ascii=False, indent=2)
+def get_profile_data(username):
+    p = load_profiles().get(username, {})
+    if isinstance(p, str): return {"bio": p, "pic": ""}
+    if isinstance(p, dict): return {"bio": p.get("bio", "Hello! I am on NEXA 🌍"), "pic": p.get("pic", "")}
+    return {"bio": "Hello! I am on NEXA 🌍", "pic": ""}
+def get_all_profile_pics():
+    out = {}
+    for u, p in load_profiles().items():
+        if isinstance(p, dict) and p.get("pic"): out[u] = p["pic"]
+    return out
 def load_notifs():
+    global _NOTIFS_CACHE
+    if _NOTIFS_CACHE is not None: return _NOTIFS_CACHE
     if os.path.exists(NOTIF_FILE):
         try:
-            with open(NOTIF_FILE, "r", encoding="utf-8") as f: return json.load(f)
+            with open(NOTIF_FILE, "r", encoding="utf-8") as f: _NOTIFS_CACHE = json.load(f)
+            return _NOTIFS_CACHE
         except: pass
-    return {}
+    _NOTIFS_CACHE = {}
+    return _NOTIFS_CACHE
 def save_notifs(data):
+    global _NOTIFS_CACHE
+    _NOTIFS_CACHE = data
     with open(NOTIF_FILE, "w", encoding="utf-8") as f: json.dump(data, f, ensure_ascii=False, indent=2)
 def add_notif(to_user, from_user, type_, text, wall_slug):
     if to_user == from_user: return
@@ -210,7 +236,6 @@ def find_related_posts(query):
                 results.append({"id": m["id"], "user": m["user"], "text": m.get("text",""), "video": m.get("video",""), "likes": m.get("likes",0), "comments_count": len(m.get("comments",[])), "views": m.get("views",0), "comments": m.get("comments",[])[:2], "wall": wall["name"], "wall_slug": wall_slug, "flag": wall["flag"]})
     return results[:10]
 
-# ===== LOGIN =====
 @app.route("/", methods=["GET", "POST"])
 def login():
     error = ""
@@ -240,7 +265,6 @@ def login():
 @app.route("/walls")
 def walls_redirect(): return redirect("/walls/Kenya")
 
-# ===== WALLS / CHAT PLACE =====
 @app.route("/walls/<wall_slug>", methods=["GET", "POST"])
 def wall_page(wall_slug):
     if "user" not in session: return redirect("/")
@@ -261,9 +285,9 @@ def wall_page(wall_slug):
                         if ext in ALLOWED_VIDEO or ext in ALLOWED_PHOTO:
                             filename = secure_filename(f"{session['user']}_{int(time.time())}_{f.filename}")
                             path = os.path.join(app.config["UPLOAD_FOLDER"], filename); f.save(path); media_url = f"/static/uploads/{filename}"
-                        else: error_msg = "🚫 Only photos/videos allowed!"
+                        else: error_msg = "🚫 Only MP4 / WebM video or photo allowed! iPhone MOV will not play — use MP4."
                 if not error_msg and (text or media_url):
-                    MESSAGES[wall_slug].append({"id": int(time.time()*1000), "user": session["user"], "text": text, "video": media_url, "likes": 0, "liked_by": [], "comments": [], "views": 0, "viewed_by": [], "reports": 0})
+                    MESSAGES[wall_slug].append({"id": int(time.time()*1000), "user": session["user"], "text": text, "video": media_url, "likes": 0, "liked_by": [], "comments": [], "views": 0, "viewed_by": [], "reports": 0, "reported_by": []})
                     last_post_time[session["user"]] = time.time()
                     key = get_today_key(session["user"]); user_post_count_today[key] = user_post_count_today.get(key, 0) + 1
                     save_messages(); return redirect(f"/walls/{wall_slug}")
@@ -279,9 +303,8 @@ def wall_page(wall_slug):
     for r in ranked:
         if r["slug"] == wall_slug: current_rank = r["rank"]
     posts_left = MAX_POSTS_PER_DAY - user_post_count_today.get(get_today_key(viewer), 0)
-    return render_template("walls.html", user=session["user"], walls=ranked, current_wall=wall, current_slug=wall_slug, messages=ranked_posts, current_rank=current_rank, notif_count=unread_count(session["user"]), challenge=get_today_challenge(), error_msg=error_msg, posts_left=posts_left, is_owner=is_owner())
+    return render_template("walls.html", user=session["user"], walls=ranked, current_wall=wall, current_slug=wall_slug, messages=ranked_posts, current_rank=current_rank, notif_count=unread_count(session["user"]), challenge=get_today_challenge(), error_msg=error_msg, posts_left=posts_left, is_owner=is_owner(), profile_pics=get_all_profile_pics(), my_pic=get_profile_data(viewer).get("pic", ""))
 
-# ===== LIKE =====
 @app.route("/like/<wall_slug>/<int:msg_id>", methods=["POST"])
 def like_post(wall_slug, msg_id):
     if "user" not in session: return redirect("/")
@@ -295,7 +318,6 @@ def like_post(wall_slug, msg_id):
     if "/profile/" in ref: return redirect(ref)
     return redirect(f"/walls/{wall_slug}")
 
-# ===== COMMENT =====
 @app.route("/comment/<wall_slug>/<int:msg_id>", methods=["POST"])
 def comment_post(wall_slug, msg_id):
     if "user" not in session: return redirect("/")
@@ -313,7 +335,7 @@ def comment_post(wall_slug, msg_id):
     if "/profile/" in ref: return redirect(ref)
     return redirect(f"/walls/{wall_slug}")
 
-# ===== DELETE - INSIDE app.py - NO SEPARATE FILE NEEDED =====
+# ===== DELETE - ONLY OWNER OF POST OR BRIAN (ADMIN) =====
 @app.route("/delete/<wall_slug>/<int:msg_id>", methods=["POST"])
 def delete_post(wall_slug, msg_id):
     if "user" not in session: return redirect("/")
@@ -327,6 +349,7 @@ def delete_post(wall_slug, msg_id):
         new_list = []
         for m in fresh[wall_slug]:
             if m.get("id") == msg_id:
+                # RULE: Only the person who posted it, or BRIAN, can delete. Public can NEVER delete others.
                 if m.get("user") == user or user.lower() == OWNER_NAME.lower():
                     if m.get("video") and m["video"].startswith("/static/uploads/"):
                         try: os.remove(m["video"].lstrip("/"))
@@ -344,20 +367,37 @@ def delete_post(wall_slug, msg_id):
     if "/profile/" in ref: return redirect(ref)
     return redirect(f"/walls/{wall_slug}")
 
-# ===== REPORT =====
+# ===== REPORT - NEW: 5 DIFFERENT PEOPLE REPORT = AUTO-DELETE =====
 @app.route("/report/<wall_slug>/<int:msg_id>", methods=["POST"])
 def report_post(wall_slug, msg_id):
     if "user" not in session: return redirect("/")
-    for m in MESSAGES.get(wall_slug, []):
+    user = session["user"]
+    for m in list(MESSAGES.get(wall_slug, [])):
         if m["id"] == msg_id:
-            m["reports"] = m.get("reports", 0) + 1
-            add_notif(OWNER_NAME, session["user"], "comment", f"REPORTED post: {m.get('text','')[:50]} in {wall_slug}", wall_slug)
+            # You cannot report your own post
+            if m.get("user") == user:
+                return redirect(f"/walls/{wall_slug}")
+            if "reported_by" not in m: m["reported_by"] = []
+            # 1 person = 1 report only. Same person clicking again does NOT count again.
+            if user in m["reported_by"]:
+                return redirect(f"/walls/{wall_slug}")
+            m["reported_by"].append(user)
+            m["reports"] = len(m["reported_by"])
+            # Tell BRIAN
+            add_notif(OWNER_NAME, user, "comment", f"REPORTED post by {m.get('user')}: {m.get('text','')[:50]} in {wall_slug} — {m['reports']}/5 reports", wall_slug)
+            # NEW RULE: 5 reports = AUTO-DELETE, no admin needed
+            if m["reports"] >= AUTO_DELETE_REPORTS:
+                print(f"🚨 AUTO-DELETED post {msg_id} by {m.get('user')} — reached {m['reports']} reports")
+                if m.get("video") and m["video"].startswith("/static/uploads/"):
+                    try: os.remove(m["video"].lstrip("/"))
+                    except: pass
+                MESSAGES[wall_slug] = [x for x in MESSAGES[wall_slug] if x.get("id") != msg_id]
+                add_notif(m.get("user"), "NEXA", "comment", "Your post was auto-deleted after 5 reports from different people.", wall_slug)
             save_messages(); break
     ref = request.referrer or ""
     if "/profile/" in ref: return redirect(ref)
     return redirect(f"/walls/{wall_slug}")
 
-# ===== PROFILE - WITH DELETE + CLICK LIKES/COMMENTS DATA =====
 @app.route("/profile/<username>", methods=["GET", "POST"])
 def profile_page(username):
     if "user" not in session: return redirect("/")
@@ -365,23 +405,35 @@ def profile_page(username):
     if request.method == "POST" and username == session["user"]:
         bio = request.form.get("bio", "").strip()[:120]
         if contains_bad_word(bio): return redirect(f"/profile/{username}")
-        if bio: profiles[username] = bio; save_profiles(profiles)
+        cur = get_profile_data(username)
+        new_pic = cur.get("pic", "")
+        if "profile_pic" in request.files:
+            f = request.files["profile_pic"]
+            if f and f.filename != "":
+                ext = f.filename.rsplit(".", 1)[-1].lower()
+                if ext in ALLOWED_PHOTO:
+                    filename = secure_filename(f"{username}_{int(time.time())}.{ext}")
+                    path = os.path.join(PROFILE_PIC_FOLDER, filename); f.save(path)
+                    new_pic = f"/static/uploads/profiles/{filename}"
+        new_bio = bio if bio else cur.get("bio", "Hello! I am on NEXA 🌍")
+        profiles[username] = {"bio": new_bio, "pic": new_pic}
+        save_profiles(profiles)
         return redirect(f"/profile/{username}")
-    bio = profiles.get(username, "Hello! I am on NEXA 🌍")
+    pdata = get_profile_data(username)
+    bio = pdata.get("bio", "Hello! I am on NEXA 🌍")
+    profile_pic = pdata.get("pic", "")
     my_posts = []; total_likes = 0; total_comments = 0; total_views = 0
-    fresh_messages = load_messages()
     for wall_slug in WALL_SLUGS:
         wall = get_wall(wall_slug)
-        for m in fresh_messages.get(wall_slug, []):
+        for m in MESSAGES.get(wall_slug, []):
             if m["user"] == username:
                 my_posts.append({"id": m["id"], "user": m["user"], "text": m.get("text",""), "video": m.get("video",""), "likes": m.get("likes",0), "liked_by": m.get("liked_by",[]), "comments": m.get("comments",[]), "views": m.get("views",0), "viewed_by": m.get("viewed_by",[]), "score": post_score(m), "wall": wall["name"], "wall_slug": wall_slug, "flag": wall["flag"], "reports": m.get("reports",0)})
                 total_likes += m.get("likes",0); total_comments += len(m.get("comments",[])); total_views += m.get("views",0)
     my_posts.sort(key=lambda x: x["score"], reverse=True)
     badge = get_badge(total_likes, len(my_posts))
     can_delete = (username == session["user"]) or is_owner()
-    return render_template("profile.html", user=session["user"], profile_user=username, bio=bio, my_posts=my_posts, total_likes=total_likes, total_comments=total_comments, total_views=total_views, notif_count=unread_count(session["user"]), badge=badge, is_owner=is_owner(), can_delete=can_delete)
+    return render_template("profile.html", user=session["user"], profile_user=username, bio=bio, profile_pic=profile_pic, my_posts=my_posts, total_likes=total_likes, total_comments=total_comments, total_views=total_views, notif_count=unread_count(session["user"]), badge=badge, is_owner=is_owner(), can_delete=can_delete)
 
-# ===== NOTIFICATIONS =====
 @app.route("/notifications")
 def notifications_page():
     if "user" not in session: return redirect("/")
@@ -390,7 +442,6 @@ def notifications_page():
     notifs[session["user"]] = my; save_notifs(notifs)
     return render_template("notifications.html", user=session["user"], notifs=my, notif_count=0)
 
-# ===== SEARCH =====
 @app.route("/search")
 def search():
     q = request.args.get("q", "").strip()[:100]
@@ -400,7 +451,6 @@ def search():
     ans = groq_search(q); SEARCH_CACHE[ql] = ans
     return jsonify({"answer": ans, "posts": find_related_posts(q)})
 
-# ===== ADMIN - INSIDE app.py - BRIAN ONLY WITH SECRET KEY =====
 @app.route("/admin-brian")
 def admin_brian():
     if "user" not in session: return redirect("/")
