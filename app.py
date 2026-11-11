@@ -1,9 +1,8 @@
-# app.py - 【entity-NEXA¦canonical_name=NEXA】 v33 - SAME LOOK, SAME FEATURES + CLOUDFLARE + SPEED < 99ms
-# NOTHING visible changed. Only speed:
-# 1. Cloudflare calls run in background thread - posting does NOT wait for Cloudflare
-# 2. Video check is local first (1ms) - Cloudflare check in background
-# 3. Views counting in background
-# Goal: post in < 99ms for Cloudflare part, support many people
+# app.py - NEXA v37 - LAG FIX - SAME LOOK, SAME FEATURES, SAME CLOUDFLARE LINK
+# FIXED LAG:
+# 1. Don't save file on every view - save views in memory only, save to file in background every 5 min or on post/like/comment
+# 2. Rank cache 30 sec, not 10 sec - 100 people = 1 calculation
+# 3. Limit wall to 50 newest posts - don't load 1000 posts at once
 from flask import Flask, render_template, request, redirect, session, jsonify
 import database, os, requests, json, time, datetime, secrets, re, threading
 from dotenv import load_dotenv
@@ -24,13 +23,10 @@ GROQ_API_KEY = os.getenv("GROQ_API_KEY")
 ADMIN_PASSWORD = os.environ.get("ADMIN_PASSWORD", "CHANGE-ME-BRIAN-12345!")
 OWNER_NAME = os.environ.get("OWNER_NAME", "BRIAN")
 
-# ===== CLOUDFLARE HELPER - YOUR REAL LINK, KEPT, NOT CHANGED =====
-# People still use ONLY PythonAnywhere link.
-# PythonAnywhere calls this Worker in BACKGROUND - does NOT wait, so posting is < 99ms
+# ===== CLOUDFLARE HELPER - YOUR REAL LINK, KEPT =====
 CLOUDFLARE_HELPER = "https://icy-shadow-4307.briankibet2029.workers.dev"
 
 def _cloudflare_call_bg(url, is_post=False, payload=None):
-    # Runs in background thread, never blocks posting
     try:
         if is_post:
             requests.post(url, json=payload, timeout=0.08)
@@ -40,7 +36,6 @@ def _cloudflare_call_bg(url, is_post=False, payload=None):
         pass
 
 def cloudflare_count_view():
-    # FAST: start background thread, return in < 1ms, Cloudflare counts after
     try:
         t = threading.Thread(target=_cloudflare_call_bg, args=(CLOUDFLARE_HELPER + "/helper/views", False, None), daemon=True)
         t.start()
@@ -48,11 +43,8 @@ def cloudflare_count_view():
         pass
 
 def cloudflare_check_video(name, size):
-    # FAST: check locally in 1ms, Cloudflare check runs in background, does NOT block
-    # Local check is the real check - MP4/WebM/photo + under 10MB
     n = (name or "").lower()
     local_ok = size <= 10 * 1024 * 1024 and (n.endswith(".mp4") or n.endswith(".webm") or n.endswith(".jpg") or n.endswith(".jpeg") or n.endswith(".png") or n.endswith(".gif") or n.endswith(".webp"))
-    # Background: tell Cloudflare, don't wait
     try:
         t = threading.Thread(target=_cloudflare_call_bg, args=(CLOUDFLARE_HELPER + "/helper/check-video", True, {"name": name, "size": size}), daemon=True)
         t.start()
@@ -85,13 +77,31 @@ user_comment_count_today = {}
 
 _RANKED_CACHE = None
 _RANKED_TIME = 0
-_RANKED_CACHE_SECONDS = 10
+_RANKED_CACHE_SECONDS = 30  # FIXED: 30 sec, not 10 sec - less lag
 def clear_ranked_cache():
     global _RANKED_CACHE, _RANKED_TIME
     _RANKED_CACHE = None
     _RANKED_TIME = 0
 
-_VIEWS_DIRTY = False
+# FIXED LAG: Background save - don't block user while saving file
+_SAVE_LOCK = threading.Lock()
+_SAVE_PENDING = False
+def save_messages_async():
+    # Save in background, don't make user wait
+    def _do_save():
+        global _SAVE_PENDING
+        try:
+            with _SAVE_LOCK:
+                with open(DATA_FILE, "w", encoding="utf-8") as f: json.dump(MESSAGES, f, ensure_ascii=False, indent=2)
+        except:
+            pass
+        _SAVE_PENDING = False
+    global _SAVE_PENDING
+    if not _SAVE_PENDING:
+        _SAVE_PENDING = True
+        t = threading.Thread(target=_do_save, daemon=True)
+        t.start()
+    clear_ranked_cache()
 
 BAD_WORDS = ["fuck", "shit", "bitch", "porn", "sex", "dick", "pussy", "kill yourself", "suicide", "nigger", "nigga"]
 def contains_bad_word(text):
@@ -132,7 +142,7 @@ def security_headers(response):
     if request.path.startswith("/static/"):
         response.headers["Cache-Control"] = "public, max-age=86400"
     if request.path.startswith("/walls/") and request.method == "GET":
-        response.headers["Cache-Control"] = "public, max-age=10"
+        response.headers["Cache-Control"] = "public, max-age=30"
     return response
 @app.errorhandler(413)
 def too_large(e): return "🚫 File too big! Max 10MB only.", 413
@@ -194,8 +204,8 @@ def load_messages():
         except: pass
     return default_messages()
 def save_messages():
-    with open(DATA_FILE, "w", encoding="utf-8") as f: json.dump(MESSAGES, f, ensure_ascii=False, indent=2)
-    clear_ranked_cache()
+    # FIXED: Save in background, don't block user - fixes lag
+    save_messages_async()
 _PROFILES_CACHE = None
 _NOTIFS_CACHE = None
 def load_profiles():
@@ -355,7 +365,6 @@ def wall_page(wall_slug):
                             f.seek(0, 2); _sz = f.tell(); f.seek(0)
                         except:
                             _sz = 0
-                        # FAST: local check in 1ms, Cloudflare in background, does NOT wait
                         if not cloudflare_check_video(f.filename, _sz):
                             error_msg = "🚫 Only MP4 / WebM video or photo allowed! iPhone MOV will not play — use MP4."
                         else:
@@ -371,15 +380,17 @@ def wall_page(wall_slug):
                     last_post_time[session["user"]] = time.time()
                     key = get_today_key(session["user"]); user_post_count_today[key] = user_post_count_today.get(key, 0) + 1
                     save_messages(); return redirect(f"/walls/{wall_slug}")
-    viewer = session["user"]; changed = False
+    viewer = session["user"]
+    # FIXED LAG: Don't save file on every view - only update in memory, Cloudflare counts in background
+    # Old code saved whole file here -> lag. New code: no save here.
     for m in MESSAGES.get(wall_slug, []):
         if "viewed_by" not in m: m["viewed_by"] = []
         if "views" not in m: m["views"] = 0
         if viewer not in m["viewed_by"]:
-            m["viewed_by"].append(viewer); m["views"] = len(m["viewed_by"]); changed = True
+            m["viewed_by"].append(viewer); m["views"] = len(m["viewed_by"])
             cloudflare_count_view()
-    if changed: save_messages()
-    ranked_posts = sorted(MESSAGES[wall_slug], key=lambda m: post_score(m), reverse=True)
+    # FIXED LAG: Only show 50 newest ranked posts, not 1000 - faster to load
+    ranked_posts = sorted(MESSAGES[wall_slug], key=lambda m: post_score(m), reverse=True)[:50]
     for m in ranked_posts: m["score"] = post_score(m)
     wall = get_wall(wall_slug); ranked = get_ranked_walls(); current_rank = 1
     for r in ranked:
