@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=5.0, user-scalable=yes">
-<title> 【entity-NEXA¦canonical_name=NEXA】 - Kenya - NEON NO-DELETE</title>
+<title> NEXA - Kenya - NEON NO-DELETE</title>
 <style>
 *{box-sizing:border-box;margin:0;padding:0}
 body{font-family:Arial,sans-serif;background:#0B0B1A;color:white}
@@ -14,7 +14,7 @@ a{color:white;text-decoration:none}
 .top-left h1{font-size:20px;font-weight:900;white-space:nowrap}
 .top-left p{font-size:11px;opacity:.95}
 .top-right{display:flex;align-items:center;gap:8px}
-.top-right . 【entity-nexa¦canonical_name=NEXA】-neon{font-size:18px;font-weight:900;letter-spacing:2px}
+.top-right . nexa-neon{font-size:18px;font-weight:900;letter-spacing:2px}
 .top-right .bell{background:white;color:#333;width:32px;height:32px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:16px}
 .top-right .logged{font-size:12px}
 .top-right .profile-btn{background:white;color:#FF2D55;padding:6px 10px;border-radius:20px;font-weight:bold;font-size:12px;display:flex;align-items:center;gap:5px}
@@ -69,20 +69,25 @@ a{color:white;text-decoration:none}
 .error{background:#EF4444;padding:10px;border-radius:10px;margin-bottom:10px;font-size:13px;align-self:stretch;color:white}
 .video-box .mute-btn{position:absolute;top:8px;right:8px;background:rgba(0,0,0,.7);color:white;border:1px solid white;border-radius:20px;padding:5px 10px;font-size:12px;cursor:pointer;z-index:5;line-height:1.4}
 .video-box .loading{position:absolute;top:50%;left:50%;transform:translate(-50%,-50%);background:rgba(0,0,0,.7);padding:8px 12px;border-radius:20px;font-size:12px;z-index:4;color:white;line-height:1.4}
-/* PC ONLY - VIDEO FITS SCREEN, NO NEED TO SCROLL DOWN */
 @media(min-width:701px){
 .video-box{max-height:52vh}
 .video-box video{max-height:52vh;height:52vh;object-fit:contain}
 .post-card .post-img{max-height:52vh}
 }
+/* PHONE ONLY - FLAGS AT CORNERS, NOT LONG ROW */
 @media(max-width:700px){
-.main{flex-direction:column}
-.sidebar{width:100%;min-width:100%;height:auto;position:static;border-right:none;border-bottom:3px solid #FF2D55;padding:8px;overflow:visible}
-#sidebarToggle{display:flex;align-items:center;justify-content:center;width:100%;background:linear-gradient(90deg,#2563EB,#1E40AF);color:white;border:none;padding:10px;border-radius:10px;font-size:20px;font-weight:900;cursor:pointer;margin-bottom:8px;letter-spacing:1px}
-.walls-grid{flex-direction:row;overflow-x:auto;padding-bottom:6px;gap:8px}
-.wall-card{min-width:200px;flex-shrink:0}
-.content{padding:10px;padding-bottom:80px;align-items:center}
-.post-card{width:96vw;max-width:96vw;min-width:0}
+.main{flex-direction:row}
+.sidebar{width:92px;min-width:92px;height:calc(100vh - 60px);position:sticky;top:60px;left:0;border-right:3px solid #FF2D55;border-bottom:none;padding:6px 4px;overflow-y:auto;overflow-x:hidden}
+#sidebarToggle{display:flex;align-items:center;justify-content:center;width:100%;background:linear-gradient(90deg,#2563EB,#1E40AF);color:white;border:none;padding:8px 2px;border-radius:8px;font-size:16px;font-weight:900;cursor:pointer;margin-bottom:6px}
+.sidebar .search-box{display:none}
+.walls-grid{flex-direction:column;overflow-x:hidden;overflow-y:auto;padding-bottom:6px;gap:6px}
+.wall-card{min-width:0;width:100%;flex-shrink:0;padding:5px 3px;flex-direction:column;gap:3px;text-align:center}
+.wall-card .rank{width:22px;height:22px;min-width:22px;font-size:10px}
+.wall-card .flag-img{width:62px;height:41px}
+.wall-card .info b{font-size:11px}
+.wall-card .info .colors,.wall-card .info .stats{display:none}
+.content{padding:10px;padding-bottom:80px;align-items:center;flex:1}
+.post-card{width:100%;max-width:100%;min-width:0}
 .bottom-bar{left:0;padding:10px}
 .top-left h1{font-size:17px}
 .top-left p{display:none}
@@ -114,7 +119,7 @@ body.hide-flags #showFlagsBtn{display:flex;position:fixed;top:64px;left:8px;z-in
 <button id="showFlagsBtn" onclick="toggleFlags()" title="Show flags">›</button>
 <div class="main">
 <div class="sidebar" id="sidebar">
-<button id="sidebarToggle" onclick="toggleFlags()">‹ &nbsp; HIDE FLAGS - FULL POST</button>
+<button id="sidebarToggle" onclick="toggleFlags()">‹</button>
 <div class="search-box"><input id="searchInput" placeholder="🔍 Search a wall... e.g. Nigeria"><button onclick="doSearch()">Go →</button></div>
 <div class="walls-grid">
 {% for w in walls|sort(attribute='rank') %}
@@ -185,9 +190,9 @@ function toggleFlags(){
   document.body.classList.toggle('hide-flags');
   var btn = document.getElementById('sidebarToggle');
   if(document.body.classList.contains('hide-flags')){
-    if(btn) btn.textContent = '› SHOW FLAGS';
+    if(btn) btn.textContent = '›';
   } else {
-    if(btn) btn.textContent = '‹ HIDE FLAGS - FULL POST';
+    if(btn) btn.textContent = '‹';
   }
 }
 function toggleMute(btn){
