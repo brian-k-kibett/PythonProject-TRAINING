@@ -141,7 +141,7 @@ def home():
 @app.route("/health")
 def health():
     threading.Thread(target=cloudflare_ping, daemon=True).start()
-    return jsonify({"ok": True, "helper": "cloudflare", "holder": "imagekit", "flow": "NEXA -> HOLDER -> PYTHONANYWHERE + CLOUDFLARE"})
+    return jsonify({"ok": True, "helper": "cloudflare", "holder": "imagekit", "flow": "【entity-NEXA¦canonical_name=NEXA】 -> HOLDER -> PYTHONANYWHERE + CLOUDFLARE"})
 
 @app.route("/login", methods=["GET","POST"])
 def login():
@@ -181,7 +181,7 @@ def logout():
     session.pop("user", None)
     return redirect("/walls/Kenya")
 
-# ===== HOLDER ImageKit: NEXA asks for permission =====
+# ===== HOLDER ImageKit: 【entity-NEXA¦canonical_name=NEXA】 asks for permission =====
 @app.route("/holder-signature", methods=["POST"])
 def holder_signature():
     if need_login():
@@ -212,8 +212,7 @@ def holder_signature():
 
 @app.route("/holder-usage")
 def holder_usage():
-    if current_user() != "BRIAN":
-        return jsonify({"ok": False, "error": "only_brian"}), 403
+    # Anybody can check - like Cloudflare health - no login, no secrets, works behind the scene
     configured = bool(HOLDER_PUBLIC_KEY and HOLDER_PRIVATE_KEY and HOLDER_URL_ENDPOINT)
     return jsonify({
         "ok": True,
