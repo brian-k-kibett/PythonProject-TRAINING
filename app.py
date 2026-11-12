@@ -127,7 +127,7 @@ def get_badge(total_likes, total_posts):
     if total_likes >= 5: return "⭐ Star"
     if total_posts >= 3: return "✍ Active Poster"
     return "🌱 Newcomer"
-def post_score(m): return (m.get("likes", 0) * 10) + (len(m.get("comments", [])) * 5) + m.get("views", 0)
+def post_score(m): return (m.get("likes", 0) * 10) + m.get("views", 0)
 def default_messages():
     d = {}
     for w in WALLS: d[w["slug"]] = [{"id": 1, "user": " 【entity-nexa¦canonical_name=NEXA】", "text": f"Welcome to {w['name']} wall! {w['flag']} Post anything!", "video": "", "likes": 0, "liked_by": [], "comments": [], "views": 0, "viewed_by": [], "reports": 0, "reported_by": []}]
@@ -465,7 +465,7 @@ def admin_brian():
             for wall_slug, msgs in data.items():
                 for m in msgs:
                     likes = m.get("likes", 0); comments = m.get("comments", []); views = m.get("views", 0)
-                    score = (likes * 10) + (len(comments) * 5) + views
+                    score = (likes * 10) + views
                     all_posts.append({"wall": wall_slug, "user": m.get("user", "?"), "text": m.get("text", ""), "video": m.get("video", ""), "likes": likes, "comments_count": len(comments), "comments_list": comments, "views": views, "score": score, "reports": m.get("reports", 0), "id": m.get("id", 0)})
         except: all_posts = []
     all_posts.sort(key=lambda x: x["score"], reverse=True)
