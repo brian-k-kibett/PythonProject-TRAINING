@@ -1,5 +1,5 @@
 from flask import Flask, render_template, request, redirect, url_for, session, jsonify
-import json, os, uuid, threading, urllib.request, sqlite3
+import json, os, uuid, threading, urllib.request, sqlite3, time, hashlib, hmac
 from werkzeug.utils import secure_filename
 
 app = Flask(__name__)
@@ -12,6 +12,12 @@ USERS_FILE = os.path.join(BASE, "nexa_users.json")
 DB_FILE = os.path.join(BASE, "nexa_users.db")
 UPLOAD_FOLDER = os.path.join(BASE, "static", "uploads")
 os.makedirs(UPLOAD_FOLDER, exist_ok=True)
+
+# ===== NEXA HOLDER (Cloudinary) - secrets ONLY from Env vars, never in code =====
+HOLDER_CLOUD_NAME = os.environ.get("CLOUDINARY_CLOUD_NAME", "")
+HOLDER_API_KEY = os.environ.get("CLOUDINARY_API_KEY", "")
+HOLDER_API_SECRET = os.environ.get("CLOUDINARY_API_SECRET", "")
+HOLDER_FOLDER = "nexa_videos"
 
 WALLS = [
     {"slug":"Kenya","name":"Kenya","code":"ke","desc":"Black, Red, Green","rank":1,"people":0,"posts":0,"likes":0},
@@ -58,13 +64,11 @@ def load_users_json():
     return {}
 
 def load_users_db():
-    # OLD DB - BRIAN and old users are here
     users = {}
     if os.path.exists(DB_FILE):
         try:
             con = sqlite3.connect(DB_FILE)
             cur = con.cursor()
-            # try common table/column names
             try:
                 cur.execute("SELECT name FROM sqlite_master WHERE type='table'")
                 tables = [r[0] for r in cur.fetchall()]
@@ -76,7 +80,6 @@ def load_users_db():
                     cols = [r[1] for r in cur.fetchall()]
                     if not cols:
                         continue
-                    # find username + password columns
                     ucol = None
                     pcol = None
                     for c in cols:
@@ -98,11 +101,9 @@ def load_users_db():
     return users
 
 def load_users():
-    # FIX: check BOTH new JSON + old DB, DB wins if same name exists in both
     users = load_users_json()
     db_users = load_users_db()
     for k, v in db_users.items():
-        # keep both exact + lower lookup - do not overwrite JSON if JSON already has it
         if k not in users:
             users[k] = v
     return users
@@ -114,7 +115,6 @@ def save_users(u):
     except: pass
 
 def find_user(users, name):
-    # case-insensitive lookup - BRIAN == Brian == brian
     if name in users:
         return name, users[name]
     low = name.lower()
@@ -134,6 +134,13 @@ def cloudflare_ping():
         urllib.request.urlopen("https://icy-shadow-4307.briankibet2029.workers.dev/helper/health", timeout=3)
     except: pass
 
+# ===== HOLDER helpers - NEXA -> HOLDER -> PYTHONANYWHERE + CLOUDFLARE =====
+def make_holder_signature(timestamp, folder):
+    # Build signature string exactly as Cloudinary expects: folder + timestamp, signed with SECRET (server only)
+    to_sign = f"folder={folder}&timestamp={timestamp}"
+    sig = hmac.new(HOLDER_API_SECRET.encode(), to_sign.encode(), hashlib.sha1).hexdigest()
+    return sig
+
 @app.route("/")
 def home():
     return redirect("/walls/Kenya")
@@ -141,21 +148,17 @@ def home():
 @app.route("/health")
 def health():
     threading.Thread(target=cloudflare_ping, daemon=True).start()
-    return jsonify({"ok": True, "helper": "cloudflare"})
+    return jsonify({"ok": True, "helper": "cloudflare", "holder": "cloudinary", "flow": "NEXA -> HOLDER -> PYTHONANYWHERE + CLOUDFLARE"})
 
 @app.route("/login", methods=["GET","POST"])
 def login():
     if request.method == "POST":
-        # FIX: accept any field names from login.html - username/name/user, password/pass
         name = (request.form.get("username") or request.form.get("name") or request.form.get("user") or "").strip()
         pw = (request.form.get("password") or request.form.get("pass") or request.form.get("pwd") or "").strip()
-        # FIX: accept any action names - action, submit, button
         action_raw = (request.form.get("action") or request.form.get("submit") or request.form.get("button") or "").lower()
-        # if form has 'create' or 'signup' or 'register' anywhere, treat as create
         is_create = False
         if "create" in action_raw or "sign" in action_raw or "register" in action_raw or "new" in action_raw:
             is_create = True
-        # also check if any key contains create
         for k in request.form.keys():
             if "create" in k.lower() or "signup" in k.lower() or "register" in k.lower():
                 is_create = True
@@ -174,7 +177,6 @@ def login():
             found_name, stored_pw = find_user(users, name)
             if not found_name:
                 return render_template("login.html", error_msg="No such name - tap Create New Account below")
-            # compare as string, strip spaces - your password is 100% correct, we don't trim inside
             if str(stored_pw).strip() != pw:
                 return render_template("login.html", error_msg="Wrong name or password - check capital letters, BRIAN is not brian")
             session["user"] = found_name
@@ -186,6 +188,54 @@ def logout():
     session.pop("user", None)
     return redirect("/walls/Kenya")
 
+# ===== HOLDER: Step 1 - NEXA asks HOLDER for permission (signature) =====
+@app.route("/holder-signature", methods=["POST"])
+def holder_signature():
+    # Guest cannot upload - must login
+    if need_login():
+        return jsonify({"ok": False, "error": "login_required"}), 401
+    if not HOLDER_CLOUD_NAME or not HOLDER_API_KEY or not HOLDER_API_SECRET:
+        return jsonify({"ok": False, "error": "holder_not_configured"}), 500
+    # Check size the browser says it will upload - Max 15MB for now, same as before
+    try:
+        size = int(request.form.get("bytes") or request.json.get("bytes") if request.is_json else request.form.get("bytes") or 0)
+    except:
+        size = 0
+    if size and size > 15 * 1024 * 1024:
+        return jsonify({"ok": False, "error": "too_big_max_15mb"}), 400
+    timestamp = int(time.time())
+    sig = make_holder_signature(timestamp, HOLDER_FOLDER)
+    # Return ONLY signature + cloud_name + timestamp - NEVER return API_SECRET
+    return jsonify({
+        "ok": True,
+        "cloud_name": HOLDER_CLOUD_NAME,
+        "api_key": HOLDER_API_KEY,
+        "timestamp": timestamp,
+        "signature": sig,
+        "folder": HOLDER_FOLDER,
+        "expires_in_seconds": 600
+    })
+
+# ===== HOLDER: Usage - only BRIAN can see =====
+@app.route("/holder-usage")
+def holder_usage():
+    if current_user() != "BRIAN":
+        return jsonify({"ok": False, "error": "only_brian"}), 403
+    # For now we return config status - full Cloudinary Admin API call comes after you set Env vars and test
+    # This keeps NEXA working even if HOLDER is not yet configured
+    configured = bool(HOLDER_CLOUD_NAME and HOLDER_API_KEY and HOLDER_API_SECRET)
+    return jsonify({
+        "ok": True,
+        "configured": configured,
+        "cloud_name": HOLDER_CLOUD_NAME if configured else "",
+        "free_credits": 25,
+        "used_credits_estimate": 0,
+        "percent": 0,
+        "warning_80": False,
+        "block_95": False,
+        "message": "HOLDER connected - NEXA -> HOLDER -> PYTHONANYWHERE + CLOUDFLARE" if configured else "HOLDER not configured yet - set Env vars in PythonAnywhere"
+    })
+
 @app.route("/walls/<slug>", methods=["GET","POST"])
 def walls(slug):
     data = load_data()
@@ -196,15 +246,24 @@ def walls(slug):
         if need_login():
             return redirect("/login")
         text = (request.form.get("message") or "").strip()[:500]
-        f = request.files.get("video_file")
+        # NEW: Post came from HOLDER first - NEXA -> HOLDER -> PYTHONANYWHERE
+        holder_id = (request.form.get("holder_id") or request.form.get("cloudinary_id") or "").strip()
+        holder_url = (request.form.get("holder_url") or request.form.get("secure_url") or "").strip()
+        holder_duration = (request.form.get("holder_duration") or request.form.get("duration") or "").strip()
         video_url = ""
-        if f and f.filename:
-            fn = secure_filename(str(uuid.uuid4())[:8] + "_" + f.filename)
-            path = os.path.join(UPLOAD_FOLDER, fn)
-            f.save(path)
-            video_url = "/static/uploads/" + fn
+        # If HOLDER gave us a video, use HOLDER URL - PythonAnywhere does NOT load video
+        if holder_id and holder_url:
+            video_url = holder_url
+        else:
+            # OLD WAY: still works for today, until walls.html is changed tomorrow - file to static/uploads/
+            f = request.files.get("video_file")
+            if f and f.filename:
+                fn = secure_filename(str(uuid.uuid4())[:8] + "_" + f.filename)
+                path = os.path.join(UPLOAD_FOLDER, fn)
+                f.save(path)
+                video_url = "/static/uploads/" + fn
         if text or video_url:
-            msg = {"id": str(uuid.uuid4())[:8], "user": user, "text": text, "video": video_url, "likes": 0, "views": 0, "comments": [], "viewed_by": [], "score": 0}
+            msg = {"id": str(uuid.uuid4())[:8], "user": user, "text": text, "video": video_url, "holder_id": holder_id, "holder_url": holder_url, "holder_duration": holder_duration, "likes": 0, "views": 0, "comments": [], "viewed_by": [], "score": 0}
             data.setdefault(slug, []).insert(0, msg)
             save_data(data)
             threading.Thread(target=cloudflare_ping, daemon=True).start()
