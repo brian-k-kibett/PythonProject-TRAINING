@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=5.0, user-scalable=yes">
-<title> 【entity-NEXA¦canonical_name=NEXA】 - Kenya - NEON NO-DELETE</title>
+<title> NEXA - Kenya - NEON NO-DELETE</title>
 <style>
 *{box-sizing:border-box;margin:0;padding:0}
 body{font-family:Arial,sans-serif;background:#0B0B1A;color:white}
@@ -14,7 +14,7 @@ a{color:white;text-decoration:none}
 .top-left h1{font-size:20px;font-weight:900;white-space:nowrap}
 .top-left p{font-size:11px;opacity:.95}
 .top-right{display:flex;align-items:center;gap:8px}
-.top-right . 【entity-nexa¦canonical_name=NEXA】-neon{font-size:18px;font-weight:900;letter-spacing:2px}
+.top-right . nexa-neon{font-size:18px;font-weight:900;letter-spacing:2px}
 .top-right .bell{background:white;color:#333;width:32px;height:32px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:16px}
 .top-right .logged{font-size:12px}
 .top-right .profile-btn{background:white;color:#FF2D55;padding:6px 10px;border-radius:20px;font-weight:bold;font-size:12px;display:flex;align-items:center;gap:5px}
@@ -231,7 +231,7 @@ body.hide-flags #showFlagsBtn{display:flex;position:fixed;top:64px;left:8px;z-in
 <button class="post-btn" type="submit" id="postBtn">Post →</button>
 </form>
 {% endif %}
-<div class="upload-bar" id="uploadBar"><div id="uploadText">Uploading parts... 0% — video keeps playing</div><div class="bar"><div class="fill" id="uploadFill"></div></div></div>
+<div class="upload-bar" id="uploadBar"><div id="uploadText">Uploading to HOLDER... 0% — NEXA → HOLDER → PYTHONANYWHERE</div><div class="bar"><div class="fill" id="uploadFill"></div></div></div>
 <script>
 function needLogin(){ if(confirm('To Like, Comment or Post, login / join free. Go to Login?')){ window.location.href='/login'; } }
 document.querySelectorAll('.ajax-form').forEach(function(f){
@@ -268,42 +268,72 @@ document.querySelectorAll('.ajax-form').forEach(function(f){
     .catch(function(){ try{ sessionStorage.setItem('nexa_scroll', window.scrollY.toString()); }catch(e){} form.submit(); });
   });
 });
+// ===== NEXA -> HOLDER (ImageKit) -> PYTHONANYWHERE + CLOUDFLARE - ONLY upload changed =====
 var pf = document.getElementById('postForm');
 if(pf){ pf.addEventListener('submit', function(e){
+  e.preventDefault();
   var fileInput = document.getElementById('fileInput');
   var file = fileInput.files[0];
-  if(!file || file.size < 2*1024*1024){ return; }
-  e.preventDefault();
+  var text = document.getElementById('postText').value;
+  var btn = document.getElementById('postBtn');
   var bar = document.getElementById('uploadBar');
   var txt = document.getElementById('uploadText');
   var fill = document.getElementById('uploadFill');
-  var btn = document.getElementById('postBtn');
-  btn.disabled = true; btn.textContent = 'Uploading parts...';
+  // No file = text only - send old way to PythonAnywhere (same as before)
+  if(!file){ pf.submit(); return; }
+  // Image = send old way for now - HOLDER is for video only
+  if(file.type.indexOf('video') === -1){ pf.submit(); return; }
+  // Video: NEXA -> HOLDER first
+  btn.disabled = true; btn.textContent = 'Sending to HOLDER...';
   bar.style.display = 'block';
-  var CHUNK = 1024*1024;
-  var totalParts = Math.ceil(file.size / CHUNK);
-  var part = 0;
-  function uploadNext(){
-    if(part >= totalParts){
-      txt.textContent = 'Parts done — finishing post...';
-      var fd = new FormData();
-      fd.append('message', document.getElementById('postText').value);
-      fd.append('video_file', file);
-      var xhr = new XMLHttpRequest();
-      xhr.open('POST', window.location.pathname, true);
-      xhr.upload.onprogress = function(ev){ if(ev.lengthComputable){ var p = Math.round(ev.loaded/ev.total*100); fill.style.width = p+'%'; txt.textContent = 'Uploading final part... '+p+'% — video keeps playing'; } };
-      xhr.onload = function(){ bar.style.display='none'; window.location.reload(); };
-      xhr.onerror = function(){ bar.style.display='none'; btn.disabled=false; btn.textContent='Post →'; alert('Upload failed, try again with smaller video'); };
-      xhr.send(fd);
-      return;
+  fill.style.width = '5%'; txt.textContent = 'Asking HOLDER for permission... NEXA → HOLDER';
+  var sigForm = new FormData();
+  sigForm.append('bytes', file.size);
+  fetch('/holder-signature', {method:'POST', body: sigForm})
+  .then(function(r){ return r.json(); })
+  .then(function(sigData){
+    if(!sigData.ok){
+      bar.style.display = 'none'; btn.disabled = false; btn.textContent = 'Post →';
+      if(sigData.error === 'holder_not_configured'){ alert('HOLDER not set yet in PythonAnywhere WSGI. Posting old way to PythonAnywhere.'); pf.submit(); return; }
+      if(sigData.error === 'too_big_max_15mb'){ alert('Too big: Max 15MB for now. Use shorter video.'); return; }
+      alert('HOLDER error, posting old way.'); pf.submit(); return;
     }
-    var p = Math.round((part/totalParts)*70);
-    fill.style.width = p+'%';
-    txt.textContent = 'Breaking video... Uploading part ' + (part+1) + ' of ' + totalParts + ' — ' + p + '% — video keeps playing';
-    part++;
-    setTimeout(uploadNext, 120);
-  }
-  uploadNext();
+    // Step 2: Upload DIRECT to HOLDER (ImageKit)
+    fill.style.width = '20%'; txt.textContent = 'Uploading to HOLDER... NEXA → HOLDER → PYTHONANYWHERE';
+    var upForm = new FormData();
+    upForm.append('file', file);
+    upForm.append('fileName', 'nexa_' + Date.now() + '_' + file.name);
+    upForm.append('folder', sigData.folder);
+    upForm.append('publicKey', sigData.public_key);
+    upForm.append('signature', sigData.signature);
+    upForm.append('expire', sigData.expire);
+    upForm.append('token', sigData.token);
+    upForm.append('useUniqueFileName', 'true');
+    var xhr = new XMLHttpRequest();
+    xhr.open('POST', 'https://upload.imagekit.io/api/v1/files/upload', true);
+    xhr.upload.onprogress = function(ev){ if(ev.lengthComputable){ var p = 20 + Math.round(ev.loaded/ev.total*70); fill.style.width = p+'%'; txt.textContent = 'Uploading to HOLDER... '+p+'% — video held on top'; } };
+    xhr.onload = function(){
+      try{
+        var res = JSON.parse(xhr.responseText);
+        if(!res.url){ throw new Error('no url'); }
+        fill.style.width = '95%'; txt.textContent = 'HOLDER held video — sending to PythonAnywhere...';
+        var finalForm = new FormData();
+        finalForm.append('message', text);
+        finalForm.append('holder_id', res.fileId || '');
+        finalForm.append('holder_url', res.url || '');
+        finalForm.append('holder_duration', '');
+        fetch(window.location.pathname, {method:'POST', body: finalForm})
+        .then(function(){ bar.style.display='none'; window.location.reload(); })
+        .catch(function(){ bar.style.display='none'; btn.disabled=false; btn.textContent='Post →'; alert('HOLDER held video, but PythonAnywhere failed. Try Reload.'); });
+      }catch(err){
+        bar.style.display='none'; btn.disabled=false; btn.textContent='Post →';
+        alert('HOLDER upload failed, try smaller video or try again. Posting old way.'); pf.submit();
+      }
+    };
+    xhr.onerror = function(){ bar.style.display='none'; btn.disabled=false; btn.textContent='Post →'; alert('HOLDER upload failed (network). Posting old way.'); pf.submit(); };
+    xhr.send(upForm);
+  })
+  .catch(function(){ bar.style.display='none'; btn.disabled=false; btn.textContent='Post →'; alert('Cannot reach HOLDER, posting old way.'); pf.submit(); });
 });}
 function toggleFlags(){
   document.body.classList.toggle('hide-flags');
@@ -373,7 +403,7 @@ function checkSize(input){
   var mb = (f.size/1024/1024).toFixed(1);
   var info = document.getElementById('sizeInfo');
   if(f.size > 15*1024*1024){ info.textContent='❌ Too big: '+mb+'MB — TikTok fast: Max 15MB. Please use shorter video'; input.value=''; }
-  else { info.textContent='✅ '+mb+'MB — TikTok fast, will upload in parts'; }
+  else { info.textContent='✅ '+mb+'MB — HOLDER will hold it, TikTok fast'; }
 }
 </script>
 </body>

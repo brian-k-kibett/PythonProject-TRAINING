@@ -1,9 +1,9 @@
 from flask import Flask, render_template, request, redirect, url_for, session, jsonify
-import json, os, uuid, threading, urllib.request, sqlite3, time, hashlib, hmac
+import json, os, uuid, threading, urllib.request, sqlite3, time, hashlib, hmac, secrets
 from werkzeug.utils import secure_filename
 
 app = Flask(__name__)
-app.secret_key = "nexa-secret-2026-brian"
+app.secret_key = "【entity-nexa¦canonical_name=NEXA】-secret-2026-brian"
 app.config['MAX_CONTENT_LENGTH'] = 15 * 1024 * 1024
 
 BASE = os.path.dirname(os.path.abspath(__file__))
@@ -13,10 +13,10 @@ DB_FILE = os.path.join(BASE, "nexa_users.db")
 UPLOAD_FOLDER = os.path.join(BASE, "static", "uploads")
 os.makedirs(UPLOAD_FOLDER, exist_ok=True)
 
-# ===== NEXA HOLDER (Cloudinary) - secrets ONLY from Env vars, never in code =====
-HOLDER_CLOUD_NAME = os.environ.get("CLOUDINARY_CLOUD_NAME", "")
-HOLDER_API_KEY = os.environ.get("CLOUDINARY_API_KEY", "")
-HOLDER_API_SECRET = os.environ.get("CLOUDINARY_API_SECRET", "")
+# ===== 【entity-NEXA¦canonical_name=NEXA】 HOLDER = ImageKit (like Cloudinary) - secrets ONLY from WSGI Env vars =====
+HOLDER_PUBLIC_KEY = os.environ.get("IMAGEKIT_PUBLIC_KEY", "")
+HOLDER_PRIVATE_KEY = os.environ.get("IMAGEKIT_PRIVATE_KEY", "")
+HOLDER_URL_ENDPOINT = os.environ.get("IMAGEKIT_URL_ENDPOINT", "")
 HOLDER_FOLDER = "nexa_videos"
 
 WALLS = [
@@ -134,13 +134,6 @@ def cloudflare_ping():
         urllib.request.urlopen("https://icy-shadow-4307.briankibet2029.workers.dev/helper/health", timeout=3)
     except: pass
 
-# ===== HOLDER helpers - NEXA -> HOLDER -> PYTHONANYWHERE + CLOUDFLARE =====
-def make_holder_signature(timestamp, folder):
-    # Build signature string exactly as Cloudinary expects: folder + timestamp, signed with SECRET (server only)
-    to_sign = f"folder={folder}&timestamp={timestamp}"
-    sig = hmac.new(HOLDER_API_SECRET.encode(), to_sign.encode(), hashlib.sha1).hexdigest()
-    return sig
-
 @app.route("/")
 def home():
     return redirect("/walls/Kenya")
@@ -148,7 +141,7 @@ def home():
 @app.route("/health")
 def health():
     threading.Thread(target=cloudflare_ping, daemon=True).start()
-    return jsonify({"ok": True, "helper": "cloudflare", "holder": "cloudinary", "flow": "NEXA -> HOLDER -> PYTHONANYWHERE + CLOUDFLARE"})
+    return jsonify({"ok": True, "helper": "cloudflare", "holder": "imagekit", "flow": "NEXA -> HOLDER -> PYTHONANYWHERE + CLOUDFLARE"})
 
 @app.route("/login", methods=["GET","POST"])
 def login():
@@ -188,52 +181,50 @@ def logout():
     session.pop("user", None)
     return redirect("/walls/Kenya")
 
-# ===== HOLDER: Step 1 - NEXA asks HOLDER for permission (signature) =====
+# ===== HOLDER ImageKit: NEXA asks for permission =====
 @app.route("/holder-signature", methods=["POST"])
 def holder_signature():
-    # Guest cannot upload - must login
     if need_login():
         return jsonify({"ok": False, "error": "login_required"}), 401
-    if not HOLDER_CLOUD_NAME or not HOLDER_API_KEY or not HOLDER_API_SECRET:
+    if not HOLDER_PUBLIC_KEY or not HOLDER_PRIVATE_KEY or not HOLDER_URL_ENDPOINT:
         return jsonify({"ok": False, "error": "holder_not_configured"}), 500
-    # Check size the browser says it will upload - Max 15MB for now, same as before
     try:
-        size = int(request.form.get("bytes") or request.json.get("bytes") if request.is_json else request.form.get("bytes") or 0)
+        size = int(request.form.get("bytes") or 0)
     except:
         size = 0
     if size and size > 15 * 1024 * 1024:
         return jsonify({"ok": False, "error": "too_big_max_15mb"}), 400
-    timestamp = int(time.time())
-    sig = make_holder_signature(timestamp, HOLDER_FOLDER)
-    # Return ONLY signature + cloud_name + timestamp - NEVER return API_SECRET
+    # ImageKit auth: token + expire + signature (HMAC-SHA1 with Private Key, server only)
+    token = secrets.token_hex(16)
+    expire = int(time.time()) + 600
+    to_sign = token + str(expire)
+    signature = hmac.new(HOLDER_PRIVATE_KEY.encode(), to_sign.encode(), hashlib.sha1).hexdigest()
     return jsonify({
         "ok": True,
-        "cloud_name": HOLDER_CLOUD_NAME,
-        "api_key": HOLDER_API_KEY,
-        "timestamp": timestamp,
-        "signature": sig,
+        "public_key": HOLDER_PUBLIC_KEY,
+        "url_endpoint": HOLDER_URL_ENDPOINT,
+        "token": token,
+        "expire": expire,
+        "signature": signature,
         "folder": HOLDER_FOLDER,
         "expires_in_seconds": 600
     })
 
-# ===== HOLDER: Usage - only BRIAN can see =====
 @app.route("/holder-usage")
 def holder_usage():
     if current_user() != "BRIAN":
         return jsonify({"ok": False, "error": "only_brian"}), 403
-    # For now we return config status - full Cloudinary Admin API call comes after you set Env vars and test
-    # This keeps NEXA working even if HOLDER is not yet configured
-    configured = bool(HOLDER_CLOUD_NAME and HOLDER_API_KEY and HOLDER_API_SECRET)
+    configured = bool(HOLDER_PUBLIC_KEY and HOLDER_PRIVATE_KEY and HOLDER_URL_ENDPOINT)
     return jsonify({
         "ok": True,
         "configured": configured,
-        "cloud_name": HOLDER_CLOUD_NAME if configured else "",
-        "free_credits": 25,
-        "used_credits_estimate": 0,
+        "holder": "imagekit",
+        "url_endpoint": HOLDER_URL_ENDPOINT if configured else "",
+        "free_bandwidth_gb": 20,
         "percent": 0,
         "warning_80": False,
         "block_95": False,
-        "message": "HOLDER connected - NEXA -> HOLDER -> PYTHONANYWHERE + CLOUDFLARE" if configured else "HOLDER not configured yet - set Env vars in PythonAnywhere"
+        "message": "HOLDER connected - NEXA -> HOLDER -> PYTHONANYWHERE + CLOUDFLARE" if configured else "HOLDER not configured yet - check WSGI file"
     })
 
 @app.route("/walls/<slug>", methods=["GET","POST"])
@@ -246,16 +237,13 @@ def walls(slug):
         if need_login():
             return redirect("/login")
         text = (request.form.get("message") or "").strip()[:500]
-        # NEW: Post came from HOLDER first - NEXA -> HOLDER -> PYTHONANYWHERE
-        holder_id = (request.form.get("holder_id") or request.form.get("cloudinary_id") or "").strip()
-        holder_url = (request.form.get("holder_url") or request.form.get("secure_url") or "").strip()
-        holder_duration = (request.form.get("holder_duration") or request.form.get("duration") or "").strip()
+        holder_id = (request.form.get("holder_id") or request.form.get("fileId") or "").strip()
+        holder_url = (request.form.get("holder_url") or request.form.get("url") or "").strip()
+        holder_duration = (request.form.get("holder_duration") or "").strip()
         video_url = ""
-        # If HOLDER gave us a video, use HOLDER URL - PythonAnywhere does NOT load video
         if holder_id and holder_url:
             video_url = holder_url
         else:
-            # OLD WAY: still works for today, until walls.html is changed tomorrow - file to static/uploads/
             f = request.files.get("video_file")
             if f and f.filename:
                 fn = secure_filename(str(uuid.uuid4())[:8] + "_" + f.filename)
