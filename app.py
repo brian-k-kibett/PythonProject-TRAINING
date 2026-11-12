@@ -1,14 +1,8 @@
-# app.py - NEXA v37 - LAG FIX - SAME LOOK, SAME FEATURES, SAME CLOUDFLARE LINK
-# FIXED LAG:
-# 1. Don't save file on every view - save views in memory only, save to file in background every 5 min or on post/like/comment
-# 2. Rank cache 30 sec, not 10 sec - 100 people = 1 calculation
-# 3. Limit wall to 50 newest posts - don't load 1000 posts at once
 from flask import Flask, render_template, request, redirect, session, jsonify
 import database, os, requests, json, time, datetime, secrets, re, threading
 from dotenv import load_dotenv
 from werkzeug.utils import secure_filename
 load_dotenv()
-
 app = Flask(__name__)
 app.secret_key = os.environ.get("SECRET_KEY", secrets.token_hex(32))
 app.config["MAX_CONTENT_LENGTH"] = 10 * 1024 * 1024
@@ -17,41 +11,27 @@ app.config["SESSION_COOKIE_HTTPONLY"] = True
 app.config["SESSION_COOKIE_SAMESITE"] = "Lax"
 app.config["SESSION_COOKIE_SECURE"] = True if os.environ.get("KOYEB") else False
 app.config["SEND_FILE_MAX_AGE_DEFAULT"] = 86400
-
 database.init_db()
 GROQ_API_KEY = os.getenv("GROQ_API_KEY")
 ADMIN_PASSWORD = os.environ.get("ADMIN_PASSWORD", "CHANGE-ME-BRIAN-12345!")
 OWNER_NAME = os.environ.get("OWNER_NAME", "BRIAN")
-
-# ===== CLOUDFLARE HELPER - YOUR REAL LINK, KEPT =====
 CLOUDFLARE_HELPER = "https://icy-shadow-4307.briankibet2029.workers.dev"
-
 def _cloudflare_call_bg(url, is_post=False, payload=None):
     try:
-        if is_post:
-            requests.post(url, json=payload, timeout=0.08)
-        else:
-            requests.get(url, timeout=0.08)
-    except:
-        pass
-
+        if is_post: requests.post(url, json=payload, timeout=0.08)
+        else: requests.get(url, timeout=0.08)
+    except: pass
 def cloudflare_count_view():
     try:
-        t = threading.Thread(target=_cloudflare_call_bg, args=(CLOUDFLARE_HELPER + "/helper/views", False, None), daemon=True)
-        t.start()
-    except:
-        pass
-
+        t = threading.Thread(target=_cloudflare_call_bg, args=(CLOUDFLARE_HELPER + "/helper/views", False, None), daemon=True); t.start()
+    except: pass
 def cloudflare_check_video(name, size):
     n = (name or "").lower()
     local_ok = size <= 10 * 1024 * 1024 and (n.endswith(".mp4") or n.endswith(".webm") or n.endswith(".jpg") or n.endswith(".jpeg") or n.endswith(".png") or n.endswith(".gif") or n.endswith(".webp"))
     try:
-        t = threading.Thread(target=_cloudflare_call_bg, args=(CLOUDFLARE_HELPER + "/helper/check-video", True, {"name": name, "size": size}), daemon=True)
-        t.start()
-    except:
-        pass
+        t = threading.Thread(target=_cloudflare_call_bg, args=(CLOUDFLARE_HELPER + "/helper/check-video", True, {"name": name, "size": size}), daemon=True); t.start()
+    except: pass
     return local_ok
-
 BASE_DIR = os.path.dirname(os.path.abspath(__file__))
 UPLOAD_FOLDER = os.path.join(BASE_DIR, "static", "uploads")
 PROFILE_PIC_FOLDER = os.path.join(BASE_DIR, "static", "uploads", "profiles")
@@ -63,7 +43,6 @@ ALLOWED_PHOTO = {"png", "jpg", "jpeg", "gif", "webp"}
 DATA_FILE = os.path.join(BASE_DIR, "nexa_data.json")
 PROFILES_FILE = os.path.join(BASE_DIR, "profiles.json")
 NOTIF_FILE = os.path.join(BASE_DIR, "notifications.json")
-
 MAX_POSTS_PER_DAY = 10
 MAX_COMMENTS_PER_DAY = 30
 POST_COOLDOWN_SECONDS = 30
@@ -74,35 +53,12 @@ login_attempts = {}
 last_post_time = {}
 user_post_count_today = {}
 user_comment_count_today = {}
-
 _RANKED_CACHE = None
 _RANKED_TIME = 0
-_RANKED_CACHE_SECONDS = 30  # FIXED: 30 sec, not 10 sec - less lag
+_RANKED_CACHE_SECONDS = 10
 def clear_ranked_cache():
     global _RANKED_CACHE, _RANKED_TIME
-    _RANKED_CACHE = None
-    _RANKED_TIME = 0
-
-# FIXED LAG: Background save - don't block user while saving file
-_SAVE_LOCK = threading.Lock()
-_SAVE_PENDING = False
-def save_messages_async():
-    # Save in background, don't make user wait
-    def _do_save():
-        global _SAVE_PENDING
-        try:
-            with _SAVE_LOCK:
-                with open(DATA_FILE, "w", encoding="utf-8") as f: json.dump(MESSAGES, f, ensure_ascii=False, indent=2)
-        except:
-            pass
-        _SAVE_PENDING = False
-    global _SAVE_PENDING
-    if not _SAVE_PENDING:
-        _SAVE_PENDING = True
-        t = threading.Thread(target=_do_save, daemon=True)
-        t.start()
-    clear_ranked_cache()
-
+    _RANKED_CACHE = None; _RANKED_TIME = 0
 BAD_WORDS = ["fuck", "shit", "bitch", "porn", "sex", "dick", "pussy", "kill yourself", "suicide", "nigger", "nigga"]
 def contains_bad_word(text):
     t = (text or "").lower()
@@ -130,25 +86,19 @@ def record_failed_login(key):
     if login_attempts[key]["count"] >= MAX_LOGIN_ATTEMPTS:
         login_attempts[key]["blocked_until"] = time.time() + LOGIN_BLOCK_MINUTES * 60
         login_attempts[key]["count"] = 0
-def make_post_id():
-    return int(time.time() * 1000000) + secrets.randbelow(1000)
-
+def make_post_id(): return int(time.time() * 1000000) + secrets.randbelow(1000)
 @app.after_request
 def security_headers(response):
     response.headers["X-Content-Type-Options"] = "nosniff"
     response.headers["X-Frame-Options"] = "SAMEORIGIN"
     response.headers["X-XSS-Protection"] = "1; mode=block"
     response.headers["Referrer-Policy"] = "strict-origin-when-cross-origin"
-    if request.path.startswith("/static/"):
-        response.headers["Cache-Control"] = "public, max-age=86400"
-    if request.path.startswith("/walls/") and request.method == "GET":
-        response.headers["Cache-Control"] = "public, max-age=30"
+    if request.path.startswith("/static/"): response.headers["Cache-Control"] = "public, max-age=86400"
     return response
 @app.errorhandler(413)
 def too_large(e): return "🚫 File too big! Max 10MB only.", 413
 @app.errorhandler(404)
 def not_found(e): return redirect("/")
-
 WALLS = [
     {"slug": "USA", "name": "USA", "flag": "🇺🇸", "code": "us", "color": "#3B82F6", "color2": "#EF4444", "desc": "Red, White & Blue"},
     {"slug": "Kenya", "name": "Kenya", "flag": "🇰🇪", "code": "ke", "color": "#000000", "color2": "#16A34A", "desc": "Black, Red, Green"},
@@ -172,7 +122,7 @@ def get_today_challenge():
     day = datetime.date.today().timetuple().tm_yday
     return CHALLENGES[day % len(CHALLENGES)]
 def get_badge(total_likes, total_posts):
-    if total_likes >= 50: return "👑 NEXA King"
+    if total_likes >= 50: return "👑 【entity-NEXA¦canonical_name=NEXA】 King"
     if total_likes >= 20: return "🔥 Rising Star"
     if total_likes >= 5: return "⭐ Star"
     if total_posts >= 3: return "✍ Active Poster"
@@ -180,7 +130,7 @@ def get_badge(total_likes, total_posts):
 def post_score(m): return (m.get("likes", 0) * 10) + (len(m.get("comments", [])) * 5) + m.get("views", 0)
 def default_messages():
     d = {}
-    for w in WALLS: d[w["slug"]] = [{"id": 1, "user": " nexa", "text": f"Welcome to {w['name']} wall! {w['flag']} Post anything!", "video": "", "likes": 0, "liked_by": [], "comments": [], "views": 0, "viewed_by": [], "reports": 0, "reported_by": []}]
+    for w in WALLS: d[w["slug"]] = [{"id": 1, "user": " 【entity-nexa¦canonical_name=NEXA】", "text": f"Welcome to {w['name']} wall! {w['flag']} Post anything!", "video": "", "likes": 0, "liked_by": [], "comments": [], "views": 0, "viewed_by": [], "reports": 0, "reported_by": []}]
     return d
 def load_messages():
     if os.path.exists(DATA_FILE):
@@ -204,8 +154,8 @@ def load_messages():
         except: pass
     return default_messages()
 def save_messages():
-    # FIXED: Save in background, don't block user - fixes lag
-    save_messages_async()
+    with open(DATA_FILE, "w", encoding="utf-8") as f: json.dump(MESSAGES, f, ensure_ascii=False, indent=2)
+    clear_ranked_cache()
 _PROFILES_CACHE = None
 _NOTIFS_CACHE = None
 def load_profiles():
@@ -213,14 +163,11 @@ def load_profiles():
     if _PROFILES_CACHE is not None: return _PROFILES_CACHE
     if os.path.exists(PROFILES_FILE):
         try:
-            with open(PROFILES_FILE, "r", encoding="utf-8") as f: _PROFILES_CACHE = json.load(f)
-            return _PROFILES_CACHE
+            with open(PROFILES_FILE, "r", encoding="utf-8") as f: _PROFILES_CACHE = json.load(f); return _PROFILES_CACHE
         except: pass
-    _PROFILES_CACHE = {}
-    return _PROFILES_CACHE
+    _PROFILES_CACHE = {}; return _PROFILES_CACHE
 def save_profiles(data):
-    global _PROFILES_CACHE
-    _PROFILES_CACHE = data
+    global _PROFILES_CACHE; _PROFILES_CACHE = data
     with open(PROFILES_FILE, "w", encoding="utf-8") as f: json.dump(data, f, ensure_ascii=False, indent=2)
 def get_profile_data(username):
     p = load_profiles().get(username, {})
@@ -237,14 +184,11 @@ def load_notifs():
     if _NOTIFS_CACHE is not None: return _NOTIFS_CACHE
     if os.path.exists(NOTIF_FILE):
         try:
-            with open(NOTIF_FILE, "r", encoding="utf-8") as f: _NOTIFS_CACHE = json.load(f)
-            return _NOTIFS_CACHE
+            with open(NOTIF_FILE, "r", encoding="utf-8") as f: _NOTIFS_CACHE = json.load(f); return _NOTIFS_CACHE
         except: pass
-    _NOTIFS_CACHE = {}
-    return _NOTIFS_CACHE
+    _NOTIFS_CACHE = {}; return _NOTIFS_CACHE
 def save_notifs(data):
-    global _NOTIFS_CACHE
-    _NOTIFS_CACHE = data
+    global _NOTIFS_CACHE; _NOTIFS_CACHE = data
     with open(NOTIF_FILE, "w", encoding="utf-8") as f: json.dump(data, f, ensure_ascii=False, indent=2)
 def add_notif(to_user, from_user, type_, text, wall_slug):
     if to_user == from_user: return
@@ -268,8 +212,7 @@ def get_wall(slug):
 def get_ranked_walls():
     global _RANKED_CACHE, _RANKED_TIME
     now = time.time()
-    if _RANKED_CACHE is not None and now - _RANKED_TIME < _RANKED_CACHE_SECONDS:
-        return _RANKED_CACHE
+    if _RANKED_CACHE is not None and now - _RANKED_TIME < _RANKED_CACHE_SECONDS: return _RANKED_CACHE
     ranked = []
     for w in WALLS:
         msgs = MESSAGES.get(w["slug"], [])
@@ -311,7 +254,6 @@ def find_related_posts(query):
             if q in (m.get("text","") + " " + m.get("user","") + " " + wall["name"]).lower():
                 results.append({"id": m["id"], "user": m["user"], "text": m.get("text",""), "video": m.get("video",""), "likes": m.get("likes",0), "comments_count": len(m.get("comments",[])), "views": m.get("views",0), "comments": m.get("comments",[])[:2], "wall": wall["name"], "wall_slug": wall_slug, "flag": wall["flag"]})
     return results[:10]
-
 @app.route("/", methods=["GET", "POST"])
 def login():
     error = ""
@@ -337,14 +279,10 @@ def login():
             if database.create_user(name, password): session["user"] = name; session.permanent = True; return redirect("/walls/Kenya")
             else: error = "That name is already taken."
     return render_template("login.html", error=error)
-
 @app.route("/walls")
 def walls_redirect(): return redirect("/walls/Kenya")
-
 @app.route("/health")
-def health():
-    return jsonify({"ok": True, "app": "NEXA", "walls": len(WALLS), "time": int(time.time())})
-
+def health(): return jsonify({"ok": True, "app": "NEXA", "walls": len(WALLS), "time": int(time.time())})
 @app.route("/walls/<wall_slug>", methods=["GET", "POST"])
 def wall_page(wall_slug):
     if "user" not in session: return redirect("/")
@@ -361,12 +299,9 @@ def wall_page(wall_slug):
                 if "video_file" in request.files:
                     f = request.files["video_file"]
                     if f and f.filename != "":
-                        try:
-                            f.seek(0, 2); _sz = f.tell(); f.seek(0)
-                        except:
-                            _sz = 0
-                        if not cloudflare_check_video(f.filename, _sz):
-                            error_msg = "🚫 Only MP4 / WebM video or photo allowed! iPhone MOV will not play — use MP4."
+                        try: f.seek(0, 2); _sz = f.tell(); f.seek(0)
+                        except: _sz = 0
+                        if not cloudflare_check_video(f.filename, _sz): error_msg = "🚫 Only MP4 / WebM video or photo allowed! iPhone MOV will not play — use MP4."
                         else:
                             ext = f.filename.rsplit(".", 1)[-1].lower()
                             if ext in ALLOWED_VIDEO or ext in ALLOWED_PHOTO:
@@ -381,23 +316,18 @@ def wall_page(wall_slug):
                     key = get_today_key(session["user"]); user_post_count_today[key] = user_post_count_today.get(key, 0) + 1
                     save_messages(); return redirect(f"/walls/{wall_slug}")
     viewer = session["user"]
-    # FIXED LAG: Don't save file on every view - only update in memory, Cloudflare counts in background
-    # Old code saved whole file here -> lag. New code: no save here.
     for m in MESSAGES.get(wall_slug, []):
         if "viewed_by" not in m: m["viewed_by"] = []
         if "views" not in m: m["views"] = 0
         if viewer not in m["viewed_by"]:
-            m["viewed_by"].append(viewer); m["views"] = len(m["viewed_by"])
-            cloudflare_count_view()
-    # FIXED LAG: Only show 50 newest ranked posts, not 1000 - faster to load
-    ranked_posts = sorted(MESSAGES[wall_slug], key=lambda m: post_score(m), reverse=True)[:50]
+            m["viewed_by"].append(viewer); m["views"] = len(m["viewed_by"]); cloudflare_count_view()
+    ranked_posts = sorted(MESSAGES[wall_slug], key=lambda m: post_score(m), reverse=True)
     for m in ranked_posts: m["score"] = post_score(m)
     wall = get_wall(wall_slug); ranked = get_ranked_walls(); current_rank = 1
     for r in ranked:
         if r["slug"] == wall_slug: current_rank = r["rank"]
     posts_left = MAX_POSTS_PER_DAY - user_post_count_today.get(get_today_key(viewer), 0)
     return render_template("walls.html", user=session["user"], walls=ranked, current_wall=wall, current_slug=wall_slug, messages=ranked_posts, current_rank=current_rank, notif_count=unread_count(session["user"]), challenge=get_today_challenge(), error_msg=error_msg, posts_left=posts_left, is_owner=is_owner(), profile_pics=get_all_profile_pics(), my_pic=get_profile_data(viewer).get("pic", ""))
-
 @app.route("/like/<wall_slug>/<int:msg_id>", methods=["POST"])
 def like_post(wall_slug, msg_id):
     if "user" not in session: return redirect("/")
@@ -410,7 +340,6 @@ def like_post(wall_slug, msg_id):
     ref = request.referrer or ""
     if "/profile/" in ref: return redirect(ref)
     return redirect(f"/walls/{wall_slug}")
-
 @app.route("/comment/<wall_slug>/<int:msg_id>", methods=["POST"])
 def comment_post(wall_slug, msg_id):
     if "user" not in session: return redirect("/")
@@ -427,12 +356,10 @@ def comment_post(wall_slug, msg_id):
     ref = request.referrer or ""
     if "/profile/" in ref: return redirect(ref)
     return redirect(f"/walls/{wall_slug}")
-
 @app.route("/delete/<wall_slug>/<int:msg_id>", methods=["POST"])
 def delete_post(wall_slug, msg_id):
     if "user" not in session: return redirect("/")
-    user = session["user"].strip()
-    deleted = False
+    user = session["user"].strip(); deleted = False
     if wall_slug in MESSAGES:
         new_list = []
         for m in MESSAGES[wall_slug]:
@@ -443,28 +370,23 @@ def delete_post(wall_slug, msg_id):
                             full_path = os.path.join(BASE_DIR, m["video"].lstrip("/"))
                             if os.path.exists(full_path): os.remove(full_path)
                         except: pass
-                    deleted = True
-                    continue
+                    deleted = True; continue
             new_list.append(m)
         MESSAGES[wall_slug] = new_list
         if deleted: save_messages()
     ref = request.referrer or ""
     if "/profile/" in ref: return redirect(ref)
     return redirect(f"/walls/{wall_slug}")
-
 @app.route("/report/<wall_slug>/<int:msg_id>", methods=["POST"])
 def report_post(wall_slug, msg_id):
     if "user" not in session: return redirect("/")
     user = session["user"]
     for m in list(MESSAGES.get(wall_slug, [])):
         if m["id"] == msg_id:
-            if str(m.get("user", "")).strip().lower() == user.strip().lower():
-                return redirect(f"/walls/{wall_slug}")
+            if str(m.get("user", "")).strip().lower() == user.strip().lower(): return redirect(f"/walls/{wall_slug}")
             if "reported_by" not in m: m["reported_by"] = []
-            if user in m["reported_by"]:
-                return redirect(f"/walls/{wall_slug}")
-            m["reported_by"].append(user)
-            m["reports"] = len(m["reported_by"])
+            if user in m["reported_by"]: return redirect(f"/walls/{wall_slug}")
+            m["reported_by"].append(user); m["reports"] = len(m["reported_by"])
             add_notif(OWNER_NAME, user, "comment", f"REPORTED post by {m.get('user')}: {m.get('text','')[:50]} in {wall_slug} — {m['reports']}/5 reports", wall_slug)
             if m["reports"] >= AUTO_DELETE_REPORTS:
                 if m.get("video") and m["video"].startswith("/static/uploads/"):
@@ -478,7 +400,6 @@ def report_post(wall_slug, msg_id):
     ref = request.referrer or ""
     if "/profile/" in ref: return redirect(ref)
     return redirect(f"/walls/{wall_slug}")
-
 @app.route("/profile/<username>", methods=["GET", "POST"])
 def profile_page(username):
     if "user" not in session: return redirect("/")
@@ -486,8 +407,7 @@ def profile_page(username):
     if request.method == "POST" and username == session["user"]:
         bio = request.form.get("bio", "").strip()[:120]
         if contains_bad_word(bio): return redirect(f"/profile/{username}")
-        cur = get_profile_data(username)
-        new_pic = cur.get("pic", "")
+        cur = get_profile_data(username); new_pic = cur.get("pic", "")
         if "profile_pic" in request.files:
             f = request.files["profile_pic"]
             if f and f.filename != "":
@@ -496,15 +416,10 @@ def profile_page(username):
                     raw = secure_filename(f"{username}_{int(time.time())}.{ext}")
                     name_part, ext_part = os.path.splitext(raw)
                     filename = name_part + ext_part.lower()
-                    path = os.path.join(PROFILE_PIC_FOLDER, filename); f.save(path)
-                    new_pic = f"/static/uploads/profiles/{filename}"
+                    path = os.path.join(PROFILE_PIC_FOLDER, filename); f.save(path); new_pic = f"/static/uploads/profiles/{filename}"
         new_bio = bio if bio else cur.get("bio", "Hello! I am on NEXA 🌍")
-        profiles[username] = {"bio": new_bio, "pic": new_pic}
-        save_profiles(profiles)
-        return redirect(f"/profile/{username}")
-    pdata = get_profile_data(username)
-    bio = pdata.get("bio", "Hello! I am on NEXA 🌍")
-    profile_pic = pdata.get("pic", "")
+        profiles[username] = {"bio": new_bio, "pic": new_pic}; save_profiles(profiles); return redirect(f"/profile/{username}")
+    pdata = get_profile_data(username); bio = pdata.get("bio", "Hello! I am on NEXA 🌍"); profile_pic = pdata.get("pic", "")
     my_posts = []; total_likes = 0; total_comments = 0; total_views = 0
     for wall_slug in WALL_SLUGS:
         wall = get_wall(wall_slug)
@@ -516,7 +431,6 @@ def profile_page(username):
     badge = get_badge(total_likes, len(my_posts))
     can_delete = (username.strip().lower() == session["user"].strip().lower()) or is_owner()
     return render_template("profile.html", user=session["user"], profile_user=username, bio=bio, profile_pic=profile_pic, my_posts=my_posts, total_likes=total_likes, total_comments=total_comments, total_views=total_views, notif_count=unread_count(session["user"]), badge=badge, is_owner=is_owner(), can_delete=can_delete)
-
 @app.route("/notifications")
 def notifications_page():
     if "user" not in session: return redirect("/")
@@ -524,7 +438,6 @@ def notifications_page():
     for n in my: n["seen"] = True
     notifs[session["user"]] = my; save_notifs(notifs)
     return render_template("notifications.html", user=session["user"], notifs=my, notif_count=0)
-
 @app.route("/search")
 def search():
     q = request.args.get("q", "").strip()[:100]
@@ -533,7 +446,6 @@ def search():
     if ql in SEARCH_CACHE: return jsonify({"answer": SEARCH_CACHE[ql], "posts": find_related_posts(q)})
     ans = groq_search(q); SEARCH_CACHE[ql] = ans
     return jsonify({"answer": ans, "posts": find_related_posts(q)})
-
 @app.route("/admin-brian")
 def admin_brian():
     if "user" not in session: return redirect("/")
@@ -558,7 +470,6 @@ def admin_brian():
         except: all_posts = []
     all_posts.sort(key=lambda x: x["score"], reverse=True)
     return render_template("admin.html", user=session["user"], all_users=all_users, all_posts=all_posts, total_posts=len(all_posts), total_likes=sum(p["likes"] for p in all_posts), total_comments=sum(p["comments_count"] for p in all_posts), total_views=sum(p["views"] for p in all_posts), admin_key=ADMIN_PASSWORD)
-
 @app.route("/admin-brian/delete/<wall_slug>/<int:msg_id>", methods=["POST"])
 def admin_delete(wall_slug, msg_id):
     if "user" not in session: return redirect("/")
@@ -569,13 +480,10 @@ def admin_delete(wall_slug, msg_id):
         if wall_slug in data:
             data[wall_slug] = [m for m in data[wall_slug] if m.get("id") != msg_id]
             with open(DATA_FILE, "w", encoding="utf-8") as f: json.dump(data, f, ensure_ascii=False, indent=2)
-            global MESSAGES
-            MESSAGES = data
+            global MESSAGES; MESSAGES = data
     return redirect(f"/admin-brian?key={ADMIN_PASSWORD}")
-
 @app.route("/logout")
 def logout(): session.clear(); return redirect("/")
-
 if __name__ == "__main__":
     port = int(os.environ.get("PORT", 5000))
     app.run(host="0.0.0.0", port=port, threaded=True, debug=False)

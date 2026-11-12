@@ -1,67 +1,67 @@
- <!DOCTYPE html>
+<!DOCTYPE html>
 <html lang="en">
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>NEXA - Login - v26</title>
+<title>NEXA - Login</title>
 <style>
-* { margin:0; padding:0; box-sizing:border-box; font-family:'Segoe UI', Arial, sans-serif; }
-body { background: linear-gradient(135deg, #0066ff, #ff1493, #ff0000); min-height:100vh; display:flex; align-items:center; justify-content:center; padding:16px; }
-.card { background:#0a0a12; color:white; padding:34px 28px 28px; border-radius:24px; width:100%; max-width:410px; text-align:center; border:2px solid #ff1493; box-shadow:0 20px 50px rgba(0,0,0,0.55), 0 0 0 1px rgba(255,20,147,0.18); }
-.logo { font-size:44px; font-weight:900; letter-spacing:9px; margin-bottom:8px; line-height:1; } .logo span { color:#ff1493; }
-.tag { color:#aab0d6; font-size:13px; margin-bottom:20px; line-height:1.5; }
-.label { display:block; text-align:left; font-size:12px; font-weight:700; letter-spacing:0.4px; color:#cdd3f2; margin:0 0 6px 6px; }
-input { width:100%; padding:14px 16px; border-radius:50px; border:1px solid #2b315a; background:#151a35; color:white; outline:none; margin-bottom:14px; font-size:15px; transition:border-color 0.15s, box-shadow 0.15s; }
-input:focus { border-color:#ff1493; box-shadow:0 0 0 3px rgba(255,20,147,0.22); }
-input::placeholder { color:#7d84a8; }
-.btn { width:100%; padding:14px; border-radius:50px; border:none; background:linear-gradient(90deg,#0066ff,#ff1493,#ff0000); color:white; font-weight:800; cursor:pointer; font-size:15px; margin-bottom:10px; box-shadow:0 8px 20px rgba(255,20,147,0.28); }
-.btn:active { transform:translateY(1px); }
-.btn2 { width:100%; padding:13px; border-radius:50px; border:1px solid #ff1493; background:#151a35; color:white; font-weight:800; cursor:pointer; font-size:15px; }
-.btn2:active { transform:translateY(1px); }
-.divider { display:flex; align-items:center; gap:10px; color:#7d84a8; font-size:12px; margin:14px 0 10px; }
-.divider:before, .divider:after { content:""; height:1px; flex:1; background:#2b315a; }
-.help-text { font-size:13px; color:#aab0d6; margin:2px 0 8px; line-height:1.4; }
-.error { background:#ff0000; color:white; padding:11px 12px; border-radius:12px; font-size:13px; margin-bottom:14px; line-height:1.4; text-align:left; }
-.rules { font-size:11px; color:#aab0d6; margin-top:16px; line-height:1.6; border-top:1px solid #232848; padding-top:14px; }
-.quote { margin-top:12px; font-size:12px; font-style:italic; color:#dbe8ff; line-height:1.5; }
-.pass-wrap { position:relative; width:100%; }
-.pass-wrap input { padding-right:62px; }
-.eye-btn { position:absolute; right:7px; top:6px; height:34px; padding:0 11px; border-radius:50px; border:1px solid #ff1493; background:#1e2447; color:white; font-size:12px; font-weight:700; cursor:pointer; }
-@media (max-width:480px){ .card{ padding:28px 20px 22px; border-radius:20px; } .logo{ font-size:38px; } }
+*{box-sizing:border-box;margin:0;padding:0}
+body{font-family:Arial,sans-serif;background:#1A0B2E;color:white;min-height:100vh;display:flex;align-items:center;justify-content:center;padding:14px}
+.top-neon{position:fixed;top:0;left:0;right:0;height:56px;background:linear-gradient(90deg,#FF2D55,#FF9500,#FFD700,#FF6B00);display:flex;align-items:center;justify-content:center;font-size:22px;font-weight:900;letter-spacing:3px;z-index:10}
+.box{background:linear-gradient(135deg,#FF2D55,#FF6B00,#FFD700);width:100%;max-width:400px;border-radius:20px;padding:3px;margin-top:56px;box-shadow:0 0 25px rgba(255,45,85,.6)}
+.inner{background:#1A0B2E;border-radius:17px;padding:28px 24px;text-align:center}
+.logo{font-size:42px;font-weight:900;letter-spacing:2px;color:white}
+.logo span{color:#FFD700}
+.sub{color:#FFD700;font-size:14px;margin:6px 0 18px}
+.err{background:#FF2D55;color:white;padding:10px;border-radius:10px;font-size:13px;margin-bottom:12px;text-align:left;font-weight:bold}
+label{display:block;text-align:left;font-size:13px;font-weight:bold;margin:12px 0 4px;color:#FFD700}
+input{width:100%;padding:13px 12px;border-radius:10px;border:2px solid #FF2D55;background:#2A0A4A;color:white;font-size:15px;outline:none}
+input::placeholder{color:#C9A0FF}
+input:focus{border-color:#FFD700}
+.pw-wrap{position:relative}
+.pw-wrap input{padding-right:70px}
+.show-btn{position:absolute;right:8px;top:50%;transform:translateY(-50%);background:white;color:#FF2D55;border:none;padding:6px 10px;border-radius:20px;font-size:13px;font-weight:bold;cursor:pointer}
+.hint{font-size:11px;color:#C9A0FF;text-align:left;margin-top:4px}
+.btn{width:100%;padding:13px;border-radius:10px;border:none;font-size:16px;font-weight:bold;cursor:pointer;margin-top:12px}
+.btn-login{background:white;color:black}
+.btn-signup{background:linear-gradient(90deg,#FF2D55,#FF9500);color:white}
+.divider{display:flex;align-items:center;gap:10px;margin:16px 0;color:#FFD700;font-size:12px;font-weight:bold}
+.divider:before,.divider:after{content:"";flex:1;height:1px;background:#FF2D55}
+.foot{font-size:12px;color:#C9A0FF;margin-top:14px;line-height:1.5}
+.foot b{color:white}
 </style>
 </head>
 <body>
-<div class="card">
-<div class="logo">NEXA<span>.</span></div>
-<div class="tag">15 Country Walls 🌍 • Post • Like • Comment • Rank • v26 SECURE</div>
-{% if error %}<div class="error">{{ error }}</div>{% endif %}
+<div class="top-neon">⚡ NEXA. NEON</div>
+<div class="box"><div class="inner">
+<div class="logo">⚡ NEXA<span>.</span></div>
+<div class="sub">15 Country Walls 🌍 • Post • Like • Comment • Rank</div>
+{% if error %}<div class="err">{{ error }}</div>{% endif %}
 <form method="POST">
-<label class="label" for="username">Username</label>
-<input id="username" type="text" name="username" placeholder="Username — 3-20 letters/numbers, no spaces" required>
-<label class="label" for="password">Password</label>
-<div class="pass-wrap">
-<input id="password" type="password" name="password" placeholder="Password — min 4 chars" required>
-<button type="button" class="eye-btn" onclick="togglePass()">👁️ Show</button>
+<label for="username">Username</label>
+<input id="username" name="username" placeholder="e.g. BRIAN" required maxlength="20" autocomplete="username">
+<div class="hint">3-20 letters / numbers. No spaces.</div>
+<label for="pw">Password</label>
+<div class="pw-wrap">
+<input id="pw" type="password" name="password" placeholder="Min 4 characters" required autocomplete="current-password">
+<button type="button" class="show-btn" onclick="togglePw()">Show</button>
 </div>
-<button class="btn" type="submit" name="action" value="login">Login →</button>
-<div class="divider">OR</div>
-<p class="help-text">New here? Don't Login — create an account first:</p>
-<button class="btn2" type="submit" name="action" value="signup">Sign Up — New Account</button>
+<div class="hint">Keep it secret. Min 4 characters.</div>
+<button class="btn btn-login" name="action" value="login" type="submit">Log In</button>
+<div class="divider"><span>OR</span></div>
+<button class="btn btn-signup" name="action" value="signup" type="submit">Create New Account</button>
 </form>
-<div class="rules">🛡️ Rules: Max 10 posts/day • 30 sec wait • Bad words blocked • Max 10MB photo/video<br>Be kind ❤️</div>
-<div class="quote">"I am just a kid, but <b>age does not define our destiny.</b>"</div>
+<div class="foot">
+New here? Type a new name + password, then click <b>Create New Account</b>.<br>
+Already have account? Type same name + password, then click <b>Log In</b>.
 </div>
+</div></div>
 <script>
-function togglePass(){
-  var p = document.getElementById("password");
-  var btn = document.querySelector(".eye-btn");
-  if(p.type === "password"){
-    p.type = "text";
-    btn.textContent = "🙈 Hide";
-  } else {
-    p.type = "password";
-    btn.textContent = "👁️ Show";
-  }
+function togglePw(){
+  var p = document.getElementById('pw');
+  var btn = document.querySelector('.show-btn');
+  if(p.type === 'password'){ p.type = 'text'; btn.textContent = 'Hide'; }
+  else { p.type = 'password'; btn.textContent = 'Show'; }
 }
 </script>
 </body>

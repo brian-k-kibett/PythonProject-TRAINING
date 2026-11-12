@@ -1,239 +1,195 @@
-<!DOCTYPE html>
+ <!DOCTYPE html>
 <html lang="en">
 <head>
 <meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0">
-<title>【entity-NEXA¦canonical_name=NEXA】 - {{ current_wall.name }} {{ current_wall.flag }}</title>
+<!-- PHONE = PC EXACTLY - FORCE PC WIDTH ON PHONE -->
+<meta name="viewport" content="width=1024, initial-scale=0.4, maximum-scale=2.0, user-scalable=yes">
+<title> 【entity-NEXA¦canonical_name=NEXA】 - Kenya - NEON NO-DELETE</title>
 <style>
 *{box-sizing:border-box;margin:0;padding:0}
-body{font-family:Arial,sans-serif;background:#0B0B1A;color:white;overflow-x:hidden}
+body{font-family:Arial,sans-serif;background:#0B0B1A;color:white;overflow-x:auto;min-width:1024px}
 a{color:white;text-decoration:none}
-
-/* TOP BAR - NEON PARTY */
-.topbar{position:fixed;top:0;left:0;right:0;height:56px;background:linear-gradient(90deg,#3B82F6,#EC4899,#F59E0B,#EF4444);display:flex;align-items:center;justify-content:space-between;padding:0 10px;z-index:100;box-shadow:0 4px 20px rgba(236,72,153,.5)}
-.logo{font-size:22px;font-weight:900;letter-spacing:2px;text-shadow:0 0 10px white}
-.top-right{display:flex;gap:8px;align-items:center}
-.top-right a,.top-right button{background:rgba(0,0,0,.35);border:1px solid rgba(255,255,255,.6);color:white;padding:6px 10px;border-radius:20px;font-size:13px;cursor:pointer}
-.notif-dot{background:#EF4444;color:white;border-radius:50%;padding:1px 6px;font-size:11px;margin-left:3px}
-
-/* LAYOUT - FLAGS LEFT NARROW, CHAT RIGHT BIG - SAME AS BEFORE */
-.main{display:flex;margin-top:56px;min-height:calc(100vh - 56px)}
-.sidebar{width:68px;min-width:68px;background:#14142B;border-right:2px solid #EC4899;overflow-y:auto;height:calc(100vh - 56px);position:sticky;top:56px;padding:6px 4px}
-.sidebar a{display:flex;flex-direction:column;align-items:center;padding:8px 2px;border-radius:12px;margin-bottom:4px;font-size:10px;text-align:center;line-height:1.2}
-.sidebar a.active{background:linear-gradient(135deg,#3B82F6,#EC4899);box-shadow:0 0 12px #EC4899}
-.sidebar .flag{font-size:26px;line-height:1}
-.sidebar .rank{font-size:9px;background:#F59E0B;color:black;border-radius:10px;padding:1px 5px;margin-top:2px;font-weight:bold}
-.sidebar .people{font-size:9px;opacity:.7}
-
-.content{flex:1;max-width:720px;margin:0 auto;padding:10px;width:100%}
-
-/* WALL HEADER */
-.wall-head{background:linear-gradient(135deg,#1E1E3A,#2D1B4E);border:2px solid #EC4899;border-radius:16px;padding:14px;text-align:center;margin-bottom:12px;box-shadow:0 0 20px rgba(236,72,153,.3)}
-.wall-head h1{font-size:24px}
-.wall-head p{font-size:13px;opacity:.8;margin-top:4px}
-.challenge{background:linear-gradient(90deg,#F59E0B,#EF4444);color:white;padding:8px;border-radius:10px;margin-top:10px;font-size:13px;font-weight:bold}
-.posts-left{background:#16A34A;display:inline-block;padding:4px 10px;border-radius:20px;font-size:12px;margin-top:8px;font-weight:bold}
-
-/* POST BOX */
-.post-box{background:#1A1A33;border:2px solid #3B82F6;border-radius:16px;padding:12px;margin-bottom:14px}
-.post-box textarea{width:100%;background:#0B0B1A;border:1px solid #444;color:white;border-radius:10px;padding:10px;font-size:15px;min-height:70px;resize:vertical}
-.post-actions{display:flex;gap:8px;margin-top:10px;flex-wrap:wrap;align-items:center}
-.post-actions label{background:#333;color:white;padding:8px 12px;border-radius:20px;font-size:13px;cursor:pointer}
-.post-actions input[type=file]{display:none}
-.post-actions button{background:linear-gradient(90deg,#3B82F6,#EC4899);color:white;border:none;padding:9px 18px;border-radius:20px;font-size:14px;font-weight:bold;cursor:pointer}
-.hint{font-size:11px;opacity:.6;margin-top:6px}
-.error{background:#EF4444;color:white;padding:10px;border-radius:10px;margin-bottom:10px;font-size:13px}
-
-/* POST CARD */
-.post{background:#1A1A33;border:1px solid #2A2A4A;border-radius:16px;padding:12px;margin-bottom:12px}
-.post-top{display:flex;gap:10px;align-items:center}
-.avatar{width:40px;height:40px;border-radius:50%;background:linear-gradient(135deg,#3B82F6,#EC4899);display:flex;align-items:center;justify-content:center;font-weight:900;font-size:18px;flex-shrink:0;overflow:hidden}
-.avatar img{width:100%;height:100%;object-fit:cover}
-.post-top b{font-size:15px}
-.post-top small{font-size:11px;opacity:.6;display:block}
-.post-text{font-size:15px;line-height:1.5;margin:10px 0;white-space:pre-wrap;word-break:break-word}
-
-/* ===== VIDEO NO-LAG STYLE ===== */
-.video-wrap{position:relative;width:100%;background:black;border-radius:12px;overflow:hidden;margin:8px 0;aspect-ratio:16/9;cursor:pointer}
-.video-wrap img.thumb{width:100%;height:100%;object-fit:cover;display:block}
-.video-wrap video{width:100%;height:100%;object-fit:contain;display:none;background:black}
-.video-wrap.playing video{display:block}
-.video-wrap.playing img.thumb{display:none}
-.play-btn{position:absolute;top:50%;left:50%;transform:translate(-50%,-50%);width:64px;height:64px;background:rgba(0,0,0,.6);border:2px solid white;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:28px;z-index:2}
-.video-wrap.playing .play-btn{display:none}
-.video-label{position:absolute;bottom:8px;left:8px;background:rgba(0,0,0,.7);padding:3px 8px;border-radius:20px;font-size:11px;z-index:2}
-.video-wrap.playing .video-label{display:none}
-.photo-wrap img{width:100%;border-radius:12px;display:block;max-height:420px;object-fit:cover}
-
-.post-actions-row{display:flex;gap:6px;flex-wrap:wrap;margin-top:10px}
-.post-actions-row button,.post-actions-row a{background:#26264A;border:1px solid #3A3A5A;color:white;padding:7px 12px;border-radius:20px;font-size:13px;cursor:pointer}
-.post-actions-row button.liked{background:#EC4899;border-color:#EC4899}
-.comments{margin-top:10px;border-top:1px solid #2A2A4A;padding-top:8px}
-.comment{display:flex;gap:8px;margin-bottom:8px;font-size:13px}
-.comment b{color:#F59E0B}
-.comment-form{display:flex;gap:6px;margin-top:8px}
-.comment-form input{flex:1;background:#0B0B1A;border:1px solid #444;color:white;border-radius:20px;padding:8px 12px;font-size:13px}
-.comment-form button{background:#3B82F6;color:white;border:none;padding:8px 14px;border-radius:20px;font-size:13px}
-.no-posts{text-align:center;padding:30px;opacity:.6}
-
-@media(max-width:600px){
-.sidebar{width:56px;min-width:56px}
-.sidebar .flag{font-size:22px}
-.content{padding:8px}
-.logo{font-size:18px}
-}
+.topbar{position:fixed;top:0;left:0;right:0;height:56px;min-width:1024px;background:linear-gradient(90deg,#FF2D55,#FF9500,#FFD700,#FF6B00);display:flex;align-items:center;justify-content:space-between;padding:0 10px;z-index:100}
+.top-left{display:flex;align-items:center;gap:8px}
+.top-left .flag-img{width:68px;height:46px;border-radius:8px;border:2px solid white;object-fit:cover;background:white}
+.top-left h1{font-size:20px;font-weight:900;white-space:nowrap}
+.top-left p{font-size:11px;opacity:.95;white-space:nowrap}
+.top-right{display:flex;align-items:center;gap:8px}
+.top-right . 【entity-nexa¦canonical_name=NEXA】-neon{font-size:18px;font-weight:900;letter-spacing:2px;white-space:nowrap}
+.top-right .bell{background:white;color:#333;width:32px;height:32px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:16px}
+.top-right .logged{font-size:12px;white-space:nowrap}
+.top-right .profile-btn{background:white;color:#FF2D55;padding:6px 10px;border-radius:20px;font-weight:bold;font-size:12px;display:flex;align-items:center;gap:5px;white-space:nowrap}
+.top-right .profile-btn span{background:#1A1A33;color:white;border-radius:50%;width:20px;height:20px;display:flex;align-items:center;justify-content:center;font-size:10px}
+.main{display:flex;margin-top:56px;min-height:calc(100vh - 56px);min-width:1024px}
+.sidebar{width:300px;min-width:300px;background:#1A0B2E;padding:10px;height:calc(100vh - 56px);border-right:3px solid #FF2D55;position:sticky;top:56px;overflow:hidden}
+.search-box{display:flex;background:#2A0A4A;border:2px solid #FF2D55;border-radius:25px;padding:5px 5px 5px 12px;margin-bottom:10px;align-items:center}
+.search-box input{flex:1;background:transparent;border:none;color:white;outline:none;font-size:13px}
+.search-box input::placeholder{color:#C9A0FF}
+.search-box button{background:linear-gradient(90deg,#FF2D55,#FFD700);border:none;color:white;padding:6px 10px;border-radius:20px;font-weight:bold;cursor:pointer;font-size:12px}
+.walls-grid{display:flex;flex-direction:column;gap:6px}
+.wall-card{background:#2A0A4A;border-radius:10px;padding:6px 8px;display:flex;gap:8px;align-items:center;cursor:pointer;border:2px solid transparent}
+.wall-card.active{background:linear-gradient(90deg,#0B3D00,#16A34A);border-color:#FFD700;box-shadow:0 0 10px #FFD700}
+.wall-card .rank{width:28px;height:28px;min-width:28px;border-radius:50%;background:#FFD700;color:black;display:flex;align-items:center;justify-content:center;font-weight:900;font-size:11px}
+.wall-card:not(.active) .rank{background:#E5E7EB;color:black}
+.wall-card .flag-img{width:64px;height:42px;border-radius:6px;object-fit:cover;border:2px solid white;flex-shrink:0}
+.wall-card .info b{font-size:13px;display:block;line-height:1.1}
+.wall-card .colors{font-size:10px;opacity:.8;display:block;line-height:1.1}
+.wall-card .stats{font-size:10px;opacity:.7;display:block;line-height:1.1}
+.content{flex:1;background:#0B0B1A;padding:10px;position:relative;padding-bottom:70px;display:flex;flex-direction:column;align-items:flex-end;min-width:724px}
+.post-card{background:linear-gradient(135deg,#2563EB 0%,#3B82F6 30%,#EF4444 55%,#DC2626 70%,#16A34A 100%);border:2px solid white;border-radius:14px;padding:8px;width:100%;max-width:380px;margin-bottom:10px;margin-left:auto;margin-right:0;box-shadow:0 0 15px rgba(37,99,235,.6)}
+.post-card video{width:100%;border-radius:10px;background:black;max-height:220px;display:block}
+.post-card .share-btn{background:rgba(0,0,0,.35);border:1px solid white;color:white;padding:4px 10px;border-radius:20px;margin:6px 0;font-size:12px;cursor:pointer}
+.post-stats{display:flex;gap:5px;flex-wrap:wrap;margin:6px 0}
+.post-stats span{background:rgba(0,0,0,.35);padding:3px 8px;border-radius:20px;font-size:11px}
+.hide-btn{background:#111;color:white;border:1px solid white;width:100%;padding:7px;border-radius:10px;font-weight:bold;cursor:pointer;margin:6px 0;font-size:12px}
+.no-comments{text-align:center;opacity:.9;font-size:12px;margin:6px 0}
+.comment-row{display:flex;gap:6px;margin-top:8px}
+.comment-row input{flex:1;background:#0B0B1A;border:none;color:white;border-radius:20px;padding:7px 10px;outline:none;font-size:12px}
+.comment-row button{background:white;color:black;border:none;padding:7px 12px;border-radius:20px;font-weight:bold;cursor:pointer;font-size:12px}
+.post-text{font-size:13px;line-height:1.4;margin:6px 0;white-space:pre-wrap;word-break:break-word;text-shadow:0 1px 2px rgba(0,0,0,.5)}
+.bottom-bar{position:fixed;bottom:0;left:300px;right:0;min-width:724px;background:#1A0B2E;border-top:2px solid #FF2D55;padding:8px 10px;display:flex;gap:8px;align-items:center;z-index:99}
+.bottom-bar .plus{width:40px;height:40px;border-radius:50%;background:linear-gradient(135deg,#FF2D55,#FFD700);display:flex;align-items:center;justify-content:center;font-size:22px;font-weight:bold;cursor:pointer;flex-shrink:0}
+.bottom-bar input[type=text]{flex:1;background:#2A0A4A;border:1px solid #FF2D55;color:white;border-radius:25px;padding:9px 12px;outline:none;font-size:13px}
+.bottom-bar input[type=text]::placeholder{color:#C9A0FF}
+.bottom-bar .post-btn{background:linear-gradient(90deg,#00C6FF,#FFD700);color:black;border:none;padding:9px 14px;border-radius:25px;font-weight:900;cursor:pointer;font-size:13px}
+.error{background:#EF4444;padding:8px;border-radius:10px;margin-bottom:8px;font-size:12px;align-self:stretch}
+.video-box{position:relative;background:black;border-radius:10px;overflow:hidden}
+.video-box video{width:100%;max-height:220px;display:block;background:black}
+.video-box .mute-btn{position:absolute;top:6px;right:6px;background:rgba(0,0,0,.7);color:white;border:1px solid white;border-radius:20px;padding:3px 8px;font-size:11px;cursor:pointer;z-index:5}
+.video-box .loading{position:absolute;top:50%;left:50%;transform:translate(-50%,-50%);background:rgba(0,0,0,.7);padding:6px 10px;border-radius:20px;font-size:11px;z-index:4}
 </style>
 </head>
 <body>
-
 <div class="topbar">
-<div class="logo">⚡ 【entity-NEXA¦canonical_name=NEXA】</div>
+<div class="top-left">
+<img class="flag-img" src="https://flagcdn.com/w320/ke.png" alt="Kenya">
+<div><h1>KE &nbsp;Kenya Wall &nbsp; <span style="font-size:12px;background:#FFD700;color:black;padding:2px 6px;border-radius:10px">👤 #1</span></h1>
+<p>Flag colours: Black, Red, Green • Hello, {{ user }} 👋 • {{ messages|length }} posts • Rank #{{ current_rank }}</p></div>
+</div>
 <div class="top-right">
-<a href="/profile/{{ user }}">👤 {{ user }}</a>
-<a href="/notifications">🔔 {% if notif_count %}<span class="notif-dot">{{ notif_count }}</span>{% endif %}</a>
-<a href="/logout">Logout</a>
+<div style="text-align:right"><div class=" 【entity-nexa¦canonical_name=NEXA】-neon">N E X A . &nbsp;NEON</div>
+<div style="display:flex;align-items:center;gap:6px;justify-content:flex-end;margin-top:1px"><span class="bell">🔔{% if notif_count %} {{ notif_count }}{% endif %}</span><span class="logged">Logged in as &nbsp;<b>@{{ user }}</b></span><a class="profile-btn" href="/profile/{{ user }}"><span>N</span> My Profile</a></div></div>
 </div>
 </div>
-
 <div class="main">
 <div class="sidebar">
-{% for w in walls %}
-<a href="/walls/{{ w.slug }}" class="{% if w.slug == current_slug %}active{% endif %}">
-<span class="flag">{{ w.flag }}</span>
-<span>{{ w.name }}</span>
-<span class="rank">#{{ w.rank }}</span>
-<span class="people">{{ w.people }} 👥</span>
+<div class="search-box"><input id="searchInput" placeholder="🔍 Search a wall... e.g. Nigeria"><button onclick="doSearch()">Go →</button></div>
+<div class="walls-grid">
+{% for w in walls|sort(attribute='rank') %}
+<a href="/walls/{{ w.slug }}" style="display:block;text-decoration:none;color:white">
+<div class="wall-card {% if w.slug == current_slug %}active{% endif %}">
+<div class="rank">#{{ w.rank }}</div>
+<img class="flag-img" src="https://flagcdn.com/w320/{{ w.code }}.png" alt="{{ w.name }}" loading="lazy">
+<div class="info"><b>{{ loop.index }}. {{ w.name }}</b><span class="colors">{{ w.desc }}</span><span class="stats">👥 {{ w.people }} • 📝 {{ w.posts }} • ❤ {{ w.likes }}</span></div>
+</div>
 </a>
 {% endfor %}
 </div>
-
+<div style="font-size:11px;opacity:.6;text-align:center;margin-top:10px">Walls flow 1 → 15 in order ↑<br>Tap any flag to open it</div>
+</div>
 <div class="content">
-<div class="wall-head">
-<h1>{{ current_wall.flag }} {{ current_wall.name }} Wall</h1>
-<p>Rank #{{ current_rank }} • {{ current_wall.desc }}</p>
-<div class="challenge">🔥 Today: {{ challenge }}</div>
-<div class="posts-left">✍ You have {{ posts_left }} posts left today</div>
-</div>
-
 {% if error_msg %}<div class="error">{{ error_msg }}</div>{% endif %}
-
-<div class="post-box">
-<form method="POST" enctype="multipart/form-data">
-<textarea name="message" placeholder="What's on your mind, {{ user }}? 🌍..."></textarea>
-<div class="post-actions">
-<label>📷 Photo / 🎥 Video <input type="file" name="video_file" accept=".mp4,.webm,.jpg,.jpeg,.png,.gif,.webp" onchange="checkSize(this)"></label>
-<button type="submit">Post 🚀</button>
-<span id="sizeInfo" style="font-size:12px"></span>
-</div>
-<div class="hint">✅ MP4 / WebM / Photo only. Max 10MB. Tip: Keep video under 3MB = NO LAG. iPhone MOV will NOT show — use MP4.</div>
-</form>
-</div>
-
 {% for m in messages %}
-<div class="post">
-<div class="post-top">
-<div class="avatar">{% if profile_pics.get(m.user) %}<img src="{{ profile_pics.get(m.user) }}" loading="lazy">{% else %}{{ m.user[0]|upper }}{% endif %}</div>
-<div><b><a href="/profile/{{ m.user }}">{{ m.user }}</a></b><small>👁 {{ m.views }} • ❤ {{ m.likes }} • Score {{ m.score }}</small></div>
-</div>
-{% if m.text %}<div class="post-text">{{ m.text }}</div>{% endif %}
-
+<div class="post-card">
+{% if m.text %}<div class="post-text"><b>{{ m.user }}:</b> {{ m.text }}</div>{% endif %}
 {% if m.video %}
 {% if m.video.endswith('.mp4') or m.video.endswith('.webm') %}
-<!-- NO-LAG VIDEO: Shows picture first, tap to play, loads ONLY when tapped -->
-<div class="video-wrap" onclick="playVideo(this)">
-<img class="thumb" src="https://via.placeholder.com/640x360/1A1A33/EC4899?text=▶+Tap+to+Play+Video" alt="Tap to play video" loading="lazy">
-<video controls playsinline preload="none" src="{{ m.video }}" onplay="pauseOthers(this)"></video>
-<div class="play-btn">▶</div>
-<div class="video-label">🎥 Tap to Play • No Lag</div>
+<div class="video-box">
+<div class="loading">🎥 Scroll here to play...</div>
+<video controls playsinline preload="none" data-src="{{ m.video }}" loop muted></video>
+<button class="mute-btn" onclick="toggleMute(this)">🔇 Tap to Unmute</button>
 </div>
 {% else %}
-<div class="photo-wrap"><img src="{{ m.video }}" loading="lazy"></div>
+<img src="{{ m.video }}" style="width:100%;border-radius:10px;max-height:220px;object-fit:cover" loading="lazy">
 {% endif %}
 {% endif %}
-
-<div class="post-actions-row">
-<form method="POST" action="/like/{{ current_slug }}/{{ m.id }}" style="display:inline"><button type="submit" class="{% if user in m.liked_by %}liked{% endif %}">❤ {{ m.likes }}</button></form>
+<div><button class="share-btn" onclick="sharePost('{{ current_slug }}')">🔗 Share</button></div>
+<div class="post-stats">
+<form method="POST" action="/like/{{ current_slug }}/{{ m.id }}" style="display:inline"><button type="submit" style="background:rgba(0,0,0,.35);border:1px solid white;color:white;padding:3px 8px;border-radius:20px;cursor:pointer;font-size:11px">❤ {{ m.likes }}</button></form>
+<span>💬 {{ m.comments|length }} comments</span>
+<span>👁 {{ m.views }} views</span>
+<span>👥 {{ m.viewed_by|length }} viewed</span>
+<span>👤 {{ m.score }}</span>
 {% if m.user != user %}
-<form method="POST" action="/report/{{ current_slug }}/{{ m.id }}" style="display:inline" onsubmit="return confirm('Report this post? 5 reports = auto-delete')"><button type="submit">🚩 Report</button></form>
+<form method="POST" action="/report/{{ current_slug }}/{{ m.id }}" style="display:inline" onsubmit="return confirm('Report this post? 5 reports = auto-delete')"><button type="submit" style="background:rgba(0,0,0,.35);border:1px solid white;color:white;padding:3px 8px;border-radius:20px;cursor:pointer;font-size:11px">🚩 Report</button></form>
 {% endif %}
-<a href="https://wa.me/?text={{ ('Look on NEXA ' + current_wall.name + ': ' + m.text)|urlencode }}" target="_blank">💬 WhatsApp</a>
-<a href="https://www.facebook.com/sharer/sharer.php?u=https://Brian1234bett.pythonanywhere.com/walls/{{ current_slug }}" target="_blank">📘 Share</a>
 </div>
-
-<div class="comments">
-{% for c in m.comments %}
-<div class="comment"><b>{{ c.user }}:</b><span>{{ c.text }}</span></div>
-{% endfor %}
-<form class="comment-form" method="POST" action="/comment/{{ current_slug }}/{{ m.id }}">
-<input name="comment" placeholder="Write a comment..." required maxlength="300">
+<button class="hide-btn" onclick="toggleComments(this)">▲ Hide Comments</button>
+<div class="comments-box">
+{% for c in m.comments %}<div style="font-size:12px;margin:4px 0"><b>{{ c.user }}:</b> {{ c.text }}</div>{% endfor %}
+{% if not m.comments %}<div class="no-comments">No comments yet. Be first!</div>{% endif %}
+<form class="comment-row" method="POST" action="/comment/{{ current_slug }}/{{ m.id }}">
+<input name="comment" placeholder="Write a comment... (Max 300)" required maxlength="300">
 <button type="submit">Send</button>
 </form>
 </div>
 </div>
 {% else %}
-<div class="no-posts">No posts yet. Be first! 🚀</div>
+<div style="text-align:center;padding:30px;opacity:.7">No posts yet. Be first! 🚀</div>
 {% endfor %}
 </div>
 </div>
-
+<form class="bottom-bar" method="POST" enctype="multipart/form-data">
+<div class="plus" onclick="document.getElementById('fileInput').click()">+</div>
+<input type="file" id="fileInput" name="video_file" accept=".mp4,.webm,.jpg,.jpeg,.png,.gif,.webp" style="display:none" onchange="checkSize(this)">
+<input type="text" name="message" placeholder="Post anything in {{ current_wall.name }}... + photo/video (Max 500)" maxlength="500">
+<span id="sizeInfo" style="font-size:11px;color:#FFD700"></span>
+<button class="post-btn" type="submit">Post →</button>
+</form>
 <script>
-// ===== VIDEO NO-LAG LOGIC =====
-// 1. Only 1 video plays at a time
-// 2. Video loads ONLY when you tap it - not before
-// 3. When you leave tab / lock phone -> pause all
-function pauseOthers(currentVideo){
-  document.querySelectorAll('video').forEach(v=>{
-    if(v !== currentVideo){ v.pause(); v.closest('.video-wrap').classList.remove('playing'); }
+function toggleMute(btn){
+  var v = btn.parentElement.querySelector('video');
+  if(v.muted){ v.muted = false; v.volume = 1; btn.textContent = '🔊 Sound ON'; }
+  else { v.muted = true; btn.textContent = '🔇 Muted'; }
+}
+let videoObserver = new IntersectionObserver((entries)=>{
+  entries.forEach(entry=>{
+    let box = entry.target;
+    let v = box.querySelector('video');
+    let loading = box.querySelector('.loading');
+    let btn = box.querySelector('.mute-btn');
+    if(entry.isIntersecting && entry.intersectionRatio >= 0.6){
+      if(!v.getAttribute('src')){ v.src = v.getAttribute('data-src'); v.load(); }
+      document.querySelectorAll('video').forEach(other=>{ if(other !== v){ other.pause(); } });
+      if(loading) loading.style.display = 'none';
+      v.muted = false; v.volume = 1;
+      if(btn) btn.textContent = '🔊 Sound ON';
+      v.play().catch(()=>{
+        v.muted = true; v.play().catch(()=>{});
+        if(btn) btn.textContent = '🔇 Tap to Unmute';
+      });
+    } else {
+      v.pause();
+    }
   });
+},{threshold:[0.6], rootMargin:'0px'});
+document.querySelectorAll('.video-box').forEach(box=>videoObserver.observe(box));
+document.addEventListener('visibilitychange', function(){ if(document.hidden){ document.querySelectorAll('video').forEach(v=>v.pause()); } });
+window.addEventListener('pagehide', function(){ document.querySelectorAll('video').forEach(v=>v.pause()); });
+window.addEventListener('blur', function(){ document.querySelectorAll('video').forEach(v=>v.pause()); });
+function toggleComments(btn){
+  var box = btn.nextElementSibling;
+  if(box.style.display === 'none'){ box.style.display='block'; btn.textContent='▲ Hide Comments'; }
+  else { box.style.display='none'; btn.textContent='▼ Show Comments'; }
 }
-function playVideo(wrap){
-  var video = wrap.querySelector('video');
-  // If already playing, pause it
-  if(wrap.classList.contains('playing')){
-    video.pause();
-    wrap.classList.remove('playing');
-    return;
-  }
-  // Pause all others, play this one
-  document.querySelectorAll('.video-wrap').forEach(w=>w.classList.remove('playing'));
-  document.querySelectorAll('video').forEach(v=>{ if(v!==video) v.pause(); });
-  wrap.classList.add('playing');
-  // This is the magic: load ONLY now, when tapped
-  if(video.getAttribute('data-loaded') !== 'yes'){
-    video.setAttribute('data-loaded','yes');
-    video.load();
-  }
-  video.play().catch(()=>{});
+function doSearch(){
+  var q = document.getElementById('searchInput').value.trim();
+  if(!q) return;
+  var walls = [{% for w in walls %}"{{ w.name }}",{% endfor %}];
+  for(var i=0;i<walls.length;i++){ if(walls[i].toLowerCase() === q.toLowerCase()){ window.location.href='/walls/'+walls[i]; return; } }
+  alert('Wall not found. Try Kenya, USA, UK, Nigeria...');
 }
-// Pause when leaving site / switching tab / locking phone
-document.addEventListener('visibilitychange', function(){
-  if(document.hidden){
-    document.querySelectorAll('video').forEach(v=>v.pause());
-  }
-});
-window.addEventListener('pagehide', function(){
-  document.querySelectorAll('video').forEach(v=>v.pause());
-});
-window.addEventListener('blur', function(){
-  document.querySelectorAll('video').forEach(v=>v.pause());
-});
-// Check size before posting
+function sharePost(slug){
+  var url = 'https://Brian1234bett.pythonanywhere.com/walls/'+slug;
+  if(navigator.share){ navigator.share({title:'NEXA', text:'Look on NEXA!', url:url}); }
+  else { prompt('Copy this link:', url); }
+}
 function checkSize(input){
-  var f = input.files[0];
-  if(!f) return;
-  var mb = (f.size / 1024 / 1024).toFixed(1);
+  var f = input.files[0]; if(!f) return;
+  var mb = (f.size/1024/1024).toFixed(1);
   var info = document.getElementById('sizeInfo');
-  if(f.size > 10*1024*1024){
-    info.textContent = '❌ Too big: ' + mb + 'MB (max 10MB)';
-    info.style.color = 'red';
-    input.value = '';
-  } else if(f.size > 3*1024*1024){
-    info.textContent = '⚠ ' + mb + 'MB - will be a bit slow. Try under 3MB for NO LAG.';
-    info.style.color = 'orange';
-  } else {
-    info.textContent = '✅ ' + mb + 'MB - perfect, no lag!';
-    info.style.color = 'green';
-  }
+  if(f.size > 10*1024*1024){ info.textContent='❌ Too big: '+mb+'MB'; input.value=''; }
+  else { info.textContent='✅ '+mb+'MB'; }
 }
 </script>
 </body>
