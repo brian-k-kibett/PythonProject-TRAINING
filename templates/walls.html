@@ -14,7 +14,7 @@ a{color:white;text-decoration:none}
 .top-left h1{font-size:20px;font-weight:900;white-space:nowrap}
 .top-left p{font-size:11px;opacity:.95}
 .top-right{display:flex;align-items:center;gap:8px}
-.top-right . nexa-neon{font-size:18px;font-weight:900;letter-spacing:2px}
+.top-right . 【entity-nexa¦canonical_name=NEXA】-neon{font-size:18px;font-weight:900;letter-spacing:2px}
 .top-right .bell{background:white;color:#333;width:32px;height:32px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:16px}
 .top-right .logged{font-size:12px}
 .top-right .profile-btn{background:white;color:#FF2D55;padding:6px 10px;border-radius:20px;font-weight:bold;font-size:12px;display:flex;align-items:center;gap:5px}
@@ -36,7 +36,6 @@ a{color:white;text-decoration:none}
 .wall-card .colors{font-size:11px;opacity:.8;display:block;line-height:1.2}
 .wall-card .stats{font-size:11px;opacity:.7;display:block;line-height:1.2}
 .content{flex:1;background:#0B0B1A;padding:14px;position:relative;padding-bottom:80px;display:flex;flex-direction:column;align-items:flex-end}
-/* POST PLACE - PLAY STORE MIX - NOT CHANGED */
 .post-card{background:linear-gradient(135deg,#D3E3FD 0%,#C6E7C9 30%,#FEF3C7 55%,#FAD2CF 80%,#D3E3FD 100%);color:#0F172A;border-radius:16px;padding:0;width:fit-content;max-width:min(520px, 92vw);min-width:min(320px, 92vw);margin-bottom:16px;margin-left:auto;margin-right:0;overflow:hidden;box-shadow:0 4px 20px rgba(0,0,0,.35), 0 0 0 2px #4285F4, 0 0 0 4px #34A853;display:flex;flex-direction:column}
 .fb-header{display:flex;align-items:center;gap:12px;padding:14px 16px 10px;background:transparent}
 .fb-avatar{width:44px;height:44px;border-radius:50%;background:linear-gradient(135deg,#4285F4,#34A853,#FBBC05,#EA4335);color:white;display:flex;align-items:center;justify-content:center;font-weight:900;font-size:18px;flex-shrink:0;border:2px solid #FFFFFF}
@@ -95,6 +94,7 @@ a{color:white;text-decoration:none}
 .fb-actions button .icon{font-size:20px}
 .bottom-bar{left:340px}
 }
+/* PHONE ONLY - PROFILE CLOSE FROM CORNER, NOT FAR */
 @media(max-width:700px){
 .main{flex-direction:row}
 .sidebar{width:92px;min-width:92px;height:calc(100vh - 60px);position:sticky;top:60px;left:0;border-right:3px solid #FF2D55;border-bottom:none;padding:6px 4px;overflow-y:auto;overflow-x:hidden}
@@ -111,10 +111,16 @@ a{color:white;text-decoration:none}
 .video-box video{width:100%;height:auto;aspect-ratio:auto;border-radius:0}
 .fb-actions button{font-size:13px;padding:10px 4px}
 .bottom-bar{left:0;padding:10px}
+.topbar{padding:0 8px 0 6px;height:60px}
 .top-left h1{font-size:17px}
 .top-left p{display:none}
+.top-right{margin-right:0;margin-left:4px}
 .top-right . nexa-neon,.top-right .logged{display:none}
+.top-right .bell{display:none}
 .top-left .flag-img{width:72px;height:48px}
+/* PROFILE BUTTON - CLOSE FROM CORNER, BIG, VISIBLE */
+.top-right .profile-btn{display:flex!important;background:#FFFFFF;color:#FF2D55;padding:0 14px;height:40px;min-width:92px;border-radius:20px;font-weight:900;font-size:13px;align-items:center;justify-content:center;gap:6px;white-space:nowrap;box-shadow:0 2px 8px rgba(0,0,0,.35);margin-right:4px}
+.top-right .profile-btn span{width:24px;height:24px;font-size:12px}
 body.hide-flags .sidebar{display:none}
 body.hide-flags .content{padding:0;padding-bottom:80px}
 body.hide-flags .post-card{width:100vw;max-width:100vw;min-width:0;border-radius:0;margin-bottom:0}
@@ -293,7 +299,6 @@ function toggleMute(btn){
   if(v.muted){ v.muted = false; v.volume = 1; btn.textContent = '🔊 Sound ON'; }
   else { v.muted = true; btn.textContent = '🔇 Muted'; }
 }
-// TIKTOK NO-LAG: play only 1, preload next 1 quietly
 let allBoxes = Array.from(document.querySelectorAll('.video-box'));
 let videoObserver = new IntersectionObserver((entries)=>{
   entries.forEach(entry=>{
@@ -311,7 +316,6 @@ let videoObserver = new IntersectionObserver((entries)=>{
         v.muted = true; v.play().catch(()=>{});
         if(btn) btn.textContent = '🔇 Tap to Unmute';
       });
-      // Preload NEXT video quietly like TikTok
       let idx = allBoxes.indexOf(box);
       let nextBox = allBoxes[idx+1];
       if(nextBox){
