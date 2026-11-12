@@ -14,7 +14,7 @@ a{color:white;text-decoration:none}
 .top-left h1{font-size:20px;font-weight:900;white-space:nowrap}
 .top-left p{font-size:11px;opacity:.95}
 .top-right{display:flex;align-items:center;gap:8px}
-.top-right . 【entity-nexa¦canonical_name=NEXA】-neon{font-size:18px;font-weight:900;letter-spacing:2px}
+.top-right . nexa-neon{font-size:18px;font-weight:900;letter-spacing:2px}
 .top-right .bell{background:white;color:#333;width:32px;height:32px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:16px}
 .top-right .logged{font-size:12px}
 .top-right .profile-btn{background:white;color:#FF2D55;padding:6px 10px;border-radius:20px;font-weight:bold;font-size:12px;display:flex;align-items:center;gap:5px}
@@ -36,7 +36,7 @@ a{color:white;text-decoration:none}
 .wall-card .colors{font-size:11px;opacity:.8;display:block;line-height:1.2}
 .wall-card .stats{font-size:11px;opacity:.7;display:block;line-height:1.2}
 .content{flex:1;background:#0B0B1A;padding:14px;position:relative;padding-bottom:80px;display:flex;flex-direction:column;align-items:flex-end}
-/* POST PLACE COLOUR ONLY - 【entity-PLAY STORE¦canonical_name=Play Store】 ICON MIX */
+/* POST PLACE - PLAY STORE MIX - NOT CHANGED */
 .post-card{background:linear-gradient(135deg,#D3E3FD 0%,#C6E7C9 30%,#FEF3C7 55%,#FAD2CF 80%,#D3E3FD 100%);color:#0F172A;border-radius:16px;padding:0;width:fit-content;max-width:min(520px, 92vw);min-width:min(320px, 92vw);margin-bottom:16px;margin-left:auto;margin-right:0;overflow:hidden;box-shadow:0 4px 20px rgba(0,0,0,.35), 0 0 0 2px #4285F4, 0 0 0 4px #34A853;display:flex;flex-direction:column}
 .fb-header{display:flex;align-items:center;gap:12px;padding:14px 16px 10px;background:transparent}
 .fb-avatar{width:44px;height:44px;border-radius:50%;background:linear-gradient(135deg,#4285F4,#34A853,#FBBC05,#EA4335);color:white;display:flex;align-items:center;justify-content:center;font-weight:900;font-size:18px;flex-shrink:0;border:2px solid #FFFFFF}
@@ -168,8 +168,8 @@ body.hide-flags #showFlagsBtn{display:flex;position:fixed;top:64px;left:8px;z-in
 {% if m.video %}
 {% if m.video.endswith('.mp4') or m.video.endswith('.webm') %}
 <div class="video-box">
-<div class="loading">🎥 Scroll here to play...</div>
-<video controls playsinline preload="none" data-src="{{ m.video }}" loop muted></video>
+<div class="loading">🎥 Loading fast...</div>
+<video controls playsinline preload="metadata" data-src="{{ m.video }}" loop muted disablepictureinpicture></video>
 <button class="mute-btn" onclick="toggleMute(this)">🔇 Tap to Unmute</button>
 </div>
 {% else %}
@@ -203,7 +203,7 @@ body.hide-flags #showFlagsBtn{display:flex;position:fixed;top:64px;left:8px;z-in
 <form class="bottom-bar" method="POST" enctype="multipart/form-data" id="postForm">
 <div class="plus" onclick="document.getElementById('fileInput').click()">+</div>
 <input type="file" id="fileInput" name="video_file" accept=".mp4,.webm,.jpg,.jpeg,.png,.gif,.webp" style="display:none" onchange="checkSize(this)">
-<input type="text" name="message" id="postText" placeholder="Post anything in {{ current_wall.name }}... + photo/video (Max 500)" maxlength="500">
+<input type="text" name="message" id="postText" placeholder="Post anything in {{ current_wall.name }}... + photo/video (Max 500) - TikTok fast max 15MB" maxlength="500">
 <span id="sizeInfo" style="font-size:11px;color:#FFD700"></span>
 <button class="post-btn" type="submit" id="postBtn">Post →</button>
 </form>
@@ -293,6 +293,8 @@ function toggleMute(btn){
   if(v.muted){ v.muted = false; v.volume = 1; btn.textContent = '🔊 Sound ON'; }
   else { v.muted = true; btn.textContent = '🔇 Muted'; }
 }
+// TIKTOK NO-LAG: play only 1, preload next 1 quietly
+let allBoxes = Array.from(document.querySelectorAll('.video-box'));
 let videoObserver = new IntersectionObserver((entries)=>{
   entries.forEach(entry=>{
     let box = entry.target;
@@ -309,12 +311,19 @@ let videoObserver = new IntersectionObserver((entries)=>{
         v.muted = true; v.play().catch(()=>{});
         if(btn) btn.textContent = '🔇 Tap to Unmute';
       });
+      // Preload NEXT video quietly like TikTok
+      let idx = allBoxes.indexOf(box);
+      let nextBox = allBoxes[idx+1];
+      if(nextBox){
+        let nv = nextBox.querySelector('video');
+        if(nv && !nv.getAttribute('src')){ nv.src = nv.getAttribute('data-src'); nv.preload = 'metadata'; nv.load(); }
+      }
     } else {
       v.pause();
     }
   });
-},{threshold:[0.6], rootMargin:'0px'});
-document.querySelectorAll('.video-box').forEach(box=>videoObserver.observe(box));
+},{threshold:[0.6], rootMargin:'200px'});
+allBoxes.forEach(box=>videoObserver.observe(box));
 document.addEventListener('visibilitychange', function(){ if(document.hidden){ document.querySelectorAll('video').forEach(v=>v.pause()); } });
 window.addEventListener('pagehide', function(){ document.querySelectorAll('video').forEach(v=>v.pause()); });
 window.addEventListener('blur', function(){ document.querySelectorAll('video').forEach(v=>v.pause()); });
@@ -339,8 +348,8 @@ function checkSize(input){
   var f = input.files[0]; if(!f) return;
   var mb = (f.size/1024/1024).toFixed(1);
   var info = document.getElementById('sizeInfo');
-  if(f.size > 50*1024*1024){ info.textContent='❌ Too big: '+mb+'MB — Max 50MB now'; input.value=''; }
-  else { info.textContent='✅ '+mb+'MB — Will upload in parts'; }
+  if(f.size > 15*1024*1024){ info.textContent='❌ Too big: '+mb+'MB — TikTok fast: Max 15MB. Please use shorter video'; input.value=''; }
+  else { info.textContent='✅ '+mb+'MB — TikTok fast, will upload in parts'; }
 }
 </script>
 </body>
