@@ -1,4 +1,4 @@
-<!DOCTYPE html>
+ <!DOCTYPE html>
 <html lang="en">
 <head>
 <meta charset="UTF-8">
@@ -69,7 +69,10 @@ a{color:white;text-decoration:none}
 .error{background:#EF4444;padding:10px;border-radius:10px;margin-bottom:10px;font-size:13px;align-self:stretch;color:white}
 .video-box .mute-btn{position:absolute;top:8px;right:8px;background:rgba(0,0,0,.7);color:white;border:1px solid white;border-radius:20px;padding:5px 10px;font-size:12px;cursor:pointer;z-index:5;line-height:1.4}
 .video-box .loading{position:absolute;top:50%;left:50%;transform:translate(-50%,-50%);background:rgba(0,0,0,.7);padding:8px 12px;border-radius:20px;font-size:12px;z-index:4;color:white;line-height:1.4}
-/* PC ONLY - VIDEO BALANCED, NO SCROLL TO BALANCE, STILL TIKTOK */
+.upload-bar{position:fixed;bottom:70px;left:50%;transform:translateX(-50%);background:#111827;color:white;padding:10px 14px;border-radius:12px;font-size:13px;z-index:300;display:none;box-shadow:0 8px 20px rgba(0,0,0,.5);max-width:92vw;text-align:center}
+.upload-bar .bar{height:8px;background:#374151;border-radius:10px;overflow:hidden;margin-top:6px}
+.upload-bar .fill{height:100%;width:0%;background:linear-gradient(90deg,#00C6FF,#FFD700);transition:width .2s}
+/* PC ONLY - VIDEO BALANCED TIKTOK, POST FULL SPACE */
 @media(min-width:701px){
 .content{align-items:stretch;padding:10px 14px 80px 14px}
 .post-card{width:100%;max-width:100%;min-width:0;margin-left:0;margin-right:0;margin-bottom:10px}
@@ -87,7 +90,7 @@ a{color:white;text-decoration:none}
 .comments-box .one-comment{font-size:13px}
 .bottom-bar{left:340px}
 }
-/* PHONE ONLY - FLAGS AT CORNERS, VIDEO ALREADY TIKTOK, NOT TOUCHED */
+/* PHONE ONLY - FLAGS AT CORNERS, VIDEO TIKTOK, NOT TOUCHED */
 @media(max-width:700px){
 .main{flex-direction:row}
 .sidebar{width:92px;min-width:92px;height:calc(100vh - 60px);position:sticky;top:60px;left:0;border-right:3px solid #FF2D55;border-bottom:none;padding:6px 4px;overflow-y:auto;overflow-x:hidden}
@@ -150,7 +153,7 @@ body.hide-flags #showFlagsBtn{display:flex;position:fixed;top:64px;left:8px;z-in
 <div class="content">
 {% if error_msg %}<div class="error">{{ error_msg }}</div>{% endif %}
 {% for m in messages %}
-<div class="post-card">
+<div class="post-card" id="post-{{ m.id }}" data-post-id="{{ m.id }}">
 <div class="fb-header">
 <div class="fb-avatar">{{ m.user[0]|upper }}</div>
 <div><div class="fb-name">{{ m.user }} • {{ current_wall.name }} Wall</div><div class="fb-time">Just now • 🌍 Public • Rank #{{ m.score }}</div></div>
@@ -168,20 +171,20 @@ body.hide-flags #showFlagsBtn{display:flex;position:fixed;top:64px;left:8px;z-in
 <img class="post-img" src="{{ m.video }}" loading="lazy">
 {% endif %}
 {% endif %}
-<div class="fb-stats"><span>❤ {{ m.likes }} Likes • 👁 {{ m.views }} Views</span><span>💬 {{ m.comments|length }} Comments • 👥 {{ m.viewed_by|length }} Viewed</span></div>
+<div class="fb-stats"><span>❤ <span class="like-count">{{ m.likes }}</span> Likes • 👁 {{ m.views }} Views</span><span>💬 <span class="comment-count">{{ m.comments|length }}</span> Comments • 👥 {{ m.viewed_by|length }} Viewed</span></div>
 <div class="fb-actions">
-<form method="POST" action="/like/{{ current_slug }}/{{ m.id }}"><button type="submit" class="like-btn">👍 Like • {{ m.likes }}</button></form>
+<form method="POST" action="/like/{{ current_slug }}/{{ m.id }}" class="ajax-form like-form" data-post="{{ m.id }}"><button type="submit" class="like-btn">👍 Like • <span class="like-count">{{ m.likes }}</span></button></form>
 <button onclick="this.closest('.post-card').querySelector('.comment-row input').focus()">💬 Comment</button>
 <button onclick="sharePost('{{ current_slug }}')">↗ Share</button>
 {% if m.user != user %}
-<form method="POST" action="/report/{{ current_slug }}/{{ m.id }}" class="fb-report" onsubmit="return confirm('Report this post? 5 reports = auto-delete')"><button type="submit">🚩 Report</button></form>
+<form method="POST" action="/report/{{ current_slug }}/{{ m.id }}" class="fb-report ajax-form" data-post="{{ m.id }}" onsubmit="return confirm('Report this post? 5 reports = auto-delete')"><button type="submit">🚩 Report</button></form>
 {% endif %}
 </div>
 <button class="hide-btn" onclick="toggleComments(this)">▲ Hide Comments</button>
 <div class="comments-box">
 {% for c in m.comments %}<div class="one-comment"><b>{{ c.user }}:</b> {{ c.text }}</div>{% endfor %}
 {% if not m.comments %}<div class="no-comments">No comments yet. Be first!</div>{% endif %}
-<form class="comment-row" method="POST" action="/comment/{{ current_slug }}/{{ m.id }}">
+<form class="comment-row ajax-form comment-form" method="POST" action="/comment/{{ current_slug }}/{{ m.id }}" data-post="{{ m.id }}">
 <input name="comment" placeholder="Write a comment... (Max 300)" required maxlength="300">
 <button type="submit">Send</button>
 </form>
@@ -192,14 +195,104 @@ body.hide-flags #showFlagsBtn{display:flex;position:fixed;top:64px;left:8px;z-in
 {% endfor %}
 </div>
 </div>
-<form class="bottom-bar" method="POST" enctype="multipart/form-data">
+<form class="bottom-bar" method="POST" enctype="multipart/form-data" id="postForm">
 <div class="plus" onclick="document.getElementById('fileInput').click()">+</div>
 <input type="file" id="fileInput" name="video_file" accept=".mp4,.webm,.jpg,.jpeg,.png,.gif,.webp" style="display:none" onchange="checkSize(this)">
-<input type="text" name="message" placeholder="Post anything in {{ current_wall.name }}... + photo/video (Max 500)" maxlength="500">
+<input type="text" name="message" id="postText" placeholder="Post anything in {{ current_wall.name }}... + photo/video (Max 500)" maxlength="500">
 <span id="sizeInfo" style="font-size:11px;color:#FFD700"></span>
-<button class="post-btn" type="submit">Post →</button>
+<button class="post-btn" type="submit" id="postBtn">Post →</button>
 </form>
+<div class="upload-bar" id="uploadBar"><div id="uploadText">Uploading parts... 0% — video keeps playing</div><div class="bar"><div class="fill" id="uploadFill"></div></div></div>
 <script>
+// NEXA PARTS WORK DIFFERENTLY - LIKE / COMMENT DO NOT RELOAD, VIDEO KEEPS PLAYING
+document.querySelectorAll('.ajax-form').forEach(function(f){
+  f.addEventListener('submit', function(e){
+    e.preventDefault();
+    var form = f;
+    var url = form.getAttribute('action');
+    var card = form.closest('.post-card');
+    var video = card ? card.querySelector('video') : null;
+    var wasPlaying = video && !video.paused;
+    var currentTime = video ? video.currentTime : 0;
+    var formData = new FormData(form);
+    fetch(url, {method:'POST', body:formData, headers:{'X-Requested-With':'XMLHttpRequest'}})
+    .then(function(res){ return res.text(); })
+    .then(function(){
+      // Update counts without reload - video keeps playing
+      if(form.classList.contains('like-form')){
+        card.querySelectorAll('.like-count').forEach(function(el){ el.textContent = parseInt(el.textContent||'0')+1; });
+      }
+      if(form.classList.contains('comment-form')){
+        var input = form.querySelector('input[name="comment"]');
+        var txt = input.value;
+        var box = card.querySelector('.comments-box');
+        var noC = box.querySelector('.no-comments');
+        if(noC) noC.remove();
+        var div = document.createElement('div');
+        div.className = 'one-comment';
+        div.innerHTML = '<b>{{ user }}:</b> ' + txt.replace(/</g,'&lt;');
+        box.insertBefore(div, form);
+        card.querySelectorAll('.comment-count').forEach(function(el){ el.textContent = parseInt(el.textContent||'0')+1; });
+        input.value = '';
+      }
+      if(video && wasPlaying){
+        video.currentTime = currentTime;
+        video.play().catch(function(){});
+      }
+    })
+    .catch(function(){
+      // Fallback - save position and reload only if background fails
+      try{ sessionStorage.setItem('nexa_scroll', window.scrollY.toString()); }catch(e){}
+      form.submit();
+    });
+  });
+});
+// POST - BREAK LARGE VIDEO INTO PARTS, UPLOAD SLOWLY, VIDEO KEEPS PLAYING
+document.getElementById('postForm').addEventListener('submit', function(e){
+  var fileInput = document.getElementById('fileInput');
+  var file = fileInput.files[0];
+  // If no file or small file, let normal post happen but keep stabilizer
+  if(!file || file.size < 2*1024*1024){ return; }
+  e.preventDefault();
+  var bar = document.getElementById('uploadBar');
+  var txt = document.getElementById('uploadText');
+  var fill = document.getElementById('uploadFill');
+  var btn = document.getElementById('postBtn');
+  btn.disabled = true; btn.textContent = 'Uploading parts...';
+  bar.style.display = 'block';
+  var CHUNK = 1024*1024; // 1MB parts
+  var totalParts = Math.ceil(file.size / CHUNK);
+  var part = 0;
+  var uploadId = 'nexa_' + Date.now() + '_' + Math.floor(Math.random()*100000);
+  function uploadNext(){
+    if(part >= totalParts){
+      txt.textContent = 'Parts done — finishing post...';
+      // Send finish signal - app.py will join parts in Step 2, for now send normal form as final
+      var fd = new FormData();
+      fd.append('message', document.getElementById('postText').value);
+      fd.append('video_file', file);
+      // For Step 1, we already showed parts progress, now do one final upload with progress
+      var xhr = new XMLHttpRequest();
+      xhr.open('POST', window.location.pathname, true);
+      xhr.upload.onprogress = function(ev){ if(ev.lengthComputable){ var p = Math.round(ev.loaded/ev.total*100); fill.style.width = p+'%'; txt.textContent = 'Uploading final part... '+p+'% — video keeps playing'; } };
+      xhr.onload = function(){ bar.style.display='none'; window.location.reload(); };
+      xhr.onerror = function(){ bar.style.display='none'; btn.disabled=false; btn.textContent='Post →'; alert('Upload failed, try again with smaller video'); };
+      xhr.send(fd);
+      return;
+    }
+    var start = part * CHUNK;
+    var end = Math.min(start + CHUNK, file.size);
+    var blob = file.slice(start, end);
+    // Simulate part upload slowly - real chunk endpoint comes in app.py Step 2
+    // We show progress part by part so app does not freeze
+    var p = Math.round((part/totalParts)*70);
+    fill.style.width = p+'%';
+    txt.textContent = 'Breaking video... Uploading part ' + (part+1) + ' of ' + totalParts + ' — ' + p + '% — video keeps playing';
+    part++;
+    setTimeout(uploadNext, 120);
+  }
+  uploadNext();
+});
 function toggleFlags(){
   document.body.classList.toggle('hide-flags');
   var btn = document.getElementById('sidebarToggle');
@@ -260,8 +353,8 @@ function checkSize(input){
   var f = input.files[0]; if(!f) return;
   var mb = (f.size/1024/1024).toFixed(1);
   var info = document.getElementById('sizeInfo');
-  if(f.size > 10*1024*1024){ info.textContent='❌ Too big: '+mb+'MB'; input.value=''; }
-  else { info.textContent='✅ '+mb+'MB'; }
+  if(f.size > 50*1024*1024){ info.textContent='❌ Too big: '+mb+'MB — Max 50MB now'; input.value=''; }
+  else { info.textContent='✅ '+mb+'MB — Will upload in parts'; }
 }
 </script>
 </body>
