@@ -1,9 +1,9 @@
-<!DOCTYPE html>
+ <!DOCTYPE html>
 <html lang="en">
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=5.0, user-scalable=yes">
-<title> NEXA - Kenya - NEON NO-DELETE</title>
+<title> 【entity-NEXA¦canonical_name=NEXA】 - Kenya - NEON NO-DELETE</title>
 <style>
 *{box-sizing:border-box;margin:0;padding:0}
 body{font-family:Arial,sans-serif;background:#0B0B1A;color:white}
@@ -14,7 +14,7 @@ a{color:white;text-decoration:none}
 .top-left h1{font-size:20px;font-weight:900;white-space:nowrap}
 .top-left p{font-size:11px;opacity:.95}
 .top-right{display:flex;align-items:center;gap:8px}
-.top-right . nexa-neon{font-size:18px;font-weight:900;letter-spacing:2px}
+.top-right . 【entity-nexa¦canonical_name=NEXA】-neon{font-size:18px;font-weight:900;letter-spacing:2px}
 .top-right .bell{background:white;color:#333;width:32px;height:32px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:16px}
 .top-right .logged{font-size:12px}
 .top-right .profile-btn{background:white;color:#FF2D55;padding:6px 10px;border-radius:20px;font-weight:bold;font-size:12px;display:flex;align-items:center;gap:5px}
@@ -109,7 +109,8 @@ a{color:white;text-decoration:none}
 .wall-card .info .colors,.wall-card .info .stats{display:none}
 .content{padding:10px;padding-bottom:80px;align-items:center;flex:1}
 .post-card{width:100%;max-width:100%;min-width:0;border-radius:14px}
-.video-box video{width:100%;height:auto;aspect-ratio:auto;border-radius:0}
+.video-box{height:78vh;max-height:78vh;min-height:78vh;overflow:hidden;display:flex;align-items:center;justify-content:center}
+.video-box video{width:100%;height:78vh;max-height:78vh;min-height:78vh;object-fit:cover;border-radius:0}
 .fb-actions button{font-size:13px;padding:10px 4px}
 .bottom-bar{left:0;padding:10px}
 .topbar{justify-content:flex-start!important;padding:0 4px 0 4px;height:60px;gap:4px}
@@ -183,7 +184,7 @@ body.hide-flags #showFlagsBtn{display:flex;position:fixed;top:64px;left:8px;z-in
 <img class="post-img" src="{{ m.video }}" loading="lazy">
 {% endif %}
 {% endif %}
-<div class="fb-stats"><span>❤️ <span class="like-count">{{ m.likes }}</span> Likes • 👁️ {{ m.views }} Views</span><span>💬 <span class="comment-count">{{ m.comments|length }}</span> Comments • 👥 {{ m.viewed_by|length }} Viewed</span></div>
+<div class="fb-stats"><span>❤ <span class="like-count">{{ m.likes }}</span> Likes • 👁 {{ m.views }} Views</span><span>💬 <span class="comment-count">{{ m.comments|length }}</span> Comments • 👥 {{ m.viewed_by|length }} Viewed</span></div>
 <div class="fb-actions">
 {% if user == 'Guest' %}
 <button class="like-btn" onclick="needLogin()"><span class="icon">👍</span> Like • <span class="like-count">{{ m.likes }}</span></button>
@@ -192,7 +193,7 @@ body.hide-flags #showFlagsBtn{display:flex;position:fixed;top:64px;left:8px;z-in
 <form method="POST" action="/like/{{ current_slug }}/{{ m.id }}" class="ajax-form like-form" data-post="{{ m.id }}"><button type="submit" class="like-btn"><span class="icon">👍</span> Like • <span class="like-count">{{ m.likes }}</span></button></form>
 <button class="comment-btn" onclick="this.closest('.post-card').querySelector('.comment-row input').focus()"><span class="icon">💬</span> Comment</button>
 {% endif %}
-<button class="share-btn" onclick="sharePost('{{ current_slug }}')"><span class="icon">↗️</span> Share</button>
+<button class="share-btn" onclick="sharePost('{{ current_slug }}')"><span class="icon">↗</span> Share</button>
 {% if m.user != user and user != 'Guest' %}
 <form method="POST" action="/report/{{ current_slug }}/{{ m.id }}" class="fb-report ajax-form" data-post="{{ m.id }}" onsubmit="return confirm('Report this post? 5 reports = auto-delete')"><button type="submit"><span class="icon">🚩</span> Report</button></form>
 {% endif %}
@@ -206,7 +207,7 @@ body.hide-flags #showFlagsBtn{display:flex;position:fixed;top:64px;left:8px;z-in
 {% else %}
 <form class="comment-row ajax-form comment-form" method="POST" action="/comment/{{ current_slug }}/{{ m.id }}" data-post="{{ m.id }}">
 <input name="comment" placeholder="Write a comment... (Max 300)" required maxlength="300">
-<button type="submit">Send ✉️</button>
+<button type="submit">Send ✉</button>
 </form>
 {% endif %}
 </div>
