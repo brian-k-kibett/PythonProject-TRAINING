@@ -13,11 +13,65 @@ DB_FILE = os.path.join(BASE, "nexa_users.db")
 UPLOAD_FOLDER = os.path.join(BASE, "static", "uploads")
 os.makedirs(UPLOAD_FOLDER, exist_ok=True)
 
-# ===== 【entity-NEXA¦canonical_name=NEXA】 HOLDER = ImageKit (like Cloudinary) - secrets ONLY from WSGI Env vars =====
+# ===== 【entity-NEXA HOLDER¦canonical_name=NEXA】 = ImageKit (like Cloudinary) - secrets ONLY from WSGI Env vars =====
 HOLDER_PUBLIC_KEY = os.environ.get("IMAGEKIT_PUBLIC_KEY", "")
 HOLDER_PRIVATE_KEY = os.environ.get("IMAGEKIT_PRIVATE_KEY", "")
 HOLDER_URL_ENDPOINT = os.environ.get("IMAGEKIT_URL_ENDPOINT", "")
 HOLDER_FOLDER = "nexa_videos"
+
+# ===== 【entity-NEXA¦canonical_name=NEXA】 SUPABASE = Brain / Database - secrets ONLY from WSGI Env vars =====
+SUPABASE_URL = os.environ.get("SUPABASE_URL", "").rstrip("/")
+SUPABASE_KEY = os.environ.get("SUPABASE_KEY", "")
+
+def supabase_request(method, table, payload=None):
+    # Behind the scene, like Cloudflare - if Supabase is not ready, do nothing, 【entity-NEXA¦canonical_name=NEXA】 still works
+    if not SUPABASE_URL or not SUPABASE_KEY:
+        return None
+    try:
+        url = SUPABASE_URL + "/rest/v1/" + table
+        data = None
+        headers = {
+            "apikey": SUPABASE_KEY,
+            "Authorization": "Bearer " + SUPABASE_KEY,
+            "Content-Type": "application/json",
+            "Prefer": "return=minimal"
+        }
+        if payload is not None:
+            data = json.dumps(payload).encode()
+        req = urllib.request.Request(url, data=data, headers=headers, method=method)
+        with urllib.request.urlopen(req, timeout=5) as resp:
+            body = resp.read().decode()
+            try:
+                return json.loads(body) if body else True
+            except:
+                return True
+    except Exception:
+        return None
+
+def supabase_save_post(post, slug):
+    # Copy post to Supabase table nexa_posts - old file stays as main
+    try:
+        payload = {
+            "id": str(post.get("id", "")),
+            "wall": slug,
+            "username": str(post.get("user", "")),
+            "text": str(post.get("text", ""))[:500],
+            "video": str(post.get("video", "")),
+            "holder_id": str(post.get("holder_id", "")),
+            "holder_url": str(post.get("holder_url", "")),
+            "likes": int(post.get("likes", 0)),
+        }
+        threading.Thread(target=lambda: supabase_request("POST", "nexa_posts", payload), daemon=True).start()
+    except:
+        pass
+
+def supabase_save_user(name):
+    # Copy user name to Supabase table nexa_users - password NEVER sent to Supabase
+    try:
+        payload = {"username": str(name)}
+        threading.Thread(target=lambda: supabase_request("POST", "nexa_users", payload), daemon=True).start()
+    except:
+        pass
 
 WALLS = [
     {"slug":"Kenya","name":"Kenya","code":"ke","desc":"Black, Red, Green","rank":1,"people":0,"posts":0,"likes":0},
@@ -141,7 +195,19 @@ def home():
 @app.route("/health")
 def health():
     threading.Thread(target=cloudflare_ping, daemon=True).start()
-    return jsonify({"ok": True, "helper": "cloudflare", "holder": "imagekit", "flow": "【entity-NEXA¦canonical_name=NEXA】 -> HOLDER -> PYTHONANYWHERE + CLOUDFLARE"})
+    return jsonify({"ok": True, "helper": "cloudflare", "holder": "imagekit", "flow": "NEXA -> HOLDER -> PYTHONANYWHERE + CLOUDFLARE"})
+
+@app.route("/supabase-status")
+def supabase_status():
+    # Anybody can check - like Cloudflare health + holder-usage - no login, no secrets
+    configured = bool(SUPABASE_URL and SUPABASE_KEY)
+    return jsonify({
+        "ok": True,
+        "configured": configured,
+        "database": "supabase",
+        "url": SUPABASE_URL if configured else "",
+        "message": "SUPABASE connected - NEXA -> SUPABASE + HOLDER -> PYTHONANYWHERE + CLOUDFLARE" if configured else "SUPABASE not configured yet - check WSGI file"
+    })
 
 @app.route("/login", methods=["GET","POST"])
 def login():
@@ -164,6 +230,7 @@ def login():
                 return render_template("login.html", error_msg="That name is already taken - try " + name + "254 or " + name + "2")
             users[name] = pw
             save_users(users)
+            supabase_save_user(name)
             session["user"] = name
             return redirect("/walls/Kenya")
         else:
@@ -253,6 +320,7 @@ def walls(slug):
             msg = {"id": str(uuid.uuid4())[:8], "user": user, "text": text, "video": video_url, "holder_id": holder_id, "holder_url": holder_url, "holder_duration": holder_duration, "likes": 0, "views": 0, "comments": [], "viewed_by": [], "score": 0}
             data.setdefault(slug, []).insert(0, msg)
             save_data(data)
+            supabase_save_post(msg, slug)
             threading.Thread(target=cloudflare_ping, daemon=True).start()
         return redirect(f"/walls/{slug}")
     msgs = data.get(slug, [])
