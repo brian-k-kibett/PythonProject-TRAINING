@@ -37,36 +37,34 @@ a{color:white;text-decoration:none}
 .wall-card .stats{font-size:11px;opacity:.7;display:block;line-height:1.2}
 .content{flex:1;background:#0B0B1A;padding:14px;position:relative;padding-bottom:80px;display:flex;flex-direction:column;align-items:flex-end}
 .post-card{background:linear-gradient(135deg,#0A0A2E 0%,#0F0F3A 40%,#1A0B2E 70%,#0A0A2E 100%);color:#FFFFFF;border-radius:16px;padding:0;width:fit-content;max-width:min(520px, 92vw);min-width:min(320px, 92vw);margin-bottom:16px;margin-left:auto;margin-right:0;overflow:hidden;box-shadow:0 4px 20px rgba(0,0,0,.5), 0 0 0 2px #00C6FF, 0 0 0 4px #A855F7, 0 0 18px rgba(255,0,229,.35);display:flex;flex-direction:column;border:1px solid #00C6FF}
-.fb-header{display:flex;align-items:center;gap:12px;padding:14px 16px 10px;background:transparent}
+.fb-header{display:flex;align-items:center;gap:8px;padding:14px 16px 10px;background:transparent}
 .fb-avatar{width:44px;height:44px;border-radius:50%;background:linear-gradient(135deg,#00C6FF,#4285F4,#A855F7,#FF00E5);color:white;display:flex;align-items:center;justify-content:center;font-weight:900;font-size:18px;flex-shrink:0;border:2px solid #FFFFFF}
 .fb-name{font-size:15px;font-weight:800;color:#FFFFFF;line-height:1.3}
 .fb-time{font-size:12px;color:#C4B5FD;margin-top:1px}
-.fb-follow{margin-left:auto;background:linear-gradient(90deg,#00C6FF,#A855F7);color:#FFFFFF;border:none;padding:7px 14px;border-radius:20px;font-weight:800;cursor:pointer;font-size:12px;white-space:nowrap}
+.fb-follow{margin-left:auto;background:linear-gradient(90deg,#00C6FF,#A855F7);color:#FFFFFF;border:none;padding:7px 14px;border-radius:20px;font-weight:800;cursor:pointer;font-size:12px;white-space:nowrap;flex-shrink:0}
 .post-text{font-size:15px;line-height:1.6;margin:0 16px 12px;color:#FFFFFF;white-space:pre-wrap;word-break:break-word;background:transparent}
 .video-box{position:relative;background:#000;overflow:hidden;width:100%;margin:0;padding:0;line-height:0;display:flex;align-items:center;justify-content:center}
 .video-box video{width:100%;height:auto;max-height:480px;display:block;background:#000;object-fit:cover;margin:0;padding:0;border-radius:0}
 .post-card .post-img{width:100%;height:auto;max-height:480px;object-fit:cover;display:block;margin:0;padding:0;border-radius:0}
-.fb-stats{display:flex;justify-content:space-between;padding:10px 16px;font-size:13px;color:#E0E7FF;background:rgba(255,255,255,.08);border-top:1px solid rgba(0,198,255,.35);border-bottom:1px solid rgba(168,85,247,.35)}
-.fb-actions{display:flex;padding:8px 10px;background:transparent;gap:8px}
-.fb-actions form{flex:1}
-.fb-actions button{width:100%;background:#1E1B4B;border:none;padding:11px 6px;font-size:14px;font-weight:800;color:#FFFFFF;cursor:pointer;border-radius:12px;display:flex;align-items:center;justify-content:center;gap:6px}
-.fb-actions button:hover{background:#312E81;transform:scale(1.02)}
-.fb-actions .like-btn{color:#FFFFFF;background:linear-gradient(135deg,#00C6FF,#2563EB);box-shadow:0 2px 8px rgba(0,198,255,.4)}
-.fb-actions .like-btn .icon{font-size:18px}
-.fb-actions .comment-btn{color:#FFFFFF;background:#1E1B4B;border:1px solid #00C6FF}
-.fb-actions .comment-btn .icon{font-size:18px}
-.fb-actions .share-btn{color:#FFFFFF;background:linear-gradient(135deg,#A855F7,#FF00E5);box-shadow:0 2px 8px rgba(255,0,229,.35)}
-.fb-actions .share-btn .icon{font-size:18px}
-.fb-report{flex:1}
-.fb-report button{color:#FFFFFF;background:linear-gradient(135deg,#EF4444,#DC2626);box-shadow:0 2px 8px rgba(239,68,68,.3)}
-.fb-report button .icon{font-size:16px}
-.hide-btn{background:rgba(255,255,255,.12);color:#00C6FF;border:1px solid #00C6FF;width:calc(100% - 32px);margin:8px 16px;padding:8px;border-radius:10px;font-weight:700;cursor:pointer;font-size:12px}
+.fb-stats{display:none !important}
+.fb-actions{display:grid !important;grid-template-columns:1fr 1fr 1fr !important;gap:8px !important;padding:10px 12px !important;background:transparent !important;border-top:1px solid rgba(255,255,255,.12) !important;width:100% !important}
+.fb-actions form{display:contents !important}
+.fb-actions button,.fb-actions .views-box{width:100% !important;height:52px !important;min-width:0 !important;max-width:100% !important;background:#1E1B4B !important;border:1px solid rgba(255,255,255,.15) !important;border-radius:10px !important;display:flex !important;flex-direction:row !important;flex-wrap:nowrap !important;align-items:center !important;justify-content:center !important;gap:6px !important;font-size:14px !important;font-weight:700 !important;color:#fff !important;white-space:nowrap !important;overflow:hidden !important;cursor:pointer !important;padding:0 !important;line-height:1 !important}
+.fb-actions .views-box{cursor:default !important;background:rgba(255,255,255,.06) !important}
+.fb-actions button span{white-space:nowrap !important;flex-shrink:0 !important;line-height:1 !important}
+.fb-actions .heart{color:#FF2D55 !important;font-size:24px !important}
+.fb-actions .msg-icon{width:30px !important;height:30px !important;min-width:30px !important;max-width:30px !important;background:#22C55E !important;border-radius:50% !important;display:inline-flex !important;align-items:center !important;justify-content:center !important;font-size:13px !important;letter-spacing:1px !important;color:white !important;flex-shrink:0 !important}
+.fb-actions .eye{font-size:24px !important}
+.report-wrap{display:flex !important;flex-shrink:0 !important}
+.report-icon-btn{background:#FFFFFF !important;border:2px solid #FF2D55 !important;color:#FF2D55 !important;width:38px !important;height:38px !important;min-width:38px !important;border-radius:50% !important;cursor:pointer !important;font-size:20px !important;line-height:1 !important;padding:0 !important;display:flex !important;align-items:center !important;justify-content:center !important;box-shadow:0 0 0 2px white, 0 2px 10px rgba(0,0,0,.6) !important}
+.hide-btn{background:rgba(255,255,255,.12);color:#00C6FF;border:1px solid #00C6FF;width:calc(100% - 32px);margin:8px 16px;padding:8px;border-radius:10px;font-weight:700;cursor:pointer;font-size:12px;display:none}
 .no-comments{text-align:center;color:#A5B4FC;font-size:12px;margin:6px 0}
 .comment-row{display:flex;gap:8px;margin:8px 16px 14px;align-items:center;background:transparent}
 .comment-row input{flex:1;background:#FFFFFF;border:1px solid #00C6FF;color:#0F172A;border-radius:20px;padding:10px 14px;outline:none;font-size:13px}
 .comment-row button{background:linear-gradient(90deg,#00C6FF,#A855F7);color:white;border:none;padding:10px 16px;border-radius:20px;font-weight:800;cursor:pointer;font-size:12px}
-.comments-box{padding:0 16px 4px;background:transparent}
+.comments-box{padding:0 16px 4px;background:transparent;display:none;max-height:260px;overflow-y:auto}
 .comments-box .one-comment{font-size:13px;margin:6px 0;color:#FFFFFF;background:rgba(255,255,255,.10);padding:8px 10px;border-radius:10px}
+.comments-more{text-align:center;color:#00C6FF;font-size:12px;font-weight:700;padding:6px;cursor:pointer}
 .bottom-bar{position:fixed;bottom:0;left:340px;right:0;background:#1A0B2E;border-top:2px solid #FF2D55;padding:10px;display:flex;gap:8px;align-items:center;z-index:99}
 .bottom-bar .plus{width:44px;height:44px;border-radius:50%;background:linear-gradient(135deg,#FF2D55,#FFD700);display:flex;align-items:center;justify-content:center;font-size:24px;font-weight:bold;cursor:pointer;flex-shrink:0}
 .bottom-bar input[type=text]{flex:1;background:#2A0A4A;border:1px solid #FF2D55;color:white;border-radius:25px;padding:11px 12px;outline:none;font-size:15px}
@@ -90,10 +88,8 @@ a{color:white;text-decoration:none}
 .video-box{max-height:68vh;min-height:0;height:68vh;background:#000;display:flex;align-items:center;justify-content:center}
 .video-box video{width:100%;max-width:100%;height:68vh;min-height:0;aspect-ratio:auto;object-fit:cover;border-radius:0}
 .post-card .post-img{max-height:68vh;min-height:0;height:68vh;object-fit:cover;width:100%;max-width:100%;margin:0 auto;border-radius:0}
-.fb-stats{font-size:13px;padding:8px 18px}
-.fb-actions{padding:8px 12px;gap:10px}
-.fb-actions button{font-size:15px;padding:12px 6px}
-.fb-actions button .icon{font-size:20px}
+.fb-actions{padding:10px 14px;gap:10px}
+.fb-actions button,.fb-actions .views-box{font-size:15px;height:54px}
 .bottom-bar{left:340px}
 }
 @media(max-width:700px){
@@ -111,7 +107,8 @@ a{color:white;text-decoration:none}
 .post-card{width:100%;max-width:100%;min-width:0;border-radius:14px}
 .video-box{height:78vh;max-height:78vh;min-height:78vh;overflow:hidden;display:flex;align-items:center;justify-content:center}
 .video-box video{width:100%;height:78vh;max-height:78vh;min-height:78vh;object-fit:cover;border-radius:0}
-.fb-actions button{font-size:13px;padding:10px 4px}
+.fb-actions{padding:8px 10px !important;gap:6px !important}
+.fb-actions button,.fb-actions .views-box{font-size:13px !important;height:50px !important;gap:5px !important}
 .bottom-bar{left:0;padding:10px}
 .topbar{justify-content:flex-start!important;padding:0 4px 0 4px;height:60px;gap:4px}
 .top-left{flex-shrink:0;gap:6px}
@@ -119,7 +116,7 @@ a{color:white;text-decoration:none}
 .top-left p{display:none}
 .top-left .flag-img{width:62px;height:42px}
 .top-right{margin-left:6px!important;margin-right:0!important;flex-shrink:0}
-.top-right . nexa-neon,.top-right .logged,.top-right .bell{display:none!important}
+.top-right .nexa-neon,.top-right .logged,.top-right .bell{display:none!important}
 .top-right .profile-btn{display:flex!important;background:#FFD700!important;color:#000!important;padding:0 10px!important;height:38px!important;min-width:84px!important;border-radius:20px!important;font-weight:900!important;font-size:12px!important;align-items:center!important;justify-content:center!important;gap:4px!important;white-space:nowrap!important;box-shadow:0 2px 8px rgba(0,0,0,.4)!important;margin-right:0!important;border:2px solid #FFFFFF!important}
 .top-right .profile-btn span{width:22px!important;height:22px!important;font-size:11px!important;background:#000!important;color:#FFD700!important}
 body.hide-flags .sidebar{display:none}
@@ -131,6 +128,15 @@ body.hide-flags #sidebarToggle{display:none}
 #showFlagsBtn{display:none}
 body.hide-flags #showFlagsBtn{display:flex;position:fixed;top:64px;left:8px;z-index:200;background:#2563EB;color:white;border:2px solid white;width:44px;height:44px;border-radius:50%;align-items:center;justify-content:center;font-size:22px;font-weight:900;cursor:pointer;box-shadow:0 4px 12px rgba(0,0,0,.5)}
 }
+.bottom-bar{left:50% !important;transform:translateX(-50%) !important;bottom:12px !important;width:min(560px, 92vw) !important;right:auto !important;background:rgba(10,10,30,.92) !important;backdrop-filter:blur(12px) !important;border-radius:30px !important;padding:8px 8px 8px 10px !important;box-shadow:0 0 0 2px #00C6FF, 0 0 0 4px #A855F7, 0 0 22px rgba(255,0,229,.45), 0 10px 30px rgba(0,0,0,.6) !important;gap:8px !important;border-top:none !important}
+.bottom-bar .plus{width:42px !important;height:42px !important;background:linear-gradient(135deg,#00C6FF,#A855F7,#FF00E5) !important;box-shadow:0 0 12px rgba(0,198,255,.6) !important;font-size:22px !important}
+.bottom-bar input[type=text]{background:#FFFFFF !important;color:#0F172A !important;border:none !important;border-radius:22px !important;padding:12px 16px !important;font-size:14px !important}
+.bottom-bar input[type=text]::placeholder{color:#8B5CF6 !important;font-weight:600 !important}
+.bottom-bar .post-btn{background:linear-gradient(90deg,#00C6FF,#A855F7,#FF00E5) !important;color:#FFFFFF !important;border-radius:22px !important;padding:12px 18px !important;font-size:14px !important;box-shadow:0 4px 14px rgba(168,85,247,.5) !important;white-space:nowrap !important}
+.comment-row{background:#FFFFFF !important;border-radius:22px !important;padding:6px 6px 6px 12px !important;box-shadow:0 0 0 2px #00C6FF, 0 4px 12px rgba(0,0,0,.25) !important;gap:8px !important}
+.comment-row input{background:transparent !important;border:none !important;color:#0F172A !important;font-size:14px !important}
+.comment-row button{background:linear-gradient(90deg,#00C6FF,#A855F7,#FF00E5) !important;border-radius:20px !important;padding:10px 18px !important;box-shadow:0 3px 10px rgba(255,0,229,.35) !important}
+@media(max-width:700px){.bottom-bar{left:50% !important;transform:translateX(-50%) !important;bottom:10px !important;width:94vw !important}}
 </style>
 </head>
 <body>
@@ -141,7 +147,7 @@ body.hide-flags #showFlagsBtn{display:flex;position:fixed;top:64px;left:8px;z-in
 <p>Flag colours: Black, Red, Green • Hello, {{ user }} 👋 • {{ messages|length }} posts • Rank #{{ current_rank }}</p></div>
 </div>
 <div class="top-right">
-<div style="text-align:right"><div class=" nexa-neon">N E X A . &nbsp;NEON</div>
+<div style="text-align:right"><div class="nexa-neon">N E X A . &nbsp;NEON</div>
 <div style="display:flex;align-items:center;gap:6px;justify-content:flex-end;margin-top:1px"><span class="bell">🔔{% if notif_count %} {{ notif_count }}{% endif %}</span>{% if user != 'Guest' %}<span class="logged">Logged in as &nbsp;<b>@{{ user }}</b></span><a class="profile-btn" href="/profile/{{ user }}"><span>N</span> My Profile</a>{% else %}<a class="profile-btn" href="/login"><span>N</span> Login / Join</a>{% endif %}</div></div>
 </div>
 </div>
@@ -171,6 +177,7 @@ body.hide-flags #showFlagsBtn{display:flex;position:fixed;top:64px;left:8px;z-in
 <div class="fb-avatar">{{ m.user[0]|upper }}</div>
 <div><div class="fb-name">{{ m.user }} • {{ current_wall.name }} Wall</div><div class="fb-time">Just now • 🌍 Public • Rank #{{ m.score }}</div></div>
 <button class="fb-follow" onclick="window.location.href='/profile/{{ m.user }}'">View Profile</button>
+<div class="report-wrap">{% if user == 'Guest' %}<button type="button" class="report-icon-btn" onclick="needLogin()" title="Report">🚩</button>{% elif m.user == user %}<button type="button" class="report-icon-btn" onclick="alert('You cannot report your own post')" title="Report">🚩</button>{% else %}<form method="POST" action="/report/{{ current_slug }}/{{ m.id }}" class="ajax-form report-form" data-post="{{ m.id }}" onsubmit="return confirm('Report this post?')" style="display:inline"><button type="submit" class="report-icon-btn" title="Report">🚩</button></form>{% endif %}</div>
 </div>
 {% if m.text %}<div class="post-text">{{ m.text }}</div>{% endif %}
 {% if m.video %}
@@ -184,19 +191,15 @@ body.hide-flags #showFlagsBtn{display:flex;position:fixed;top:64px;left:8px;z-in
 <img class="post-img" src="{{ m.video }}" loading="lazy">
 {% endif %}
 {% endif %}
-<div class="fb-stats"><span>❤ <span class="like-count">{{ m.likes }}</span> Likes • 👁 {{ m.views }} Views</span><span>💬 <span class="comment-count">{{ m.comments|length }}</span> Comments • 👥 {{ m.viewed_by|length }} Viewed</span></div>
 <div class="fb-actions">
 {% if user == 'Guest' %}
-<button class="like-btn" onclick="needLogin()"><span class="icon">👍</span> Like • <span class="like-count">{{ m.likes }}</span></button>
-<button class="comment-btn" onclick="needLogin()"><span class="icon">💬</span> Comment</button>
+<button class="like-btn" onclick="needLogin()"><span class="heart">❤</span><span class="like-count">{{ m.likes }}</span></button>
+<button class="comment-btn" onclick="needLogin()"><span class="msg-icon">•••</span><span class="comment-count">{{ m.comments|length }}</span></button>
 {% else %}
-<form method="POST" action="/like/{{ current_slug }}/{{ m.id }}" class="ajax-form like-form" data-post="{{ m.id }}"><button type="submit" class="like-btn"><span class="icon">👍</span> Like • <span class="like-count">{{ m.likes }}</span></button></form>
-<button class="comment-btn" onclick="this.closest('.post-card').querySelector('.comment-row input').focus()"><span class="icon">💬</span> Comment</button>
+<form method="POST" action="/like/{{ current_slug }}/{{ m.id }}" class="ajax-form like-form" data-post="{{ m.id }}"><button type="submit" class="like-btn"><span class="heart">❤</span><span class="like-count">{{ m.likes }}</span></button></form>
+<button class="comment-btn" onclick="openComment(this)"><span class="msg-icon">•••</span><span class="comment-count">{{ m.comments|length }}</span></button>
 {% endif %}
-<button class="share-btn" onclick="sharePost('{{ current_slug }}')"><span class="icon">↗</span> Share</button>
-{% if m.user != user and user != 'Guest' %}
-<form method="POST" action="/report/{{ current_slug }}/{{ m.id }}" class="fb-report ajax-form" data-post="{{ m.id }}" onsubmit="return confirm('Report this post? 5 reports = auto-delete')"><button type="submit"><span class="icon">🚩</span> Report</button></form>
-{% endif %}
+<div class="views-box"><span class="eye">👁</span><span>{{ m.views }}</span></div>
 </div>
 <button class="hide-btn" onclick="toggleComments(this)">▲ Hide Comments</button>
 <div class="comments-box">
@@ -210,6 +213,7 @@ body.hide-flags #showFlagsBtn{display:flex;position:fixed;top:64px;left:8px;z-in
 <button type="submit">Send ✉</button>
 </form>
 {% endif %}
+<div class="comments-more" onclick="showMoreComments(this)">▼ Show more comments</div>
 </div>
 </div>
 {% else %}
@@ -235,177 +239,100 @@ body.hide-flags #showFlagsBtn{display:flex;position:fixed;top:64px;left:8px;z-in
 <div class="upload-bar" id="uploadBar"><div id="uploadText">Uploading to HOLDER... 0% — NEXA → HOLDER → PYTHONANYWHERE</div><div class="bar"><div class="fill" id="uploadFill"></div></div></div>
 <script>
 function needLogin(){ if(confirm('To Like, Comment or Post, login / join free. Go to Login?')){ window.location.href='/login'; } }
+function openComment(btn){
+  var card = btn.closest('.post-card');
+  var box = card.querySelector('.comments-box');
+  var hideBtn = card.querySelector('.hide-btn');
+  if(box.style.display==='block'){ box.style.display='none'; if(hideBtn) hideBtn.style.display='none'; return; }
+  box.style.display='block'; if(hideBtn){ hideBtn.style.display='block'; hideBtn.textContent='▲ Hide Comments'; }
+  var input = card.querySelector('.comment-row input'); if(input){ input.focus(); }
+}
+function toggleComments(btn){
+  var box = btn.nextElementSibling;
+  if(box.style.display === 'none'){ box.style.display='block'; btn.textContent='▲ Hide Comments'; }
+  else { box.style.display='none'; btn.textContent='▼ Show Comments'; }
+}
+function showMoreComments(el){
+  var box = el.closest('.comments-box');
+  var hidden = box.querySelectorAll('.one-comment.nexa-hidden');
+  for(var i=0;i<3 && i<hidden.length;i++){ hidden[i].classList.remove('nexa-hidden'); hidden[i].style.display='block'; }
+  if(box.querySelectorAll('.one-comment.nexa-hidden').length===0){ el.style.display='none'; }
+}
+document.querySelectorAll('.post-card').forEach(function(card){
+  var box = card.querySelector('.comments-box'); if(!box) return;
+  var items = box.querySelectorAll('.one-comment');
+  var more = box.querySelector('.comments-more');
+  items.forEach(function(it,idx){ if(idx>=6){ it.classList.add('nexa-hidden'); it.style.display='none'; } });
+  if(items.length<=6 && more) more.style.display='none';
+  if(items.length>6 && more) more.textContent='▼ Show more comments ('+(items.length-6)+' left)';
+  box.addEventListener('scroll', function(){
+    if(box.scrollTop + box.clientHeight >= box.scrollHeight - 10){
+      var hidden = box.querySelectorAll('.one-comment.nexa-hidden');
+      for(var i=0;i<3 && i<hidden.length;i++){ hidden[i].classList.remove('nexa-hidden'); hidden[i].style.display='block'; }
+      var left = box.querySelectorAll('.one-comment.nexa-hidden').length;
+      if(left===0 && more) more.style.display='none'; else if(more) more.textContent='▼ Show more comments ('+left+' left)';
+    }
+  });
+  var postObserver = new IntersectionObserver(function(entries){
+    entries.forEach(function(en){
+      if(!en.isIntersecting){
+        var b = card.querySelector('.comments-box'); var hb = card.querySelector('.hide-btn');
+        if(b && b.style.display==='block'){ b.style.display='none'; if(hb) hb.style.display='none'; }
+      }
+    });
+  },{threshold:0.1});
+  postObserver.observe(card);
+});
 document.querySelectorAll('.ajax-form').forEach(function(f){
   f.addEventListener('submit', function(e){
-    e.preventDefault();
-    var form = f;
-    var url = form.getAttribute('action');
-    var card = form.closest('.post-card');
-    var video = card ? card.querySelector('video') : null;
-    var wasPlaying = video && !video.paused;
-    var currentTime = video ? video.currentTime : 0;
+    e.preventDefault(); var form = f; var url = form.getAttribute('action'); var card = form.closest('.post-card');
+    var video = card ? card.querySelector('video') : null; var wasPlaying = video && !video.paused; var currentTime = video ? video.currentTime : 0;
     var formData = new FormData(form);
     fetch(url, {method:'POST', body:formData, headers:{'X-Requested-With':'XMLHttpRequest'}})
     .then(function(res){ return res.text(); })
     .then(function(){
-      if(form.classList.contains('like-form')){
-        card.querySelectorAll('.like-count').forEach(function(el){ el.textContent = parseInt(el.textContent||'0')+1; });
-      }
+      if(form.classList.contains('like-form')){ card.querySelectorAll('.like-count').forEach(function(el){ el.textContent = parseInt(el.textContent||'0')+1; }); }
+      if(form.classList.contains('report-form')){ alert('Reported. Thank you.'); }
       if(form.classList.contains('comment-form')){
-        var input = form.querySelector('input[name="comment"]');
-        var txt = input.value;
-        var box = card.querySelector('.comments-box');
-        var noC = box.querySelector('.no-comments');
-        if(noC) noC.remove();
-        var div = document.createElement('div');
-        div.className = 'one-comment';
-        div.innerHTML = '<b>{{ user }}:</b> ' + txt.replace(/</g,'&lt;');
-        box.insertBefore(div, form);
-        card.querySelectorAll('.comment-count').forEach(function(el){ el.textContent = parseInt(el.textContent||'0')+1; });
-        input.value = '';
+        var input = form.querySelector('input[name="comment"]'); var txt = input.value;
+        var box = card.querySelector('.comments-box'); var noC = box.querySelector('.no-comments'); if(noC) noC.remove();
+        var div = document.createElement('div'); div.className = 'one-comment'; div.innerHTML = '<b>{{ user }}:</b> ' + txt.replace(/</g,'&lt;');
+        var moreBtn = box.querySelector('.comments-more'); if(moreBtn) box.insertBefore(div, moreBtn); else box.insertBefore(div, form);
+        card.querySelectorAll('.comment-count').forEach(function(el){ el.textContent = parseInt(el.textContent||'0')+1; }); input.value = '';
       }
       if(video && wasPlaying){ video.currentTime = currentTime; video.play().catch(function(){}); }
     })
     .catch(function(){ try{ sessionStorage.setItem('nexa_scroll', window.scrollY.toString()); }catch(e){} form.submit(); });
   });
 });
-// ===== NEXA -> HOLDER (ImageKit) -> PYTHONANYWHERE + CLOUDFLARE - ONLY upload changed =====
 var pf = document.getElementById('postForm');
 if(pf){ pf.addEventListener('submit', function(e){
-  e.preventDefault();
-  var fileInput = document.getElementById('fileInput');
-  var file = fileInput.files[0];
-  var text = document.getElementById('postText').value;
-  var btn = document.getElementById('postBtn');
-  var bar = document.getElementById('uploadBar');
-  var txt = document.getElementById('uploadText');
-  var fill = document.getElementById('uploadFill');
-  // No file = text only - send old way to PythonAnywhere (same as before)
-  if(!file){ pf.submit(); return; }
-  // Image = send old way for now - HOLDER is for video only
-  if(file.type.indexOf('video') === -1){ pf.submit(); return; }
-  // Video: NEXA -> HOLDER first
-  btn.disabled = true; btn.textContent = 'Sending to HOLDER...';
-  bar.style.display = 'block';
-  fill.style.width = '5%'; txt.textContent = 'Asking HOLDER for permission... NEXA → HOLDER';
-  var sigForm = new FormData();
-  sigForm.append('bytes', file.size);
-  fetch('/holder-signature', {method:'POST', body: sigForm})
-  .then(function(r){ return r.json(); })
-  .then(function(sigData){
-    if(!sigData.ok){
-      bar.style.display = 'none'; btn.disabled = false; btn.textContent = 'Post →';
-      if(sigData.error === 'holder_not_configured'){ alert('HOLDER not set yet in PythonAnywhere WSGI. Posting old way to PythonAnywhere.'); pf.submit(); return; }
-      if(sigData.error === 'too_big_max_15mb'){ alert('Too big: Max 15MB for now. Use shorter video.'); return; }
-      alert('HOLDER error, posting old way.'); pf.submit(); return;
-    }
-    // Step 2: Upload DIRECT to HOLDER (ImageKit)
+  e.preventDefault(); var fileInput = document.getElementById('fileInput'); var file = fileInput.files[0]; var text = document.getElementById('postText').value;
+  var btn = document.getElementById('postBtn'); var bar = document.getElementById('uploadBar'); var txt = document.getElementById('uploadText'); var fill = document.getElementById('uploadFill');
+  if(!file){ pf.submit(); return; } if(file.type.indexOf('video') === -1){ pf.submit(); return; }
+  btn.disabled = true; btn.textContent = 'Sending to HOLDER...'; bar.style.display = 'block'; fill.style.width = '5%'; txt.textContent = 'Asking HOLDER for permission... NEXA → HOLDER';
+  var sigForm = new FormData(); sigForm.append('bytes', file.size);
+  fetch('/holder-signature', {method:'POST', body: sigForm}).then(function(r){ return r.json(); }).then(function(sigData){
+    if(!sigData.ok){ bar.style.display = 'none'; btn.disabled = false; btn.textContent = 'Post →'; if(sigData.error === 'holder_not_configured'){ alert('HOLDER not set yet in PythonAnywhere WSGI. Posting old way to PythonAnywhere.'); pf.submit(); return; } if(sigData.error === 'too_big_max_15mb'){ alert('Too big: Max 15MB for now. Use shorter video.'); return; } alert('HOLDER error, posting old way.'); pf.submit(); return; }
     fill.style.width = '20%'; txt.textContent = 'Uploading to HOLDER... NEXA → HOLDER → PYTHONANYWHERE';
-    var upForm = new FormData();
-    upForm.append('file', file);
-    upForm.append('fileName', 'nexa_' + Date.now() + '_' + file.name);
-    upForm.append('folder', sigData.folder);
-    upForm.append('publicKey', sigData.public_key);
-    upForm.append('signature', sigData.signature);
-    upForm.append('expire', sigData.expire);
-    upForm.append('token', sigData.token);
-    upForm.append('useUniqueFileName', 'true');
-    var xhr = new XMLHttpRequest();
-    xhr.open('POST', 'https://upload.imagekit.io/api/v1/files/upload', true);
+    var upForm = new FormData(); upForm.append('file', file); upForm.append('fileName', 'nexa_' + Date.now() + '_' + file.name); upForm.append('folder', sigData.folder); upForm.append('publicKey', sigData.public_key); upForm.append('signature', sigData.signature); upForm.append('expire', sigData.expire); upForm.append('token', sigData.token); upForm.append('useUniqueFileName', 'true');
+    var xhr = new XMLHttpRequest(); xhr.open('POST', 'https://upload.imagekit.io/api/v1/files/upload', true);
     xhr.upload.onprogress = function(ev){ if(ev.lengthComputable){ var p = 20 + Math.round(ev.loaded/ev.total*70); fill.style.width = p+'%'; txt.textContent = 'Uploading to HOLDER... '+p+'% — video held on top'; } };
-    xhr.onload = function(){
-      try{
-        var res = JSON.parse(xhr.responseText);
-        if(!res.url){ throw new Error('no url'); }
-        fill.style.width = '95%'; txt.textContent = 'HOLDER held video — sending to PythonAnywhere...';
-        var finalForm = new FormData();
-        finalForm.append('message', text);
-        finalForm.append('holder_id', res.fileId || '');
-        finalForm.append('holder_url', res.url || '');
-        finalForm.append('holder_duration', '');
-        fetch(window.location.pathname, {method:'POST', body: finalForm})
-        .then(function(){ bar.style.display='none'; window.location.reload(); })
-        .catch(function(){ bar.style.display='none'; btn.disabled=false; btn.textContent='Post →'; alert('HOLDER held video, but PythonAnywhere failed. Try Reload.'); });
-      }catch(err){
-        bar.style.display='none'; btn.disabled=false; btn.textContent='Post →';
-        alert('HOLDER upload failed, try smaller video or try again. Posting old way.'); pf.submit();
-      }
-    };
-    xhr.onerror = function(){ bar.style.display='none'; btn.disabled=false; btn.textContent='Post →'; alert('HOLDER upload failed (network). Posting old way.'); pf.submit(); };
-    xhr.send(upForm);
-  })
-  .catch(function(){ bar.style.display='none'; btn.disabled=false; btn.textContent='Post →'; alert('Cannot reach HOLDER, posting old way.'); pf.submit(); });
+    xhr.onload = function(){ try{ var res = JSON.parse(xhr.responseText); if(!res.url){ throw new Error('no url'); } fill.style.width = '95%'; txt.textContent = 'HOLDER held video — sending to PythonAnywhere...'; var finalForm = new FormData(); finalForm.append('message', text); finalForm.append('holder_id', res.fileId || ''); finalForm.append('holder_url', res.url || ''); finalForm.append('holder_duration', ''); fetch(window.location.pathname, {method:'POST', body: finalForm}).then(function(){ bar.style.display='none'; window.location.reload(); }).catch(function(){ bar.style.display='none'; btn.disabled=false; btn.textContent='Post →'; alert('HOLDER held video, but PythonAnywhere failed. Try Reload.'); }); }catch(err){ bar.style.display='none'; btn.disabled=false; btn.textContent='Post →'; alert('HOLDER upload failed, try smaller video or try again. Posting old way.'); pf.submit(); } };
+    xhr.onerror = function(){ bar.style.display='none'; btn.disabled=false; btn.textContent='Post →'; alert('HOLDER upload failed (network). Posting old way.'); pf.submit(); }; xhr.send(upForm);
+  }).catch(function(){ bar.style.display='none'; btn.disabled=false; btn.textContent='Post →'; alert('Cannot reach HOLDER, posting old way.'); pf.submit(); });
 });}
-function toggleFlags(){
-  document.body.classList.toggle('hide-flags');
-  var btn = document.getElementById('sidebarToggle');
-  if(document.body.classList.contains('hide-flags')){
-    if(btn) btn.textContent = '›';
-  } else {
-    if(btn) btn.textContent = '‹';
-  }
-}
-function toggleMute(btn){
-  var v = btn.parentElement.querySelector('video');
-  if(v.muted){ v.muted = false; v.volume = 1; btn.textContent = '🔊 Sound ON'; }
-  else { v.muted = true; btn.textContent = '🔇 Muted'; }
-}
+function toggleFlags(){ document.body.classList.toggle('hide-flags'); var btn = document.getElementById('sidebarToggle'); if(document.body.classList.contains('hide-flags')){ if(btn) btn.textContent = '›'; } else { if(btn) btn.textContent = '‹'; } }
+function toggleMute(btn){ var v = btn.parentElement.querySelector('video'); if(v.muted){ v.muted = false; v.volume = 1; btn.textContent = '🔊 Sound ON'; } else { v.muted = true; btn.textContent = '🔇 Muted'; } }
 let allBoxes = Array.from(document.querySelectorAll('.video-box'));
-let videoObserver = new IntersectionObserver((entries)=>{
-  entries.forEach(entry=>{
-    let box = entry.target;
-    let v = box.querySelector('video');
-    let loading = box.querySelector('.loading');
-    let btn = box.querySelector('.mute-btn');
-    if(entry.isIntersecting && entry.intersectionRatio >= 0.6){
-      if(!v.getAttribute('src')){ v.src = v.getAttribute('data-src'); v.load(); }
-      document.querySelectorAll('video').forEach(other=>{ if(other !== v){ other.pause(); } });
-      if(loading) loading.style.display = 'none';
-      v.muted = false; v.volume = 1;
-      if(btn) btn.textContent = '🔊 Sound ON';
-      v.play().catch(()=>{
-        v.muted = true; v.play().catch(()=>{});
-        if(btn) btn.textContent = '🔇 Tap to Unmute';
-      });
-      let idx = allBoxes.indexOf(box);
-      let nextBox = allBoxes[idx+1];
-      if(nextBox){
-        let nv = nextBox.querySelector('video');
-        if(nv && !nv.getAttribute('src')){ nv.src = nv.getAttribute('data-src'); nv.preload = 'metadata'; nv.load(); }
-      }
-    } else {
-      v.pause();
-    }
-  });
-},{threshold:[0.6], rootMargin:'200px'});
+let videoObserver = new IntersectionObserver((entries)=>{ entries.forEach(entry=>{ let box = entry.target; let v = box.querySelector('video'); let loading = box.querySelector('.loading'); let btn = box.querySelector('.mute-btn'); if(entry.isIntersecting && entry.intersectionRatio >= 0.6){ if(!v.getAttribute('src')){ v.src = v.getAttribute('data-src'); v.load(); } document.querySelectorAll('video').forEach(other=>{ if(other !== v){ other.pause(); } }); if(loading) loading.style.display = 'none'; v.muted = false; v.volume = 1; if(btn) btn.textContent = '🔊 Sound ON'; v.play().catch(()=>{ v.muted = true; v.play().catch(()=>{}); if(btn) btn.textContent = '🔇 Tap to Unmute'; }); let idx = allBoxes.indexOf(box); let nextBox = allBoxes[idx+1]; if(nextBox){ let nv = nextBox.querySelector('video'); if(nv && !nv.getAttribute('src')){ nv.src = nv.getAttribute('data-src'); nv.preload = 'metadata'; nv.load(); } } } else { v.pause(); } }); },{threshold:[0.6], rootMargin:'200px'});
 allBoxes.forEach(box=>videoObserver.observe(box));
 document.addEventListener('visibilitychange', function(){ if(document.hidden){ document.querySelectorAll('video').forEach(v=>v.pause()); } });
 window.addEventListener('pagehide', function(){ document.querySelectorAll('video').forEach(v=>v.pause()); });
 window.addEventListener('blur', function(){ document.querySelectorAll('video').forEach(v=>v.pause()); });
-function toggleComments(btn){
-  var box = btn.nextElementSibling;
-  if(box.style.display === 'none'){ box.style.display='block'; btn.textContent='▲ Hide Comments'; }
-  else { box.style.display='none'; btn.textContent='▼ Show Comments'; }
-}
-function doSearch(){
-  var q = document.getElementById('searchInput').value.trim();
-  if(!q) return;
-  var walls = [{% for w in walls %}"{{ w.name }}",{% endfor %}];
-  for(var i=0;i<walls.length;i++){ if(walls[i].toLowerCase() === q.toLowerCase()){ window.location.href='/walls/'+walls[i]; return; } }
-  alert('Wall not found. Try Kenya, USA, UK, Nigeria...');
-}
-function sharePost(slug){
-  var url = 'https://Brian1234bett.pythonanywhere.com/walls/'+slug;
-  if(navigator.share){ navigator.share({title:'NEXA', text:'Look on NEXA!', url:url}); }
-  else { prompt('Copy this link:', url); }
-}
-function checkSize(input){
-  var f = input.files[0]; if(!f) return;
-  var mb = (f.size/1024/1024).toFixed(1);
-  var info = document.getElementById('sizeInfo');
-  if(f.size > 15*1024*1024){ info.textContent='❌ Too big: '+mb+'MB — TikTok fast: Max 15MB. Please use shorter video'; input.value=''; }
-  else { info.textContent='✅ '+mb+'MB — HOLDER will hold it, TikTok fast'; }
-}
+function doSearch(){ var q = document.getElementById('searchInput').value.trim(); if(!q) return; var walls = [{% for w in walls %}"{{ w.name }}",{% endfor %}]; for(var i=0;i<walls.length;i++){ if(walls[i].toLowerCase() === q.toLowerCase()){ window.location.href='/walls/'+walls[i]; return; } } alert('Wall not found. Try Kenya, USA, UK, Nigeria...'); }
+function sharePost(slug){ var url = 'https://Brian1234bett.pythonanywhere.com/walls/'+slug; if(navigator.share){ navigator.share({title:'NEXA', text:'Look on NEXA!', url:url}); } else { prompt('Copy this link:', url); } }
+function checkSize(input){ var f = input.files[0]; if(!f) return; var mb = (f.size/1024/1024).toFixed(1); var info = document.getElementById('sizeInfo'); if(f.size > 15*1024*1024){ info.textContent='❌ Too big: '+mb+'MB — TikTok fast: Max 15MB. Please use shorter video'; input.value=''; } else { info.textContent='✅ '+mb+'MB — HOLDER will hold it, TikTok fast'; } }
 </script>
 </body>
 </html>
